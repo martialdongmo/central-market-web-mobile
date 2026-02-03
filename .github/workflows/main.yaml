@@ -54,14 +54,3 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_HUB_USERNAME }}/central-market-web:latest
             ${{ secrets.DOCKER_HUB_USERNAME }}/central-market-web:${{ github.sha }}
-
-
-
-
-
-
-#  ☐ Auto-deploy to Kubernetes
-#  ☐ Auto-deploy to VPS (Docker Compose)
-#  ☐ Auto-deploy to AWS EC2
-#  ☐ Add Helm chart
-#  ☐ Add environment configs (dev / test / prod)
