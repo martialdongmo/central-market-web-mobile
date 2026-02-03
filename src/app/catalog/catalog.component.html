@@ -1,0 +1,79 @@
+<ion-header class="ion-no-border bg-white">
+  <div class="max-w-screen-xl mx-auto w-full px-5 pt-6 pb-4">
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-3xl font-black text-slate-900">Catalogue</h1>
+      <button class="relative p-3 bg-slate-900 text-white rounded-2xl shadow-lg active:scale-95 transition-all">
+        <ion-icon name="cart-outline" class="text-2xl"></ion-icon>
+        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white">3</span>
+      </button>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button (click)="openFilters()" class="flex items-center justify-center w-12 h-12 bg-blue-600 text-white rounded-2xl shadow-md active:scale-90 transition-all flex-shrink-0">
+        <ion-icon name="options-outline" class="text-2xl"></ion-icon>
+      </button>
+    <ion-modal #filterModal [initialBreakpoint]="0.75" [breakpoints]="[0, 0.75, 1]">
+  <ng-template>
+    <ion-content class="ion-padding">
+      <div class="flex flex-col h-full">
+        <div class="flex justify-between items-center mb-8 pt-2">
+          <h2 class="text-2xl font-black text-slate-900">Filtrer par</h2>
+          <button (click)="resetFilters()" class="text-[10px] font-bold text-blue-600 uppercase tracking-[0.2em]">Effacer tout</button>
+        </div>
+
+        <div class="space-y-6 flex-1">
+          <div class="flex justify-between items-center p-5 bg-slate-50 rounded-[1.5rem]">
+            <div class="flex items-center gap-3">
+              <ion-icon name="pricetag-outline" class="text-xl text-slate-400"></ion-icon>
+              <span class="font-bold text-slate-700">Promotions uniquement</span>
+            </div>
+            <ion-toggle [(ngModel)]="queryParams.promotionOnly" color="dark"></ion-toggle>
+          </div>
+
+          <div class="px-2 pt-4">
+            <div class="flex justify-between mb-4">
+              <span class="text-[10px] font-black uppercase text-slate-400">Budget Max</span>
+              <span class="text-sm font-black text-blue-600">{{queryParams.maxPrice}} €</span>
+            </div>
+            <ion-range [min]="0" [max]="1000" [(ngModel)]="queryParams.maxPrice" color="dark" class="py-0"></ion-range>
+          </div>
+        </div>
+
+        <div class="pt-6 pb-4">
+          <ion-button (click)="applyFilters()" expand="block" shape="round" class="h-16 main-btn">
+            <span class="font-bold tracking-widest uppercase">Afficher les résultats</span>
+          </ion-button>
+        </div>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+      <div class="flex-1">
+        <ion-searchbar 
+          placeholder="Rechercher..." 
+          class="custom-search-bar"
+          (ionInput)="onSearch($event)">
+        </ion-searchbar>
+      </div>
+    </div>
+  </div>
+</ion-header>
+
+<ion-content>
+  <div class="max-w-screen-xl mx-auto px-5 pt-4">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 pb-24">
+      
+      <app-product-card 
+        *ngFor="let product of products" 
+        [product]="product">
+      </app-product-card>
+
+    </div>
+
+    <ion-infinite-scroll (ionInfinite)="loadMore($event)">
+      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Chargement...">
+      </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </div>
+</ion-content>

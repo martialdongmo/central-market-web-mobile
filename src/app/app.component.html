@@ -1,3 +1,29 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <div id="main-content" style="height: 100%; width: 100%;">
+    <ion-router-outlet></ion-router-outlet>
+  </div>
+
+ <ion-tab-bar slot="bottom" style="position: fixed; bottom: 0; width: 100%;">
+
+  
+
+  <ion-tab-button routerLink="/catalog" routerLinkActive="tab-selected">
+    <ion-icon name="storefront-outline"></ion-icon>
+    <ion-label>Catalogue</ion-label>
+  </ion-tab-button>
+
+  <ion-tab-button routerLink="/nearby" routerLinkActive="tab-selected">
+    <ion-icon name="location-outline"></ion-icon>
+    <ion-label>Proximité</ion-label>
+  </ion-tab-button>
+
+  <ion-tab-button routerLink="/promotions" routerLinkActive="tab-selected">
+    <ion-icon name="flame-outline"></ion-icon>
+    <ion-label>Promos</ion-label>
+  </ion-tab-button>
+<ion-tab-button routerLink="/profile" routerLinkActive="tab-selected">
+    <ion-icon name="person-circle-outline"></ion-icon>
+    <ion-label>Profil</ion-label>
+  </ion-tab-button>
+</ion-tab-bar>
 </ion-app>

@@ -1,0 +1,50 @@
+<ion-content class="ion-padding bg-white">
+  <div class="max-w-md mx-auto px-4">
+    
+    <div class="mb-10 mt-12">
+      <h1 class="text-4xl font-black text-slate-900 tracking-tight italic">Ravi de vous <br>revoir.</h1>
+      <p class="text-slate-500 mt-3 font-medium">Connectez-vous pour continuer.</p>
+    </div>
+
+    <div class="space-y-6">
+      
+      <div class="space-y-2">
+        <label class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">Email</label>
+        <div class="flex items-center bg-slate-50 rounded-[2rem] px-4 py-1 border border-transparent focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-lg transition-all">
+          <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+            <ion-icon name="mail-outline" class="text-slate-400 text-lg"></ion-icon>
+          </div>
+          <ion-input type="email" placeholder="votre@email.com" class="custom-input ml-2"></ion-input>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <label class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">Mot de passe</label>
+        <div class="flex items-center bg-slate-50 rounded-[2rem] px-4 py-1 border border-transparent focus-within:border-blue-500 focus-within:bg-white focus-within:shadow-lg transition-all">
+          <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+            <ion-icon name="lock-closed-outline" class="text-slate-400 text-lg"></ion-icon>
+          </div>
+          <ion-input type="password" placeholder="••••••••" class="custom-input ml-2"></ion-input>
+        </div>
+        <div class="text-right px-2">
+          <button class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Oublié ?</button>
+        </div>
+      </div>
+
+      <div class="pt-6">
+        <ion-button expand="block" shape="round" class="h-16 main-btn shadow-2xl shadow-blue-100">
+          <span class="font-bold tracking-widest">SE CONNECTER</span>
+        </ion-button>
+      </div>
+
+    </div>
+
+    <div class="mt-12 text-center pb-10">
+      <p class="text-slate-400 text-sm">Vous n'avez pas de compte ?</p>
+      <button routerLink="/register" class="mt-2 text-slate-900 font-black border-b-2 border-slate-900 pb-0.5 uppercase text-xs tracking-tighter">
+        Créer un compte
+      </button>
+    </div>
+
+  </div>
+</ion-content>
