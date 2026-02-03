@@ -24,7 +24,7 @@ FROM nginx:alpine
 
 
 # Copy custom nginx config
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY --from=build /app/www /usr/share/nginx/html
 
 COPY --from=build /app/dist/central-market-web-mobile/browser /usr/share/nginx/html
 
