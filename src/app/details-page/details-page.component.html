@@ -1,3 +1,64 @@
-<p>
-  details-page works!
-</p>
+<div class="absolute top-12 left-0 w-full z-50 flex justify-between px-6">
+  <button (click)="goBack()" class="w-10 h-10 bg-white shadow-xl rounded-full flex items-center justify-center text-slate-900 active:scale-90 transition-all">
+    <ion-icon name="arrow-back-outline" class="text-xl"></ion-icon>
+  </button>
+  <button class="w-10 h-10 bg-white shadow-xl rounded-full flex items-center justify-center text-red-500 active:scale-90 transition-all">
+    <ion-icon name="heart-outline" class="text-xl"></ion-icon>
+  </button>
+</div>
+
+<ion-content [fullscreen]="true" class="product-detail-content">
+  <div *ngIf="product">
+    
+    <div class="relative w-full h-[45vh] bg-slate-100">
+      <img [src]="product.imageUrl" class="w-full h-full object-cover">
+      <div class="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-slate-50 to-transparent"></div>
+    </div>
+
+    <div class="px-6 -mt-8 relative bg-slate-50 rounded-t-[2.5rem] pt-8 pb-32">
+      
+      <div *ngIf="product.promotionActive" class="absolute -top-4 right-8 bg-red-600 text-white px-4 py-2 rounded-2xl font-black text-sm shadow-lg">
+        -{{ ((product.price - product.promotionPrice!) / product.price * 100) | number:'1.0-0' }}%
+      </div>
+
+      <div class="mb-6">
+        <div class="flex items-center gap-2 mb-2">
+          <ion-icon name="storefront" class="text-blue-600 text-sm"></ion-icon>
+          <span class="text-blue-600 font-bold text-[10px] uppercase tracking-[0.2em]">{{ product.shopName }}</span>
+        </div>
+        <h1 class="text-3xl font-black text-slate-900 leading-tight">{{ product.productName }}</h1>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 mb-8">
+        <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-100">
+          <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Prix</p>
+          <p class="text-xl font-black text-slate-900">{{ product.promotionPrice || product.price }}€</p>
+          <p *ngIf="product.promotionActive" class="text-[10px] text-slate-300 line-through font-bold">{{ product.price }}€</p>
+        </div>
+        <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-100">
+          <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Distance</p>
+          <p class="text-xl font-black text-slate-900">{{ product.distanceKm }} <span class="text-sm">km</span></p>
+          <p class="text-[10px] text-green-500 font-bold uppercase">Disponible</p>
+        </div>
+      </div>
+
+      <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100">
+        <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest mb-3">À propos</h3>
+        <p class="text-slate-500 text-sm leading-relaxed italic">
+          {{ product.description || 'Ce produit de haute qualité est disponible dès maintenant dans votre boutique de proximité.' }}
+        </p>
+      </div>
+    </div>
+  </div>
+</ion-content>
+
+<ion-footer class="ion-no-border bg-white/80 backdrop-blur-xl px-6 pb-8 pt-4">
+  <ion-button  expand="block" mode="ios" class="h-16 main-cta">
+    <div class="flex items-center justify-between w-full px-4">
+      <span class="font-black tracking-widest">AJOUTER AU PANIER</span>
+      <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+        <ion-icon name="chevron-forward"></ion-icon>
+      </div>
+    </div>
+  </ion-button>
+</ion-footer>

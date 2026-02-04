@@ -1,0 +1,14 @@
+import { CatalogProductResponse } from '../model/catalog-product-response.model';
+
+export const MOCK_PRODUCTS: CatalogProductResponse[] = [
+  { productId: '1', productName: 'iPhone 15 Pro', description: 'Titane noir, 256GB.', price: 1200, promotionActive: true, promotionPrice: 999, imageUrl: 'https://picsum.photos/id/160/500', shopName: 'Apple Store', inStock: true, availableQuantity: 5, distanceKm: 1.2 },
+  { productId: '2', productName: 'AirPods Pro 2', description: 'Réduction de bruit active.', price: 279, promotionActive: false, imageUrl: 'https://picsum.photos/id/2/500', shopName: 'Tech Shop', inStock: true, availableQuantity: 15, distanceKm: 3.5 },
+  { productId: '3', productName: 'Samsung S24', description: 'Galaxy AI intégrée.', price: 950, promotionActive: true, promotionPrice: 850, imageUrl: 'https://picsum.photos/id/3/500', shopName: 'Samsung Hub', inStock: true, availableQuantity: 8, distanceKm: 2.1 },
+  { productId: '4', productName: 'Sony WH-1000XM5', description: 'Casque sans fil premium.', price: 399, promotionActive: false, imageUrl: 'https://picsum.photos/id/4/500', shopName: 'Audio Pro', inStock: true, availableQuantity: 3, distanceKm: 0.8 },
+  { productId: '5', productName: 'iPad Air M2', description: 'Puissance et finesse.', price: 699, promotionActive: false, imageUrl: 'https://picsum.photos/id/5/500', shopName: 'Apple Store', inStock: true, availableQuantity: 10, distanceKm: 1.2 },
+  { productId: '6', productName: 'Apple Watch Ultra', description: 'Pour les aventuriers.', price: 899, promotionActive: true, promotionPrice: 799, imageUrl: 'https://picsum.photos/id/6/500', shopName: 'Apple Store', inStock: false, availableQuantity: 0, distanceKm: 1.5 },
+  { productId: '7', productName: 'Nintendo Switch', description: 'Modèle OLED.', price: 349, promotionActive: false, imageUrl: 'https://picsum.photos/id/7/500', shopName: 'Gaming Zone', inStock: true, availableQuantity: 20, distanceKm: 5.4 },
+  { productId: '8', productName: 'PS5 Slim', description: 'Console de salon Sony.', price: 549, promotionActive: true, promotionPrice: 499, imageUrl: 'https://picsum.photos/id/8/500', shopName: 'Gaming Zone', inStock: true, availableQuantity: 2, distanceKm: 5.4 },
+  { productId: '9', productName: 'Clavier Mécanique', description: 'RGB et switchs red.', price: 120, promotionActive: false, imageUrl: 'https://picsum.photos/id/9/500', shopName: 'PC Master', inStock: true, availableQuantity: 12, distanceKm: 4.2 },
+  { productId: '10', productName: 'Souris Gamer', description: 'Haute précision 25k DPI.', price: 80, promotionActive: true, promotionPrice: 59, imageUrl: 'https://picsum.photos/id/10/500', shopName: 'PC Master', inStock: true, availableQuantity: 25, distanceKm: 4.2 }
+];
