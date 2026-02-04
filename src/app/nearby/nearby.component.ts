@@ -53,4 +53,7 @@ nearbyProducts: CatalogProductResponse[] = [];
     this.router.navigate(['/details', productId]);
   }
 
+  goToDetails(productId: string) {
+    this.router.navigate(['/details', productId]);
+  }
 }

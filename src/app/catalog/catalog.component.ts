@@ -4,7 +4,10 @@ import { ProductCardComponent } from '../product-card/product-card.component';
 import { CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
 import { IonModal } from '@ionic/angular/standalone';
-import { addOutline, arrowForwardOutline, cartOutline, eyeOutline, heartOutline, optionsOutline, searchOutline } from 'ionicons/icons';
+import { 
+  addOutline, arrowForwardOutline, cartOutline, eyeOutline, 
+  heartOutline, optionsOutline, searchOutline, pricetagOutline 
+} from 'ionicons/icons';
 import { FormsModule } from '@angular/forms';
 import { CatalogProductResponse } from '../model/catalog-product-response.model';
 import { CatalogQueryParams } from '../model/catalog-query-params.model';
@@ -12,7 +15,7 @@ import { Catalogue } from '../services/catalogue';
 
 @Component({
   selector: 'app-catalog',
-  standalone: true, // Assure-toi qu'il est bien standalone
+  standalone: true,
   imports: [IonicModule, ProductCardComponent, CommonModule, FormsModule],
   templateUrl: './catalog.component.html',
   styleUrls: ['./catalog.component.scss'],
@@ -20,14 +23,13 @@ import { Catalogue } from '../services/catalogue';
 export class CatalogComponent implements OnInit {
   @ViewChild('filterModal') modal!: IonModal;
 
-  // Variables de données
   products: CatalogProductResponse[] = [];
   isLoading = false;
 
   queryParams: CatalogQueryParams = {
     page: 0,
-    size: 10, // On commence petit pour la pagination
-    maxPrice: 500,
+    size: 10,
+    maxPrice: 1000,
     radiusKm: 10,
     inStockOnly: false,
     promotionOnly: false,
@@ -37,7 +39,7 @@ export class CatalogComponent implements OnInit {
   constructor(private catalogService: Catalogue) {
     addIcons({ 
       eyeOutline, cartOutline, optionsOutline, searchOutline, 
-      addOutline, arrowForwardOutline, heartOutline 
+      addOutline, arrowForwardOutline, heartOutline, pricetagOutline 
     });
   }
 
@@ -45,20 +47,11 @@ export class CatalogComponent implements OnInit {
     this.loadProducts();
   }
 
-  /**
-   * Charge les produits depuis le service
-   * @param append Si vrai, ajoute aux produits existants (pour l'infinite scroll)
-   */
   loadProducts(append: boolean = false) {
     this.isLoading = true;
-    
     this.catalogService.search(this.queryParams).subscribe({
       next: (response) => {
-        if (append) {
-          this.products = [...this.products, ...response.content];
-        } else {
-          this.products = response.content;
-        }
+        this.products = append ? [...this.products, ...response.content] : response.content;
         this.isLoading = false;
       },
       error: (err) => {
@@ -72,13 +65,18 @@ export class CatalogComponent implements OnInit {
 
   onSearch(event: any) {
     this.queryParams.keyword = event.detail.value;
-    this.queryParams.page = 0; // Reset pagination
+    this.updateFilters();
+  }
+
+  // Met à jour la liste sans fermer le modal (pour le "Live")
+  updateFilters() {
+    this.queryParams.page = 0;
     this.loadProducts();
   }
 
+  // Appelé par le bouton "Afficher les résultats"
   applyFilters() {
-    this.queryParams.page = 0;
-    this.loadProducts();
+    this.updateFilters();
     this.modal.dismiss();
   }
 
@@ -89,14 +87,15 @@ export class CatalogComponent implements OnInit {
       maxPrice: 1000, 
       radiusKm: 10,
       inStockOnly: false,
-      promotionOnly: false 
+      promotionOnly: false,
+      keyword: ''
     };
     this.loadProducts();
   }
 
   loadMore(event: any) {
-    this.queryParams.page!++; // Incrémente la page
-    this.loadProducts(true); // 'true' pour ajouter à la suite
+    this.queryParams.page!++;
+    this.loadProducts(true);
     event.target.complete();
   }
 

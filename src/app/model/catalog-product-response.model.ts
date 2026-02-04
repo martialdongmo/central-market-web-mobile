@@ -4,10 +4,10 @@ export interface CatalogProductResponse {
   description: string;
   imageUrl: string;
 
-  categoryId: string;
-  categoryName: string;    
+  categoryId?: string;
+  categoryName?: string;    
 
-  shopId: string;
+  shopId?: string;
   shopName: string;
   shopOpen?: boolean;   
 

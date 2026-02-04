@@ -1,44 +1,46 @@
 <ion-content class="bg-slate-50">
-  <div class="px-6 pt-10 pb-6 bg-white rounded-b-[3rem] shadow-sm mb-6">
-    <div class="flex items-center gap-3">
-      <div class="p-3 bg-orange-100 rounded-2xl">
-        <ion-icon name="flame" class="text-orange-600 text-2xl"></ion-icon>
+  <div class="px-6 py-6 bg-white rounded-b-[2.5rem] shadow-sm mb-4">
+    <div class="flex items-center gap-2">
+      <div class="p-2 bg-orange-100 rounded-xl">
+        <ion-icon name="flame" class="text-orange-600 text-xl"></ion-icon>
       </div>
       <div>
-        <h1 class="text-3xl font-black text-slate-900 tracking-tight">Promos</h1>
-        <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Offres exclusives</p>
+        <h1 class="text-2xl font-black text-slate-900 tracking-tight">Promos</h1>
+        <p class="text-slate-400 text-[9px] font-bold uppercase tracking-widest">Offres exclusives</p>
       </div>
     </div>
   </div>
 
-  <div class="px-5 space-y-6 pb-20">
-    <div *ngFor="let product of promoProducts" class="bg-white rounded-[2.5rem] overflow-hidden shadow-sm border border-slate-100 relative group">
+  <div class="px-4 grid grid-cols-2 gap-3 pb-20">
+    <div *ngFor="let product of promoProducts" 
+         class="bg-white rounded-[1.5rem] overflow-hidden shadow-sm border border-slate-50 relative flex flex-col">
       
-      <div class="absolute top-5 left-5 z-10 bg-red-600 text-white px-4 py-2 rounded-2xl font-black shadow-xl text-sm">
+      <div class="absolute top-2 left-2 z-10 bg-red-600 text-white px-1.5 py-0.5 rounded-lg font-black text-[9px]">
         -{{ ((product.price - product.promotionPrice!) / product.price * 100) | number:'1.0-0' }}%
       </div>
 
-      <div class="aspect-[16/10] bg-slate-100 relative">
-        <img [src]="product.imageUrl" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+      <div class="aspect-square bg-slate-50">
+        <img [src]="product.imageUrl" class="w-full h-full object-cover">
       </div>
 
-      <div class="p-6">
-        <div class="flex justify-between items-start mb-4">
-          <div>
-            <p class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">{{ product.categoryName }}</p>
-            <h2 class="text-xl font-black text-slate-900 leading-tight">{{ product.productName }}</h2>
-            <p class="text-slate-400 text-xs font-medium mt-1">Chez {{ product.shopName }}</p>
-          </div>
-          <div class="text-right">
-            <p class="text-2xl font-black text-red-600">{{ product.promotionPrice }} €</p>
-            <p class="text-slate-300 line-through text-sm font-bold">{{ product.price }} €</p>
-          </div>
+      <div class="p-3 flex flex-col flex-1">
+        <h2 class="text-[11px] font-bold text-slate-800 leading-tight truncate mb-1">
+          {{ product.productName }}
+        </h2>
+        
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-sm font-black text-red-600">{{ product.promotionPrice }}€</span>
+          <span class="text-[9px] text-slate-300 line-through">{{ product.price }}€</span>
         </div>
 
-        <ion-button (click)="goToDetails(product.productId)" expand="block" shape="round" class="h-14 main-btn">
-          <ion-icon slot="start" name="eye-outline"></ion-icon>
-          <span class="font-bold tracking-widest">VOIR LE PRODUIT</span>
+        <ion-button 
+          (click)="goToDetails(product.productId)" 
+          expand="block" 
+          size="small"
+          mode="ios"
+          class="h-8 text-[9px] font-bold m-0"
+          style="--border-radius: 10px; --background: #0f172a;">
+          VOIR
         </ion-button>
       </div>
     </div>

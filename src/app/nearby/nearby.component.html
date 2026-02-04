@@ -4,7 +4,8 @@
   </div>
 
   <div class="px-5 space-y-4 pb-20">
-    <div *ngFor="let product of nearbyProducts" class="bg-white rounded-[2rem] p-4 border border-slate-100 flex items-center gap-4 shadow-sm active:scale-[0.98] transition-all">
+    <div *ngFor="let product of nearbyProducts" class="bg-white rounded-[2rem] p-4 border border-slate-100 flex items-center gap-4 shadow-sm active:scale-[0.98] transition-all"
+    (click)="goToDetails(product.productId)">
       
       <div class="w-24 h-24 rounded-[1.5rem] overflow-hidden bg-slate-100 shrink-0">
         <img [src]="product.imageUrl" class="w-full h-full object-cover">
