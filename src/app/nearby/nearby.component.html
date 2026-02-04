@@ -1,0 +1,36 @@
+<ion-content class="bg-slate-50">
+  <div class="px-6 pt-10 pb-6 bg-white rounded-b-[3rem] shadow-sm mb-6">
+    <h1 class="text-3xl font-black text-slate-900 tracking-tight italic text-center">À Proximité</h1>
+  </div>
+
+  <div class="px-5 space-y-4 pb-20">
+    <div *ngFor="let product of nearbyProducts" class="bg-white rounded-[2rem] p-4 border border-slate-100 flex items-center gap-4 shadow-sm active:scale-[0.98] transition-all">
+      
+      <div class="w-24 h-24 rounded-[1.5rem] overflow-hidden bg-slate-100 shrink-0">
+        <img [src]="product.imageUrl" class="w-full h-full object-cover">
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 mb-1">
+          <span [class]="product.shopOpen ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'" 
+                class="text-[8px] font-black px-2 py-0.5 rounded-md uppercase">
+            {{ product.shopOpen ? 'Ouvert' : 'Fermé' }}
+          </span>
+          <span class="text-blue-600 text-[10px] font-black italic tracking-tighter">
+            {{ product.distanceKm | number:'1.1-1' }} km
+          </span>
+        </div>
+
+        <h3 class="font-black text-slate-900 text-base truncate">{{ product.productName }}</h3>
+        <p class="text-slate-400 text-[11px] font-bold uppercase tracking-tight truncate">{{ product.shopName }}</p>
+        
+        <div class="flex items-center justify-between mt-2">
+          <p class="text-blue-600 font-black text-lg">{{ product.price }} €</p>
+          <button class="w-8 h-8 bg-slate-900 text-white rounded-full flex items-center justify-center">
+            <ion-icon name="chevron-forward"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>
