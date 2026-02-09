@@ -1,37 +1,73 @@
-<ion-content class="bg-slate-50">
-  <div class="px-6 pt-10 pb-6 bg-white rounded-b-[3rem] shadow-sm mb-6">
-    <h1 class="text-3xl font-black text-slate-900 tracking-tight italic text-center">À Proximité</h1>
-  </div>
-
-  <div class="px-5 space-y-4 pb-20">
-    <div *ngFor="let product of nearbyProducts" class="bg-white rounded-[2rem] p-4 border border-slate-100 flex items-center gap-4 shadow-sm active:scale-[0.98] transition-all"
-    (click)="goToDetails(product.productId)">
+<ion-header class="ion-no-border bg-white">
+  <div class="max-w-screen-xl mx-auto w-full px-5 pt-8 pb-4">
+    <div class="flex justify-between items-start">
+      <div>
+        <div class="flex items-center gap-1 mb-1">
+          <ion-icon name="location" class="text-yellow-600 text-sm"></ion-icon>
+          <span class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Autour de vous</span>
+        </div>
+        <h1 class="text-3xl font-black text-blue-900 tracking-tight">À Proximité</h1>
+      </div>
       
-      <div class="w-24 h-24 rounded-[1.5rem] overflow-hidden bg-slate-100 shrink-0">
-        <img [src]="product.imageUrl" class="w-full h-full object-cover">
+      <div class="bg-blue-50 px-3 py-2 rounded-xl flex items-center gap-2 border border-blue-100">
+        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+        <span class="text-[10px] font-black text-blue-900 uppercase tracking-tighter">Yaoundé</span>
+      </div>
+    </div>
+    
+    <p class="text-slate-400 text-xs mt-3 leading-relaxed italic">
+      Les meilleures boutiques livrant en <span class="text-yellow-600 font-bold">moins de 30 min</span>.
+    </p>
+  </div>
+</ion-header>
+
+<ion-content class="bg-slate-50">
+  <div class="px-5 pt-6 space-y-5 pb-24">
+    
+    <div *ngFor="let product of nearbyProducts" 
+         class="bg-white rounded-[2.5rem] p-4 border border-white flex items-center gap-4 shadow-sm active:scale-[0.97] transition-all"
+         (click)="goToDetails(product.productId)">
+      
+      <div class="w-24 h-24 rounded-[2rem] overflow-hidden bg-slate-50 shrink-0 shadow-inner">
+        <img [src]="product.imageUrl" class="w-full h-full object-cover" alt="store product">
       </div>
 
       <div class="flex-1 min-w-0">
-        <div class="flex items-center gap-2 mb-1">
-          <span [class]="product.shopOpen ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'" 
-                class="text-[8px] font-black px-2 py-0.5 rounded-md uppercase">
-            {{ product.shopOpen ? 'Ouvert' : 'Fermé' }}
+        <div class="flex items-center justify-between mb-1.5">
+          <span [class]="product.shopOpen ? 'bg-green-100 text-green-700' : 'bg-red-50 text-red-700'" 
+                class="text-[8px] font-black px-2.5 py-1 rounded-lg uppercase tracking-wider">
+            {{ product.shopOpen ? 'Disponible' : 'Fermé' }}
           </span>
-          <span class="text-blue-600 text-[10px] font-black italic tracking-tighter">
-            {{ product.distanceKm | number:'1.1-1' }} km
-          </span>
+          
+          <div class="flex items-center gap-1">
+             <ion-icon name="bicycle-outline" class="text-yellow-600 text-sm"></ion-icon>
+             <span class="text-yellow-600 text-[10px] font-black italic">
+               {{ product.distanceKm | number:'1.1-1' }} km
+             </span>
+          </div>
         </div>
 
-        <h3 class="font-black text-slate-900 text-base truncate">{{ product.productName }}</h3>
-        <p class="text-slate-400 text-[11px] font-bold uppercase tracking-tight truncate">{{ product.shopName }}</p>
+        <h3 class="font-black text-blue-900 text-base truncate">{{ product.productName }}</h3>
+        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest truncate mb-2">
+          {{ product.shopName }}
+        </p>
         
-        <div class="flex items-center justify-between mt-2">
-          <p class="text-blue-600 font-black text-lg">{{ product.price }} €</p>
-          <button class="w-8 h-8 bg-slate-900 text-white rounded-full flex items-center justify-center">
-            <ion-icon name="chevron-forward"></ion-icon>
+        <div class="flex items-center justify-between mt-1">
+          <p class="text-blue-900 font-black text-lg">{{ product.price }} €</p>
+          
+          <button class="w-10 h-10 bg-blue-800 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-100 active:rotate-12 transition-transform">
+            <ion-icon name="chevron-forward" class="text-lg"></ion-icon>
           </button>
         </div>
       </div>
     </div>
+
+    <div *ngIf="nearbyProducts.length === 0" class="flex flex-col items-center justify-center py-20">
+      <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-4">
+        <ion-icon name="map-outline" class="text-4xl text-blue-200"></ion-icon>
+      </div>
+      <p class="text-slate-400 text-sm font-medium italic">Aucun partenaire dans cette zone...</p>
+    </div>
+
   </div>
 </ion-content>

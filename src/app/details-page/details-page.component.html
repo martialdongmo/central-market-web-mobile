@@ -1,8 +1,8 @@
 <div class="absolute top-12 left-0 w-full z-50 flex justify-between px-6">
-  <button (click)="goBack()" class="w-10 h-10 bg-white shadow-xl rounded-full flex items-center justify-center text-slate-900 active:scale-90 transition-all">
+  <button (click)="goBack()" class="w-10 h-10 bg-white/90 backdrop-blur shadow-xl rounded-2xl flex items-center justify-center text-blue-900 active:scale-90 transition-all">
     <ion-icon name="arrow-back-outline" class="text-xl"></ion-icon>
   </button>
-  <button class="w-10 h-10 bg-white shadow-xl rounded-full flex items-center justify-center text-red-500 active:scale-90 transition-all">
+  <button class="w-10 h-10 bg-white/90 backdrop-blur shadow-xl rounded-2xl flex items-center justify-center text-yellow-600 active:scale-90 transition-all">
     <ion-icon name="heart-outline" class="text-xl"></ion-icon>
   </button>
 </div>
@@ -10,54 +10,61 @@
 <ion-content [fullscreen]="true" class="product-detail-content">
   <div *ngIf="product">
     
-    <div class="relative w-full h-[45vh] bg-slate-100">
+    <div class="relative w-full h-[48vh] bg-slate-100">
       <img [src]="product.imageUrl" class="w-full h-full object-cover">
-      <div class="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-slate-50 to-transparent"></div>
+      <div class="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white to-transparent"></div>
     </div>
 
-    <div class="px-6 -mt-8 relative bg-slate-50 rounded-t-[2.5rem] pt-8 pb-32">
+    <div class="px-6 -mt-10 relative bg-white rounded-t-[3rem] pt-10 pb-32 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
       
-      <div *ngIf="product.promotionActive" class="absolute -top-4 right-8 bg-red-600 text-white px-4 py-2 rounded-2xl font-black text-sm shadow-lg">
-        -{{ ((product.price - product.promotionPrice!) / product.price * 100) | number:'1.0-0' }}%
+      <div *ngIf="product.promotionActive" class="absolute -top-5 right-8 bg-yellow-500 text-blue-900 px-5 py-2.5 rounded-2xl font-black text-xs shadow-lg shadow-yellow-200 uppercase tracking-tighter">
+        Offre -{{ ((product.price - product.promotionPrice!) / product.price * 100) | number:'1.0-0' }}%
       </div>
 
-      <div class="mb-6">
-        <div class="flex items-center gap-2 mb-2">
-          <ion-icon name="storefront" class="text-blue-600 text-sm"></ion-icon>
-          <span class="text-blue-600 font-bold text-[10px] uppercase tracking-[0.2em]">{{ product.shopName }}</span>
+      <div class="mb-8">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="p-1.5 bg-blue-50 rounded-lg">
+            <ion-icon name="storefront" class="text-blue-700 text-xs"></ion-icon>
+          </div>
+          <span class="text-blue-700 font-black text-[10px] uppercase tracking-[0.2em]">{{ product.shopName }}</span>
         </div>
-        <h1 class="text-3xl font-black text-slate-900 leading-tight">{{ product.productName }}</h1>
+        <h1 class="text-3xl font-black text-blue-900 leading-tight tracking-tight">{{ product.productName }}</h1>
       </div>
 
-      <div class="grid grid-cols-2 gap-3 mb-8">
-        <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-100">
-          <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Prix</p>
-          <p class="text-xl font-black text-slate-900">{{ product.promotionPrice || product.price }}€</p>
-          <p *ngIf="product.promotionActive" class="text-[10px] text-slate-300 line-through font-bold">{{ product.price }}€</p>
+      <div class="grid grid-cols-2 gap-4 mb-8">
+        <div class="bg-blue-50/50 p-5 rounded-[2rem] border border-blue-50">
+          <p class="text-[9px] text-blue-400 font-black uppercase tracking-widest mb-1">Prix unitaire</p>
+          <p class="text-2xl font-black text-blue-900">{{ product.promotionPrice || product.price }}€</p>
+          <p *ngIf="product.promotionActive" class="text-[10px] text-slate-300 line-through font-bold italic">{{ product.price }}€</p>
         </div>
-        <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-100">
-          <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Distance</p>
-          <p class="text-xl font-black text-slate-900">{{ product.distanceKm }} <span class="text-sm">km</span></p>
-          <p class="text-[10px] text-green-500 font-bold uppercase">Disponible</p>
+        <div class="bg-slate-50 p-5 rounded-[2rem] border border-slate-100">
+          <p class="text-[9px] text-slate-400 font-black uppercase tracking-widest mb-1">Livraison</p>
+          <p class="text-2xl font-black text-slate-900">{{ product.distanceKm }} <span class="text-xs text-yellow-600 italic">km</span></p>
+          <div class="flex items-center gap-1 mt-1">
+            <div class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+            <span class="text-[9px] text-green-600 font-bold uppercase tracking-tighter">En stock</span>
+          </div>
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100">
-        <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest mb-3">À propos</h3>
-        <p class="text-slate-500 text-sm leading-relaxed italic">
-          {{ product.description || 'Ce produit de haute qualité est disponible dès maintenant dans votre boutique de proximité.' }}
-        </p>
+      <div class="space-y-4">
+        <h3 class="text-xs font-black text-blue-900 uppercase tracking-[0.3em] pl-1">Description</h3>
+        <div class="bg-slate-50/50 p-6 rounded-[2.5rem] border border-slate-50">
+          <p class="text-slate-500 text-sm leading-relaxed">
+            {{ product.description || 'Ce produit d’exception, sélectionné par Central Market, allie qualité supérieure et savoir-faire local pour vous offrir le meilleur de votre région.' }}
+          </p>
+        </div>
       </div>
     </div>
   </div>
 </ion-content>
 
-<ion-footer class="ion-no-border bg-white/80 backdrop-blur-xl px-6 pb-8 pt-4">
-  <ion-button  expand="block" mode="ios" class="h-16 main-cta">
+<ion-footer class="ion-no-border bg-white/80 backdrop-blur-xl px-6 pb-10 pt-4">
+  <ion-button expand="block" mode="ios" class="h-16 shadow-2xl shadow-blue-200" style="--background: #1e3a8a; --border-radius: 22px;">
     <div class="flex items-center justify-between w-full px-4">
-      <span class="font-black tracking-widest">AJOUTER AU PANIER</span>
-      <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-        <ion-icon name="chevron-forward"></ion-icon>
+      <span class="font-black tracking-[0.15em] text-sm">AJOUTER AU PANIER</span>
+      <div class="w-8 h-8 bg-white/10 rounded-xl flex items-center justify-center border border-white/20">
+        <ion-icon name="cart-outline" class="text-white"></ion-icon>
       </div>
     </div>
   </ion-button>

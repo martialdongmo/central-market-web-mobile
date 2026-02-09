@@ -6,7 +6,8 @@ import { addIcons } from 'ionicons';
 import { IonModal } from '@ionic/angular/standalone';
 import { 
   addOutline, arrowForwardOutline, cartOutline, eyeOutline, 
-  heartOutline, optionsOutline, searchOutline, pricetagOutline 
+  heartOutline, optionsOutline, searchOutline, pricetagOutline,
+  cashOutline, walletOutline, gridOutline, bagHandleOutline
 } from 'ionicons/icons';
 import { FormsModule } from '@angular/forms';
 import { CatalogProductResponse } from '../model/catalog-product-response.model';
@@ -39,7 +40,8 @@ export class CatalogComponent implements OnInit {
   constructor(private catalogService: Catalogue) {
     addIcons({ 
       eyeOutline, cartOutline, optionsOutline, searchOutline, 
-      addOutline, arrowForwardOutline, heartOutline, pricetagOutline 
+      addOutline, arrowForwardOutline, heartOutline, pricetagOutline,
+      cashOutline, walletOutline, gridOutline, bagHandleOutline
     });
   }
 
@@ -61,20 +63,21 @@ export class CatalogComponent implements OnInit {
     });
   }
 
-  // --- ACTIONS ---
-
   onSearch(event: any) {
     this.queryParams.keyword = event.detail.value;
     this.updateFilters();
   }
 
-  // Met à jour la liste sans fermer le modal (pour le "Live")
+  onPriceChange(event: any) {
+    this.queryParams.maxPrice = event.detail.value;
+    this.updateFilters();
+  }
+
   updateFilters() {
     this.queryParams.page = 0;
     this.loadProducts();
   }
 
-  // Appelé par le bouton "Afficher les résultats"
   applyFilters() {
     this.updateFilters();
     this.modal.dismiss();
@@ -97,9 +100,5 @@ export class CatalogComponent implements OnInit {
     this.queryParams.page!++;
     this.loadProducts(true);
     event.target.complete();
-  }
-
-  openFilters() {
-    if (this.modal) this.modal.present();
   }
 }
