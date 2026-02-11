@@ -1,69 +1,85 @@
 <ion-header class="ion-no-border bg-white">
-  <div class="max-w-screen-xl mx-auto w-full px-5 pt-6 pb-4">
-    <div class="flex justify-between items-center mb-4">
-      <h1 class="text-3xl font-black text-slate-900">Catalogue</h1>
-      <button class="relative p-3 bg-slate-900 text-white rounded-2xl shadow-lg active:scale-95 transition-all">
+  <div class="max-w-screen-xl mx-auto w-full px-5 pt-8 pb-4">
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h1 class="text-3xl font-black text-blue-900 leading-none tracking-tight italic">Central Market</h1>
+        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-2">
+          L'excellence <span class="text-yellow-600">à votre porte</span>
+        </p>
+      </div>
+      <button class="relative p-3 bg-blue-50 text-blue-900 rounded-2xl active:scale-95 transition-all">
         <ion-icon name="cart-outline" class="text-2xl"></ion-icon>
-        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white">3</span>
+        <span class="absolute -top-1 -right-1 bg-yellow-500 text-blue-900 text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-white shadow-sm">3</span>
       </button>
     </div>
 
-    <div class="flex items-center gap-3">
-      <button (click)="openFilters()" class="flex items-center justify-center w-12 h-12 bg-blue-600 text-white rounded-2xl shadow-md active:scale-90 transition-all flex-shrink-0">
-        <ion-icon name="options-outline" class="text-2xl"></ion-icon>
-      </button>
-
+    <div class="flex items-center gap-3 mb-6">
       <div class="flex-1">
         <ion-searchbar 
-          placeholder="Rechercher..." 
+          placeholder="Rechercher un produit..." 
           class="custom-search-bar"
+          mode="ios"
           [debounce]="500"
           (ionInput)="onSearch($event)">
         </ion-searchbar>
+      </div>
+      <button id="open-filter-modal" class="flex items-center justify-center w-12 h-12 bg-blue-800 text-white rounded-2xl shadow-lg shadow-blue-100 active:scale-90 transition-all flex-shrink-0">
+        <ion-icon name="options-outline" class="text-xl"></ion-icon>
+      </button>
+    </div>
+
+    <div class="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
+      <div *ngFor="let cat of ['Tout', 'Épicerie', 'Mode', 'Électro', 'Beauté']" 
+           class="flex flex-col items-center gap-2 shrink-0">
+        <div class="w-14 h-14 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-blue-900 active:bg-blue-900 active:text-white transition-all shadow-sm">
+          <ion-icon [name]="cat === 'Tout' ? 'grid-outline' : 'bag-handle-outline'" class="text-xl"></ion-icon>
+        </div>
+        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">{{cat}}</span>
       </div>
     </div>
   </div>
 </ion-header>
 
-<ion-content>
-  <ion-modal #filterModal [initialBreakpoint]="0.75" [breakpoints]="[0, 0.75, 1]">
+<ion-content class="bg-slate-50">
+  <ion-modal #filterModal trigger="open-filter-modal" [initialBreakpoint]="0.75" [breakpoints]="[0, 0.75, 1]">
     <ng-template>
-      <ion-content class="ion-padding">
+      <ion-content class="ion-padding bg-white">
         <div class="flex flex-col h-full">
-          <div class="flex justify-between items-center mb-8 pt-2">
-            <h2 class="text-2xl font-black text-slate-900">Filtrer par</h2>
-            <button (click)="resetFilters()" class="text-[10px] font-bold text-blue-600 uppercase tracking-[0.2em]">Effacer tout</button>
+          <div class="flex justify-between items-center mb-10 pt-4">
+            <h2 class="text-2xl font-black text-blue-900">Filtrer</h2>
+            <button (click)="resetFilters()" class="text-[10px] font-black text-yellow-600 uppercase tracking-widest bg-yellow-50 px-3 py-2 rounded-xl">Réinitialiser</button>
           </div>
 
-          <div class="space-y-6 flex-1">
-            <div class="flex justify-between items-center p-5 bg-slate-50 rounded-[1.5rem]">
-              <div class="flex items-center gap-3">
-                <ion-icon name="pricetag-outline" class="text-xl text-slate-400"></ion-icon>
-                <span class="font-bold text-slate-700">Promotions uniquement</span>
+          <div class="space-y-8 flex-1">
+            <div class="flex justify-between items-center p-6 bg-blue-50/30 rounded-[2rem] border border-blue-50">
+              <div class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-yellow-500 text-white rounded-2xl flex items-center justify-center shadow-md">
+                  <ion-icon name="pricetag-outline" class="text-xl"></ion-icon>
+                </div>
+                <span class="font-bold text-blue-900">Promotions</span>
               </div>
-              <ion-toggle [(ngModel)]="queryParams.promotionOnly" (ionChange)="updateFilters()" color="dark"></ion-toggle>
+              <ion-toggle [(ngModel)]="queryParams.promotionOnly" (ionChange)="updateFilters()" mode="ios"></ion-toggle>
             </div>
 
-            <div class="px-2 pt-4">
-              <div class="flex justify-between mb-4">
+            <div class="px-2">
+              <div class="flex justify-between mb-6">
                 <span class="text-[10px] font-black uppercase text-slate-400">Budget Max</span>
-                <span class="text-sm font-black text-blue-600">{{queryParams.maxPrice}} €</span>
+                <span class="text-xl font-black text-yellow-600">{{ queryParams.maxPrice }} €</span>
               </div>
               <ion-range 
-                [min]="0" 
-                [max]="1500" 
-                [(ngModel)]="queryParams.maxPrice" 
-                (ionChange)="updateFilters()" 
-                [debounce]="300" 
-                color="dark" 
-                class="py-0">
+                [min]="0" [max]="2000" [step]="50"
+                [value]="queryParams.maxPrice"
+                (ionChange)="onPriceChange($event)"
+                class="premium-range">
+                <ion-icon slot="start" name="cash-outline" class="text-blue-200"></ion-icon>
+                <ion-icon slot="end" name="wallet-outline" class="text-blue-900"></ion-icon>
               </ion-range>
             </div>
           </div>
 
-          <div class="pt-6 pb-4">
-            <ion-button (click)="applyFilters()" expand="block" shape="round" class="h-16 main-btn">
-              <span class="font-bold tracking-widest uppercase">Afficher les résultats</span>
+          <div class="pt-6 pb-6">
+            <ion-button (click)="applyFilters()" expand="block" mode="ios" class="h-16" style="--background: #1e3a8a; --border-radius: 24px;">
+              <span class="font-bold tracking-widest uppercase">Appliquer</span>
             </ion-button>
           </div>
         </div>
@@ -71,21 +87,22 @@
     </ng-template>
   </ion-modal>
 
-  <div class="max-w-screen-xl mx-auto px-5 pt-4">
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 pb-24">
-      <app-product-card 
-        *ngFor="let product of products" 
-        [product]="product">
-      </app-product-card>
+  <div class="max-w-screen-xl mx-auto px-5 pt-6">
+    <div *ngIf="isLoading" class="grid grid-cols-2 gap-4">
+      <div *ngFor="let i of [1,2,3,4]" class="h-64 bg-white animate-pulse rounded-[2rem]"></div>
     </div>
 
-    <div *ngIf="products.length === 0 && !isLoading" class="text-center py-10">
-      <p class="text-slate-400">Aucun produit ne correspond à vos critères.</p>
+    <div *ngIf="!isLoading" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 pb-24">
+      <app-product-card *ngFor="let product of products" [product]="product"></app-product-card>
+    </div>
+    
+    <div *ngIf="products.length === 0 && !isLoading" class="flex flex-col items-center justify-center py-20 text-center">
+      <ion-icon name="search-outline" class="text-5xl text-blue-100 mb-4"></ion-icon>
+      <p class="text-slate-400 font-medium italic">Aucune pépite trouvée...</p>
     </div>
 
     <ion-infinite-scroll (ionInfinite)="loadMore($event)">
-      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Chargement...">
-      </ion-infinite-scroll-content>
+      <ion-infinite-scroll-content loadingSpinner="bubbles"></ion-infinite-scroll-content>
     </ion-infinite-scroll>
   </div>
 </ion-content>

@@ -1,0 +1,17 @@
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.custom-search-bar {
+  --background: #f8fafc;
+  --border-radius: 18px;
+  --icon-color: #1e3a8a;
+  padding: 0;
+}
+
+.premium-range {
+  --bar-background: #eff6ff;
+  --bar-background-active: #ca8a04; // OR
+  --knob-background: #1e3a8a; // BLEU ROYAL
+  --knob-size: 24px;
+}
