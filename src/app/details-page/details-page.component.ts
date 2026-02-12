@@ -1,16 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
-import { FormsModule } from '@angular/forms'; // Utile si tu ajoutes des sélections (taille, couleur)
+import { IonicModule, NavController, ToastController } from '@ionic/angular'; // Ajout de NavController et ToastController
+import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
 import { 
   arrowBackOutline, cartOutline, heartOutline, 
-  locationOutline, storefrontOutline 
+  locationOutline, storefrontOutline, storefront 
 } from 'ionicons/icons';
 
 import { CatalogProductResponse } from '../model/catalog-product-response.model';
 import { Catalogue } from '../services/catalogue';
+import { Cart } from '../services/cart'; // Import du service Cart
 
 @Component({
   selector: 'app-details-page',
@@ -25,25 +26,25 @@ export class DetailsPageComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private catalogService: Catalogue
+    private catalogService: Catalogue,
+    private cartService: Cart,        // Injection
+    private navCtrl: NavController,   // Pour un goBack plus propre
+    private toastCtrl: ToastController // Pour la confirmation
   ) {
     addIcons({ 
       arrowBackOutline, cartOutline, heartOutline, 
-      locationOutline, storefrontOutline 
+      locationOutline, storefrontOutline, storefront 
     });
   }
 
-ngOnInit() {
-  this.route.paramMap.subscribe(params => {
-    // ICI : productId au lieu de id
-    const idFromUrl = params.get('productId'); 
-    console.log("ID récupéré de l'URL:", idFromUrl);
-
-    if (idFromUrl) {
-      this.loadProduct(idFromUrl);
-    }
-  });
-}
+  ngOnInit() {
+    this.route.paramMap.subscribe(params => {
+      const idFromUrl = params.get('productId'); 
+      if (idFromUrl) {
+        this.loadProduct(idFromUrl);
+      }
+    });
+  }
 
   loadProduct(id: string) {
     this.isLoading = true;
@@ -59,8 +60,32 @@ ngOnInit() {
     });
   }
 
+  // LOGIQUE D'AJOUT AU PANIER
+  async addToCart() {
+    if (this.product) {
+      this.cartService.addToCart(this.product);
+      
+      // Petit message de confirmation
+      const toast = await this.toastCtrl.create({
+        message: `${this.product.productName} ajouté au panier !`,
+        duration: 2000,
+        position: 'bottom',
+        mode: 'ios',
+        color: 'dark',
+        buttons: [
+          {
+            text: 'VOIR',
+            handler: () => {
+              this.navCtrl.navigateForward('/cart');
+            }
+          }
+        ]
+      });
+      await toast.present();
+    }
+  }
+
   goBack() {
-    // Utiliser window.history.back() fonctionne, mais attention si l'utilisateur arrive via un lien externe
-    window.history.back();
+    this.navCtrl.back(); // Plus fluide que window.history.back() sur mobile
   }
 }
