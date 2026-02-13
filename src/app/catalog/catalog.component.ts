@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, NavController } from '@ionic/angular';
 import { ProductCardComponent } from '../product-card/product-card.component';
 import { CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
@@ -13,6 +13,8 @@ import { FormsModule } from '@angular/forms';
 import { CatalogProductResponse } from '../model/catalog-product-response.model';
 import { CatalogQueryParams } from '../model/catalog-query-params.model';
 import { Catalogue } from '../services/catalogue';
+import { Cart } from '../services/cart';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-catalog',
@@ -23,7 +25,8 @@ import { Catalogue } from '../services/catalogue';
 })
 export class CatalogComponent implements OnInit {
   @ViewChild('filterModal') modal!: IonModal;
-
+cartCount: number = 0;
+  private cartSub!: Subscription;
   products: CatalogProductResponse[] = [];
   isLoading = false;
 
@@ -37,18 +40,30 @@ export class CatalogComponent implements OnInit {
     keyword: ''
   };
 
-  constructor(private catalogService: Catalogue) {
+  constructor(private catalogService: Catalogue,  private cartService: Cart, // Injecte le service panier
+    private navCtrl: NavController) {
     addIcons({ 
       eyeOutline, cartOutline, optionsOutline, searchOutline, 
       addOutline, arrowForwardOutline, heartOutline, pricetagOutline,
       cashOutline, walletOutline, gridOutline, bagHandleOutline
     });
+  
   }
 
   ngOnInit() {
     this.loadProducts();
+    this.cartSub = this.cartService.cartCount$.subscribe(count => {
+      this.cartCount = count;
+    });
+  }
+ngOnDestroy() {
+    // Très important : on coupe l'abonnement quand on quitte la page
+    if (this.cartSub) this.cartSub.unsubscribe();
   }
 
+  goToCart() {
+    this.navCtrl.navigateForward('/cart'); // Route vers ton panier
+  }
   loadProducts(append: boolean = false) {
     this.isLoading = true;
     this.catalogService.search(this.queryParams).subscribe({

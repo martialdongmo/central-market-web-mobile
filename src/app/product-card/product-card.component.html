@@ -6,7 +6,7 @@
     <img [src]="product.imageUrl" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
     
     <div *ngIf="product.promotionActive" 
-         class="absolute top-4 left-4 bg-red-500 text-white text-[10px] font-black px-3 py-1.5 rounded-xl shadow-lg z-10">
+         class="absolute top-4 left-4 bg-yellow-500 text-blue-900 text-[10px] font-black px-3 py-1.5 rounded-xl shadow-lg z-10">
       PROMO
     </div>
 
@@ -18,7 +18,7 @@
   <div class="p-5 flex flex-col flex-1">
     <div class="flex-1">
       <p class="text-[10px] font-bold text-blue-600 uppercase tracking-widest mb-1">{{ product.shopName }}</p>
-      <h3 class="font-black text-slate-900 text-sm leading-tight line-clamp-2">
+      <h3 class="font-black text-blue-900 text-sm leading-tight line-clamp-2">
         {{ product.productName }}
       </h3>
       
@@ -31,15 +31,17 @@
     <div class="mt-4 pt-4 border-t border-slate-50 flex items-center justify-between">
       <div>
         <div *ngIf="product.promotionActive" class="flex flex-col">
-          <span class="text-red-600 font-black text-lg">{{ product.promotionPrice }} €</span>
-          <span class="text-slate-300 line-through text-[10px] font-bold">{{ product.price }} €</span>
+          <span class="text-blue-900 font-black text-lg">{{ product.promotionPrice }} FCFA</span>
+          <span class="text-slate-300 line-through text-[10px] font-bold">{{ product.price }} FCFA</span>
         </div>
         <div *ngIf="!product.promotionActive">
-          <span class="text-slate-900 font-black text-lg">{{ product.price }} €</span>
+          <span class="text-blue-900 font-black text-lg">{{ product.price }} FCFA</span>
         </div>
       </div>
 
-      <button (click)="$event.stopPropagation()" class="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-lg active:scale-90 transition-all">
+      <button 
+        (click)="addToCart($event)" 
+        class="w-12 h-12 bg-blue-900 text-white rounded-2xl flex items-center justify-center shadow-lg active:scale-90 transition-all hover:bg-blue-800">
         <ion-icon name="cart-outline" class="text-xl"></ion-icon>
       </button>
     </div>

@@ -15,3 +15,20 @@
   --knob-background: #1e3a8a; // BLEU ROYAL
   --knob-size: 24px;
 }
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+  &::-webkit-scrollbar {
+    display: none;           /* Chrome, Safari and Opera */
+  }
+}
+
+// Animation pour le badge qui apparaît
+.zoom-in {
+  animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}

@@ -60,7 +60,14 @@
 </ion-content>
 
 <ion-footer class="ion-no-border bg-white/80 backdrop-blur-xl px-6 pb-10 pt-4">
-  <ion-button expand="block" mode="ios" class="h-16 shadow-2xl shadow-blue-200" style="--background: #1e3a8a; --border-radius: 22px;">
+  <ion-button 
+    (click)="addToCart()" 
+    [disabled]="isLoading || !product"
+    expand="block" 
+    mode="ios" 
+    class="h-16 shadow-2xl shadow-blue-200" 
+    style="--background: #1e3a8a; --border-radius: 22px;">
+    
     <div class="flex items-center justify-between w-full px-4">
       <span class="font-black tracking-[0.15em] text-sm">AJOUTER AU PANIER</span>
       <div class="w-8 h-8 bg-white/10 rounded-xl flex items-center justify-center border border-white/20">
