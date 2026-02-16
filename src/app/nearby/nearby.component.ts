@@ -4,7 +4,7 @@ import {
   IonButton, IonSpinner, IonBadge 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { locationOutline, navigateOutline, storefrontOutline, chevronForward, bicycleOutline, mapOutline, location } from 'ionicons/icons';
+import { locationOutline, navigateOutline, storefrontOutline, chevronForward, bicycleOutline, mapOutline, location, cartOutline, cart, arrowForward } from 'ionicons/icons';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CatalogProductResponse } from '../model/catalog-product-response.model';
@@ -30,7 +30,8 @@ nearbyProducts: CatalogProductResponse[] = [];
     addIcons({ locationOutline, navigateOutline, storefrontOutline, chevronForward ,
       location, 
   bicycleOutline, 
-  mapOutline
+  mapOutline,
+  cart, cartOutline,arrowForward
     });
   }
 

@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { IonicModule, NavController } from '@ionic/angular';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { IonicModule, NavController, IonContent } from '@ionic/angular'; // Importe IonContent
 import { ProductCardComponent } from '../product-card/product-card.component';
 import { CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
@@ -7,7 +7,8 @@ import { IonModal } from '@ionic/angular/standalone';
 import { 
   addOutline, arrowForwardOutline, cartOutline, eyeOutline, 
   heartOutline, optionsOutline, searchOutline, pricetagOutline,
-  cashOutline, walletOutline, gridOutline, bagHandleOutline
+  cashOutline, walletOutline, gridOutline, bagHandleOutline,
+  locationOutline, storefrontOutline
 } from 'ionicons/icons';
 import { FormsModule } from '@angular/forms';
 import { CatalogProductResponse } from '../model/catalog-product-response.model';
@@ -23,31 +24,37 @@ import { Subscription } from 'rxjs';
   templateUrl: './catalog.component.html',
   styleUrls: ['./catalog.component.scss'],
 })
-export class CatalogComponent implements OnInit {
+export class CatalogComponent implements OnInit, OnDestroy {
   @ViewChild('filterModal') modal!: IonModal;
-cartCount: number = 0;
+  @ViewChild(IonContent) ionContent!: IonContent; // Référence à ion-content
+
+  cartCount: number = 0;
   private cartSub!: Subscription;
   products: CatalogProductResponse[] = [];
   isLoading = false;
+  isHeaderCompact: boolean = false; // Nouvelle variable pour le header compact
 
   queryParams: CatalogQueryParams = {
     page: 0,
     size: 10,
-    maxPrice: 1000,
+    maxPrice: 5000,
     radiusKm: 10,
     inStockOnly: false,
     promotionOnly: false,
     keyword: ''
   };
 
-  constructor(private catalogService: Catalogue,  private cartService: Cart, // Injecte le service panier
-    private navCtrl: NavController) {
+  constructor(
+    private catalogService: Catalogue,  
+    private cartService: Cart, 
+    private navCtrl: NavController
+  ) {
     addIcons({ 
       eyeOutline, cartOutline, optionsOutline, searchOutline, 
       addOutline, arrowForwardOutline, heartOutline, pricetagOutline,
-      cashOutline, walletOutline, gridOutline, bagHandleOutline
+      cashOutline, walletOutline, gridOutline, bagHandleOutline,
+      locationOutline, storefrontOutline
     });
-  
   }
 
   ngOnInit() {
@@ -56,14 +63,19 @@ cartCount: number = 0;
       this.cartCount = count;
     });
   }
-ngOnDestroy() {
-    // Très important : on coupe l'abonnement quand on quitte la page
+
+  ngOnDestroy() {
     if (this.cartSub) this.cartSub.unsubscribe();
   }
 
-  goToCart() {
-    this.navCtrl.navigateForward('/cart'); // Route vers ton panier
+  async openFilters() {
+    await this.modal.present();
   }
+
+  goToCart() {
+    this.navCtrl.navigateForward('/cart');
+  }
+
   loadProducts(append: boolean = false) {
     this.isLoading = true;
     this.catalogService.search(this.queryParams).subscribe({
@@ -102,7 +114,7 @@ ngOnDestroy() {
     this.queryParams = { 
       page: 0, 
       size: 10, 
-      maxPrice: 1000, 
+      maxPrice: 5000, 
       radiusKm: 10,
       inStockOnly: false,
       promotionOnly: false,
@@ -115,5 +127,12 @@ ngOnDestroy() {
     this.queryParams.page!++;
     this.loadProducts(true);
     event.target.complete();
+  }
+
+  // --- NOUVELLE LOGIQUE POUR L'EFFET WAOUH ---
+  async onScroll(event: CustomEvent) {
+    const scrollPosition = event.detail.scrollTop;
+    // Déclenche le compactage après un certain seuil de défilement (ex: 80px)
+    this.isHeaderCompact = scrollPosition > 80; 
   }
 }

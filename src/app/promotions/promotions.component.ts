@@ -4,7 +4,7 @@ import {
   IonButton, IonSpinner, IonText 
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { flame, eyeOutline, cartOutline, add, giftOutline, pricetagOutline } from 'ionicons/icons';
+import { flame, eyeOutline, cartOutline, add, giftOutline, pricetagOutline, chevronForward } from 'ionicons/icons';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CatalogProductResponse } from '../model/catalog-product-response.model';
@@ -29,7 +29,7 @@ export class PromotionsComponent  implements OnInit {
   ) {
     addIcons({ flame, eyeOutline, cartOutline,add, 
   giftOutline, 
-  pricetagOutline });
+  pricetagOutline,chevronForward });
   }
 
   ngOnInit() {

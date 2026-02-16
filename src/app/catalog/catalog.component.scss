@@ -1,34 +1,124 @@
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.custom-search-bar {
-  --background: #f8fafc;
-  --border-radius: 18px;
-  --icon-color: #1e3a8a;
-  padding: 0;
-}
-
-.premium-range {
-  --bar-background: #eff6ff;
-  --bar-background-active: #ca8a04; // OR
-  --knob-background: #1e3a8a; // BLEU ROYAL
-  --knob-size: 24px;
-}
+/* --- 1. CONFIGURATION GLOBALE & UTILITAIRES --- */
 .no-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;     /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none;    /* Firefox */
   &::-webkit-scrollbar {
-    display: none;           /* Chrome, Safari and Opera */
+    display: none;          /* Chrome/Safari */
   }
 }
 
-// Animation pour le badge qui apparaît
+/* --- 2. HEADER DYNAMIQUE & GLASSMORPHISM --- */
+ion-header {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  background: white; /* Fond par défaut */
+
+  &.header-compact {
+    padding-top: 0 !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+
+    .max-w-screen-xl {
+      padding-top: 1rem !important;
+      padding-bottom: 0.5rem !important;
+    }
+  }
+}
+
+/* --- 3. SECTION HERO "PARLEUR" --- */
+.hero-banner {
+  animation: floatBanner 6s ease-in-out infinite;
+  transform-origin: top;
+  /* Transition complexe pour un repli ultra-fluide au scroll */
+  transition: 
+    transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
+    opacity 0.4s ease, 
+    height 0.5s ease, 
+    margin 0.5s ease;
+}
+
+@keyframes floatBanner {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* --- 4. BARRE DE RECHERCHE (STYLING & FIX WEB) --- */
+.custom-search-bar {
+  --background: #f1f5f9 !important; 
+  --border-radius: 20px;
+  --icon-color: #0f172a;
+  --placeholder-color: #94a3b8;
+  --placeholder-font-weight: 600;
+  padding: 0;
+  margin: 0;
+  opacity: 1 !important;
+  display: block !important;
+  contain: none !important;
+
+  /* Force le style sur Chrome/Safari/Web */
+  &::part(container) {
+    background: #f1f5f9 !important;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+  }
+
+  &::part(native) {
+    padding-left: 48px !important;
+  }
+
+  /* Effet focus : la barre s'illumine au clic */
+  &:focus-within::part(container) {
+    background: white !important;
+    border-color: #1e3a8a;
+    box-shadow: 0 10px 25px rgba(30, 58, 138, 0.08);
+  }
+}
+
+/* --- 5. RANGE SLIDER PREMIUM --- */
+.premium-range {
+  --bar-background: #f1f5f9;
+  --bar-background-active: #1e3a8a;
+  --knob-background: #1e3a8a;
+  --knob-size: 26px;
+  --knob-box-shadow: 0 5px 15px rgba(30, 58, 138, 0.3);
+  padding: 0;
+}
+
+/* --- 6. ANIMATIONS & ÉTATS PRODUITS --- */
+
+/* Lévitation des cartes au survol */
+.hover-up {
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  &:hover {
+    transform: translateY(-8px);
+  }
+}
+
+/* Skeleton Loading (Shimmer effect dynamique) */
+.animate-pulse {
+  background: linear-gradient(90deg, #f1f5f9 25%, #f8fafc 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Badge du panier animé */
 .zoom-in {
-  animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
 @keyframes zoomIn {
-  from { transform: scale(0); }
-  to { transform: scale(1); }
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* --- 7. MODAL STYLING (ARRONDI PREMIUM) --- */
+ion-modal::part(content) {
+  --border-radius: 40px 40px 0 0;
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
 }
