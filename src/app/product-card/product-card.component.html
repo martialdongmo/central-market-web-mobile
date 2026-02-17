@@ -1,46 +1,52 @@
 <div 
   [routerLink]="['/details', product.productId]"
-  class="flex flex-col bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-sm hover:shadow-md transition-all group h-full relative cursor-pointer active:scale-[0.98]">
+  class="product-card group relative flex flex-col bg-white rounded-[2.5rem] overflow-hidden shadow-2xl shadow-slate-200/50 hover:shadow-blue-900/10 transition-all duration-500 h-full cursor-pointer active:scale-[0.97]">
   
   <div class="aspect-square relative overflow-hidden bg-slate-50">
-    <img [src]="product.imageUrl" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+    <img [src]="product.imageUrl" 
+         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out">
     
     <div *ngIf="product.promotionActive" 
-         class="absolute top-4 left-4 bg-red-500 text-white text-[10px] font-black px-3 py-1.5 rounded-xl shadow-lg z-10">
+         class="absolute top-4 left-4 bg-gradient-to-r from-yellow-400 to-orange-400 text-blue-950 text-[10px] font-[1000] px-3 py-1.5 rounded-xl shadow-xl z-10 tracking-widest animate-pulse">
       PROMO
     </div>
 
-    <button class="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-sm active:scale-90 transition-all z-10">
-      <ion-icon name="eye-outline" class="text-slate-700 text-xl"></ion-icon>
+    <button class="absolute top-4 right-4 w-11 h-11 bg-white/70 backdrop-blur-md rounded-[18px] flex items-center justify-center shadow-lg border border-white/20 text-blue-950 active:scale-75 transition-all z-10 group-hover:bg-blue-900 group-hover:text-white">
+      <ion-icon name="eye-outline" class="text-xl"></ion-icon>
     </button>
   </div>
 
-  <div class="p-5 flex flex-col flex-1">
+  <div class="p-6 flex flex-col flex-1">
     <div class="flex-1">
-      <p class="text-[10px] font-bold text-blue-600 uppercase tracking-widest mb-1">{{ product.shopName }}</p>
-      <h3 class="font-black text-slate-900 text-sm leading-tight line-clamp-2">
+      <div class="flex justify-between items-start mb-2">
+        <p class="text-[9px] font-black text-blue-600 uppercase tracking-[0.2em]">{{ product.shopName }}</p>
+        <div *ngIf="product.distanceKm" class="flex items-center gap-1 text-slate-400 bg-slate-50 px-2 py-1 rounded-lg">
+          <ion-icon name="location-outline" class="text-[10px]"></ion-icon>
+          <span class="text-[9px] font-black">{{ product.distanceKm | number:'1.1-1' }} KM</span>
+        </div>
+      </div>
+
+      <h3 class="font-black text-blue-950 text-sm leading-tight line-clamp-2 group-hover:text-blue-600 transition-colors">
         {{ product.productName }}
       </h3>
-      
-      <div *ngIf="product.distanceKm" class="flex items-center gap-1 mt-2 text-slate-400">
-        <ion-icon name="location-outline" class="text-xs"></ion-icon>
-        <span class="text-[10px] font-bold">{{ product.distanceKm | number:'1.1-1' }} km</span>
-      </div>
     </div>
 
-    <div class="mt-4 pt-4 border-t border-slate-50 flex items-center justify-between">
-      <div>
-        <div *ngIf="product.promotionActive" class="flex flex-col">
-          <span class="text-red-600 font-black text-lg">{{ product.promotionPrice }} €</span>
-          <span class="text-slate-300 line-through text-[10px] font-bold">{{ product.price }} €</span>
-        </div>
-        <div *ngIf="!product.promotionActive">
-          <span class="text-slate-900 font-black text-lg">{{ product.price }} €</span>
-        </div>
+    <div class="mt-5 pt-4 border-t border-slate-50 flex items-end justify-between">
+      <div class="flex flex-col">
+        <ng-container *ngIf="product.promotionActive">
+          <span class="text-slate-300 line-through text-[10px] font-black mb-0.5">{{ product.price }} FCFA</span>
+          <span class="text-blue-950 font-[1000] text-xl tracking-tighter leading-none">{{ product.promotionPrice }} <small class="text-[10px]">FCFA</small></span>
+        </ng-container>
+        
+        <ng-container *ngIf="!product.promotionActive">
+          <span class="text-blue-950 font-[1000] text-xl tracking-tighter leading-none">{{ product.price }} <small class="text-[10px]">FCFA</small></span>
+        </ng-container>
       </div>
 
-      <button (click)="$event.stopPropagation()" class="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-lg active:scale-90 transition-all">
-        <ion-icon name="cart-outline" class="text-xl"></ion-icon>
+      <button 
+        (click)="addToCart($event)" 
+        class="w-13 h-13 bg-blue-950 text-white rounded-[20px] flex items-center justify-center shadow-xl shadow-blue-900/20 active:scale-75 transition-all hover:bg-blue-600 hover:-rotate-6">
+        <ion-icon name="cart-outline" class="text-2xl"></ion-icon>
       </button>
     </div>
   </div>

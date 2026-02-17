@@ -1,61 +1,77 @@
-<ion-header class="ion-no-border bg-white">
-  <div class="max-w-screen-xl mx-auto w-full px-5 pt-8 pb-4">
-    <div class="flex items-center gap-3 mb-2">
-      <div class="w-8 h-1 bg-yellow-500 rounded-full"></div>
-      <span class="text-yellow-600 font-black text-[10px] uppercase tracking-[0.3em]">Ventes Privées</span>
+<ion-header class="ion-no-border sticky top-0 z-50 transition-all duration-500">
+  <div class="absolute inset-0 bg-white/80 backdrop-blur-xl -z-10"></div>
+  
+  <div class="max-w-screen-xl mx-auto w-full px-5 pt-8 pb-6">
+    <div class="flex items-center gap-3 mb-3">
+      <div class="w-12 h-1.5 bg-gradient-to-r from-yellow-500 to-orange-400 rounded-full"></div>
+      <span class="text-yellow-600 font-[1000] text-[10px] uppercase tracking-[0.4em] animate-pulse">Offres Flash</span>
     </div>
     
-    <h1 class="text-3xl font-black text-blue-900 leading-none">Promotions</h1>
+    <h1 class="text-4xl font-[1000] text-blue-950 leading-none tracking-tighter italic">
+      Promotions
+    </h1>
     
-    <p class="text-slate-400 text-xs mt-3 font-medium leading-relaxed italic">
-      Découvrez les pépites de <span class="text-blue-900 font-bold">Central Market</span> à prix d'exception.
+    <p class="text-slate-400 text-[11px] mt-4 font-medium leading-relaxed italic">
+      Découvrez les pépites de <span class="text-blue-950 font-black border-b-2 border-yellow-400">Central Market</span> à prix d'exception.
     </p>
   </div>
 </ion-header>
 
 <ion-content class="bg-slate-50">
-  <div class="px-4 pt-6 grid grid-cols-2 gap-4 pb-24">
+  <div class="px-5 pt-6 grid grid-cols-2 gap-5 pb-32 max-w-screen-xl mx-auto">
     
-    <div *ngFor="let product of promoProducts" 
-         (click)="goToDetails(product.productId)"
-         class="bg-white rounded-[2.5rem] overflow-hidden shadow-sm border border-white active:scale-95 transition-all relative flex flex-col group">
+   <div *ngFor="let product of promoProducts" 
+     (click)="goToDetails(product.productId)"
+     class="promo-card group relative flex flex-col bg-white rounded-[2.5rem] overflow-hidden shadow-2xl shadow-slate-200/50 active:scale-[0.96] transition-all duration-500 cursor-pointer">
+  
+  <div class="absolute top-4 left-4 z-20 bg-gradient-to-br from-red-500 to-pink-600 text-white px-3 py-1.5 rounded-2xl font-[1000] text-[10px] shadow-xl shadow-red-500/30 tracking-tighter">
+    -{{ ((product.price - product.promotionPrice!) / product.price * 100) | number:'1.0-0' }}%
+  </div>
+
+  <div class="aspect-[3/4] bg-slate-100 overflow-hidden relative">
+    <img [src]="product.imageUrl" 
+         class="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-110">
+    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/10 to-transparent"></div>
+  </div>
+
+  <div class="p-5 flex flex-col flex-1">
+    <div class="mb-4">
+      <div class="flex items-center gap-2 mb-1">
+         <div class="w-1.5 h-1.5 bg-blue-600 rounded-full"></div>
+         <p class="text-[9px] font-black text-blue-800 uppercase tracking-widest truncate">{{ product.shopName }}</p>
+      </div>
+      <h2 class="text-sm font-black text-blue-950 leading-tight line-clamp-2 min-h-[2.5rem]">
+        {{ product.productName }}
+      </h2>
+    </div>
+    
+    <div class="mt-auto flex items-end justify-between">
+      <div class="flex flex-col">
+        <span class="text-[10px] text-slate-300 line-through font-black mb-0.5">{{ product.price }} FCFA</span>
+        <span class="text-xl font-[1000] text-blue-950 tracking-tighter leading-none">
+          {{ product.promotionPrice }} <small class="text-[10px]">CFA</small>
+        </span>
+      </div>
       
-      <div class="absolute top-3 left-3 z-10 bg-yellow-500 text-blue-900 px-2.5 py-1 rounded-xl font-black text-[10px] shadow-lg shadow-yellow-200">
-        -{{ ((product.price - product.promotionPrice!) / product.price * 100) | number:'1.0-0' }}%
-      </div>
-
-      <div class="aspect-[4/5] bg-slate-50 overflow-hidden">
-        <img [src]="product.imageUrl" class="w-full h-full object-cover transition-transform duration-700 group-active:scale-110">
-      </div>
-
-      <div class="p-4 flex flex-col justify-between flex-1">
-        <div>
-          <p class="text-[9px] font-black text-blue-700 uppercase tracking-widest mb-1">{{ product.shopName }}</p>
-          <h2 class="text-xs font-bold text-slate-800 leading-tight line-clamp-2 mb-2">
-            {{ product.productName }}
-          </h2>
-        </div>
-        
-        <div class="flex items-end justify-between mt-auto">
-          <div class="flex flex-col">
-            <span class="text-[10px] text-slate-300 line-through font-bold">{{ product.price }}€</span>
-            <span class="text-lg font-black text-blue-900 leading-none">{{ product.promotionPrice }}€</span>
-          </div>
-          
-          <button class="w-9 h-9 bg-blue-800 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-50 active:rotate-90 transition-transform">
-            <ion-icon name="add" class="text-xl"></ion-icon>
-          </button>
-        </div>
+      <div class="w-8 h-8 rounded-full border border-slate-100 flex items-center justify-center text-slate-300 group-hover:bg-blue-950 group-hover:text-white group-hover:border-transparent transition-all duration-300">
+        <ion-icon name="chevron-forward" class="text-sm"></ion-icon>
       </div>
     </div>
+  </div>
+</div>
 
   </div>
 
-  <div *ngIf="promoProducts.length === 0" class="flex flex-col items-center justify-center py-32 px-10 text-center">
-    <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6">
-      <ion-icon name="gift-outline" class="text-4xl text-blue-200"></ion-icon>
+  <div *ngIf="promoProducts.length === 0" class="flex flex-col items-center justify-center py-40 px-12 text-center">
+    <div class="relative w-24 h-24 mb-8">
+      <div class="absolute inset-0 bg-blue-100 rounded-[2.5rem] rotate-6 animate-pulse"></div>
+      <div class="absolute inset-0 bg-white rounded-[2.5rem] shadow-xl flex items-center justify-center -rotate-3 border border-blue-50">
+        <ion-icon name="gift-outline" class="text-5xl text-blue-200"></ion-icon>
+      </div>
     </div>
-    <h3 class="text-blue-900 font-black text-lg">Patience...</h3>
-    <p class="text-slate-400 text-sm font-medium italic mt-1">De nouvelles offres exclusives arrivent bientôt.</p>
+    <h3 class="text-blue-950 font-[1000] text-2xl tracking-tighter mb-2">Presque là...</h3>
+    <p class="text-slate-400 text-sm font-medium italic leading-relaxed">
+      Nos équipes négocient les meilleures pépites pour vous. Revenez d'ici peu !
+    </p>
   </div>
 </ion-content>
