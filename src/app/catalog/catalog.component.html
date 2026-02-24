@@ -1,137 +1,224 @@
-<ion-header class="ion-no-border sticky top-0 z-50 transition-all duration-500" 
-            [class.header-compact]="isHeaderCompact">
-  <div class="absolute inset-0 bg-white/80 backdrop-blur-xl -z-10"></div>
-  
-  <div class="max-w-screen-xl mx-auto w-full px-5 pt-8 pb-4 transition-all duration-500">
-    <div class="flex justify-between items-end mb-6 transition-all duration-500" [class.mb-4]="isHeaderCompact">
-      <div class="relative">
-        <h1 class="text-4xl font-[1000] text-blue-950 leading-none tracking-tighter italic transition-all duration-500"
-            [class.text-2xl]="isHeaderCompact">
-          Central <span class="text-blue-600">Market</span>
+<ion-header class="header-improved" [class.header-compact]="isHeaderCompact">
+  <!-- Subtle background gradient -->
+  <div class="header-bg-gradient"></div>
+
+  <div class="header-wrapper">
+    <!-- ─── STICKY TOP BAR ─── -->
+    <div class="top-bar">
+      <div class="brand-section">
+        <h1 class="brand-logo" [class.compact]="isHeaderCompact">
+          Central<span class="brand-accent">Market</span>
         </h1>
-        <div class="h-1.5 w-8 bg-yellow-500 rounded-full mt-2 transition-all duration-500" 
-             [class.opacity-0]="isHeaderCompact" [class.scale-x-0]="isHeaderCompact"></div>
       </div>
 
-      <button (click)="goToCart()" 
-              class="group relative p-3.5 bg-gradient-to-br from-blue-50 to-slate-100 text-blue-900 rounded-[22px] border border-white shadow-xl shadow-blue-900/5 active:scale-90 transition-all">
-        <ion-icon name="cart-outline" class="text-2xl group-hover:rotate-12 transition-transform"></ion-icon>
-        <span *ngIf="cartCount > 0" 
-              class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-black w-6 h-6 flex items-center justify-center rounded-full border-2 border-white shadow-lg animate-in zoom-in duration-300">
-          {{ cartCount }}
-        </span>
-      </button>
-    </div>
-
-    <div class="hero-banner mb-8 transition-all duration-500 origin-top"
-         [class.scale-y-0]="isHeaderCompact" [class.h-0]="isHeaderCompact" [class.opacity-0]="isHeaderCompact" [class.mb-0]="isHeaderCompact">
-      <div class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 p-7 shadow-2xl shadow-blue-900/20">
-        <div class="absolute -top-10 -right-10 w-40 h-40 bg-yellow-500/10 rounded-full blur-3xl"></div>
-        <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-blue-400/10 rounded-full blur-2xl"></div>
-
-        <div class="relative z-10">
-          <span class="inline-block px-3 py-1 bg-white/10 border border-white/10 rounded-full text-[9px] font-black text-yellow-500 uppercase tracking-[0.2em] mb-4">
-            Ventes Flash • -50%
+      <div class="top-actions">
+        <button class="icon-btn search-trigger" (click)="focusSearch()">
+          <ion-icon name="search-outline"></ion-icon>
+        </button>
+        <button class="icon-btn cart-btn" (click)="goToCart()">
+          <ion-icon name="bag-outline"></ion-icon>
+          <span *ngIf="cartCount > 0" class="badge badge-primary">
+            {{ cartCount > 99 ? '99+' : cartCount }}
           </span>
-          <h2 class="text-2xl font-[1000] text-white leading-tight mb-2 tracking-tighter">
-            Craquez pour nos <br> 
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-300">Pépites du jour</span> ✨
+        </button>
+      </div>
+    </div>
+
+    <!-- ─── HERO SECTION (Collapsible) ─── -->
+    <div class="hero-section" [class.collapsed]="isHeaderCompact">
+      <div class="hero-wrapper">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <span class="badge-icon">⚡</span>
+            <span class="badge-text">Ventes Flash</span>
+          </div>
+          <h2 class="hero-title">
+            Découvrez nos<br>
+            <span class="gradient-text">Pépites du jour</span>
           </h2>
-          <p class="text-blue-100/60 text-[11px] font-medium max-w-[200px] leading-relaxed">
-            La qualité premium sélectionnée avec amour, livrée chez vous.
-          </p>
+          <p class="hero-subtitle">Premium qualité, livraison rapide</p>
         </div>
-        
-        <div class="absolute right-[-10px] bottom-[-20px] opacity-10 rotate-[-15deg]">
-          <ion-icon name="bag-handle" style="font-size: 120px; color: white;"></ion-icon>
+        <div class="hero-visual">
+          <div class="visual-orb orb-1"></div>
+          <div class="visual-orb orb-2"></div>
+          <ion-icon name="bag-handle" class="hero-icon"></ion-icon>
         </div>
       </div>
     </div>
 
-    <div class="flex items-center gap-3 mb-8 transition-all duration-500" [class.mb-2]="isHeaderCompact">
-      <div class="flex-1 group">
-        <ion-searchbar 
-          placeholder="Rechercher une pépite..." 
-          class="custom-search-bar"
-          mode="ios"
-          [debounce]="500"
-          (ionInput)="onSearch($event)">
-        </ion-searchbar>
+    <!-- ─── SEARCH BAR ─── -->
+    <div class="search-section">
+      <div class="search-container">
+        <ion-icon name="search-outline" class="search-icon"></ion-icon>
+        <input
+          type="search"
+          class="search-field"
+          placeholder="Rechercher une pépite..."
+          [value]="queryParams.keyword"
+          (input)="onSearch($event)"
+          #searchInput
+        />
+        <button 
+          *ngIf="queryParams.keyword" 
+          class="clear-btn"
+          (click)="clearSearch()"
+          type="button"
+        >
+          <ion-icon name="close-circle"></ion-icon>
+        </button>
       </div>
-      <button (click)="openFilters()" 
-              class="flex items-center justify-center w-14 h-12 bg-blue-950 text-white rounded-[20px] shadow-2xl shadow-blue-950/20 active:scale-90 transition-all">
-        <ion-icon name="options-outline" class="text-2xl"></ion-icon>
+      <button class="filter-btn" [class.active]="hasActiveFilters" (click)="openFilters()" type="button">
+        <ion-icon name="options-outline"></ion-icon>
       </button>
     </div>
 
-    <div class="flex gap-5 overflow-x-auto pb-4 no-scrollbar transition-all duration-500 origin-top"
-         [class.scale-y-0]="isHeaderCompact" [class.h-0]="isHeaderCompact" [class.opacity-0]="isHeaderCompact">
-      <div *ngFor="let cat of ['Tout', 'Épicerie', 'Mode', 'Électro', 'Beauté']" 
-           class="flex flex-col items-center gap-3 shrink-0 group cursor-pointer">
-        <div class="w-16 h-16 rounded-[24px] bg-white border border-slate-100 flex items-center justify-center text-slate-400 shadow-sm group-hover:bg-blue-900 group-hover:text-white group-hover:shadow-blue-900/20 transition-all duration-300">
-          <ion-icon [name]="cat === 'Tout' ? 'grid-outline' : 'bag-handle-outline'" class="text-2xl"></ion-icon>
+    <!-- ─── CATEGORIES SCROLL ─── -->
+    <div class="categories-section" [class.collapsed]="isHeaderCompact">
+      <div class="categories-scroll no-scrollbar">
+        <div
+          *ngFor="let cat of categories; let i = index"
+          class="category-chip"
+          [class.active]="activeCategory === cat.id"
+          (click)="selectCategory(cat.id)"
+          role="button"
+          tabindex="0"
+        >
+          <div class="chip-icon">
+            <ion-icon [name]="cat.icon"></ion-icon>
+          </div>
+          <span class="chip-label">{{ cat.label }}</span>
         </div>
-        <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] group-hover:text-blue-950 transition-colors">{{cat}}</span>
       </div>
     </div>
   </div>
 </ion-header>
 
-<ion-content class="bg-slate-50" (ionScroll)="onScroll($event)" [scrollEvents]="true">
-  <ion-modal #filterModal [initialBreakpoint]="0.75" [breakpoints]="[0, 0.75, 1]">
-    <ng-template>
-      <div class="h-full bg-white rounded-t-[3rem] overflow-hidden">
-        <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mt-4 mb-8"></div>
-        <ion-content class="ion-padding">
-          <div class="flex flex-col h-full px-2">
-            <div class="flex justify-between items-center mb-12">
-              <h2 class="text-3xl font-[1000] text-blue-950 tracking-tighter">Filtrer</h2>
-              <button (click)="resetFilters()" class="text-[11px] font-black text-yellow-600 uppercase tracking-widest bg-yellow-50 px-4 py-2.5 rounded-2xl">Réinitialiser</button>
-            </div>
+<!-- ─── MAIN CONTENT ─── -->
+<ion-content [scrollEvents]="true" (ionScroll)="onScroll($event)" class="content-improved" scrollX="false" scrollY="true">
 
-            <div class="space-y-10 flex-1">
-              <div class="flex justify-between items-center p-7 bg-blue-50/50 rounded-[2.5rem] border border-blue-100/50">
-                <div class="flex items-center gap-5">
-                  <div class="w-12 h-12 bg-white text-blue-900 rounded-2xl flex items-center justify-center shadow-sm">
-                    <ion-icon name="pricetag-outline" class="text-2xl"></ion-icon>
-                  </div>
-                  <div>
-                    <p class="font-black text-blue-950">Promotions</p>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">Voir les offres flash</p>
-                  </div>
-                </div>
-                <ion-toggle [(ngModel)]="queryParams.promotionOnly" (ionChange)="updateFilters()" mode="ios"></ion-toggle>
-              </div>
-
-              <div class="px-4">
-                <div class="flex justify-between items-end mb-8">
-                  <div>
-                    <p class="text-[11px] font-black uppercase text-slate-400 tracking-widest mb-1">Budget Maximum</p>
-                    <p class="text-3xl font-[1000] text-blue-950">{{ queryParams.maxPrice }}<span class="text-sm ml-1 text-blue-600">FCFA</span></p>
-                  </div>
-                </div>
-                <ion-range [min]="0" [max]="5000" [step]="100" [(ngModel)]="queryParams.maxPrice" (ionChange)="onPriceChange($event)" class="premium-range"></ion-range>
-              </div>
-            </div>
-
-            <div class="py-8">
-              <ion-button (click)="applyFilters()" expand="block" mode="ios" class="h-16 shadow-2xl shadow-blue-900/20" style="--background: #020617; --border-radius: 22px;">
-                <span class="font-black tracking-[0.2em] text-sm">APPLIQUER LES FILTRES</span>
-              </ion-button>
-            </div>
-          </div>
-        </ion-content>
-      </div>
-    </ng-template>
-  </ion-modal>
-
-  <div class="max-w-screen-xl mx-auto px-5 pt-8">
-    <div *ngIf="isLoading" class="grid grid-cols-2 gap-5">
-      <div *ngFor="let i of [1,2,3,4]" class="h-72 bg-white/50 animate-pulse rounded-[2.5rem] border border-white"></div>
-    </div>
-
-    <div *ngIf="!isLoading" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 pb-32">
-      <app-product-card *ngFor="let product of products" [product]="product" class="hover-up"></app-product-card>
+  <!-- Section Header -->
+  <div class="content-header" *ngIf="!isLoading">
+    <div class="header-info">
+      <h3 class="section-title">Catalogue</h3>
+      <p class="section-meta">{{ products.length }} articles disponibles</p>
     </div>
   </div>
+
+  <!-- Loading Skeleton -->
+  <div *ngIf="isLoading" class="products-container">
+    <div class="product-grid">
+      <div *ngFor="let i of [1,2,3,4,5,6]" class="skeleton-loader">
+        <div class="skeleton-image"></div>
+        <div class="skeleton-content">
+          <div class="skeleton-line line-title"></div>
+          <div class="skeleton-line line-price"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Grid -->
+  <div *ngIf="!isLoading && products.length > 0" class="products-container">
+    <div class="product-grid">
+      <app-product-card
+        *ngFor="let product of products; trackBy: trackById"
+        [product]="product"
+        class="product-item"
+      ></app-product-card>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && products.length === 0" class="empty-state-container">
+    <div class="empty-state">
+      <div class="empty-icon">🔍</div>
+      <h3 class="empty-title">Aucun résultat</h3>
+      <p class="empty-description">Essayez d'autres mots-clés ou modifiez vos filtres</p>
+      <button class="btn-reset" (click)="resetFilters()" type="button">
+        <ion-icon name="refresh-outline"></ion-icon>
+        Réinitialiser
+      </button>
+    </div>
+  </div>
+
+  <!-- Padding for bottom navigation -->
+  <div class="content-bottom-spacing"></div>
+
 </ion-content>
+
+<!-- ─── FILTER MODAL (Bottom Sheet) ─── -->
+<ion-modal
+  [isOpen]="isFilterModalOpen"
+  (didDismiss)="closeFilters()"
+  [initialBreakpoint]="0.75"
+  [breakpoints]="[0, 0.75, 1]"
+  [handle]="true"
+  [handleBehavior]="'cycle'"
+  class="filter-modal"
+>
+  <ng-template>
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">Filtrer les résultats</h2>
+        <button class="btn-close" (click)="closeFilters()" type="button">
+          <ion-icon name="close"></ion-icon>
+        </button>
+      </div>
+
+      <ion-content [scrollY]="true" class="modal-content">
+        <div class="filter-group">
+          <!-- Promotions Filter -->
+          <div class="filter-item promo-filter">
+            <div class="filter-header">
+              <div class="filter-icon">
+                <ion-icon name="pricetag-outline"></ion-icon>
+              </div>
+              <div class="filter-info">
+                <p class="filter-title">Promotions</p>
+                <p class="filter-description">Afficher uniquement les offres</p>
+              </div>
+            </div>
+            <ion-toggle
+              [(ngModel)]="queryParams.promotionOnly"
+              mode="ios"
+              class="toggle-switch"
+            ></ion-toggle>
+          </div>
+
+          <!-- Price Range Filter -->
+          <div class="filter-item price-filter">
+            <div class="filter-header">
+              <div class="filter-icon">
+                <ion-icon name="wallet-outline"></ion-icon>
+              </div>
+              <div class="filter-info">
+                <p class="filter-title">Budget Maximum</p>
+                <p class="price-value">
+                  {{ queryParams.maxPrice | number:'1.0-0' }}
+                  <span class="price-unit">FCFA</span>
+                </p>
+              </div>
+            </div>
+            <ion-range
+              [min]="0"
+              [max]="10000"
+              [step]="500"
+              [(ngModel)]="queryParams.maxPrice"
+              class="price-range"
+              [pin]="false"
+            ></ion-range>
+          </div>
+        </div>
+      </ion-content>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="resetFilters()" type="button">
+          Réinitialiser
+        </button>
+        <button class="btn-primary" (click)="applyFilters()" type="button">
+          Appliquer les filtres
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>

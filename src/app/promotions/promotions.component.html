@@ -1,77 +1,110 @@
-<ion-header class="ion-no-border sticky top-0 z-50 transition-all duration-500">
-  <div class="absolute inset-0 bg-white/80 backdrop-blur-xl -z-10"></div>
+<ion-header class="promo-header ion-no-border sticky top-0 z-50">
+  <!-- Glassmorphism Background -->
+  <div class="header-backdrop"></div>
   
-  <div class="max-w-screen-xl mx-auto w-full px-5 pt-8 pb-6">
-    <div class="flex items-center gap-3 mb-3">
-      <div class="w-12 h-1.5 bg-gradient-to-r from-yellow-500 to-orange-400 rounded-full"></div>
-      <span class="text-yellow-600 font-[1000] text-[10px] uppercase tracking-[0.4em] animate-pulse">Offres Flash</span>
+  <div class="header-content">
+    <!-- Flash Badge -->
+    <div class="flash-badge">
+      <div class="flash-line"></div>
+      <span class="flash-text">Offres Flash</span>
     </div>
     
-    <h1 class="text-4xl font-[1000] text-blue-950 leading-none tracking-tighter italic">
+    <!-- Main Title -->
+    <h1 class="header-title">
       Promotions
     </h1>
     
-    <p class="text-slate-400 text-[11px] mt-4 font-medium leading-relaxed italic">
-      Découvrez les pépites de <span class="text-blue-950 font-black border-b-2 border-yellow-400">Central Market</span> à prix d'exception.
+    <!-- Subtitle -->
+    <p class="header-subtitle">
+      Découvrez les pépites de <span class="highlight">Central Market</span> à prix d'exception.
     </p>
   </div>
 </ion-header>
 
-<ion-content class="bg-slate-50">
-  <div class="px-5 pt-6 grid grid-cols-2 gap-5 pb-32 max-w-screen-xl mx-auto">
+<ion-content class="promo-content">
+  <div class="content-wrapper">
     
-   <div *ngFor="let product of promoProducts" 
-     (click)="goToDetails(product.productId)"
-     class="promo-card group relative flex flex-col bg-white rounded-[2.5rem] overflow-hidden shadow-2xl shadow-slate-200/50 active:scale-[0.96] transition-all duration-500 cursor-pointer">
-  
-  <div class="absolute top-4 left-4 z-20 bg-gradient-to-br from-red-500 to-pink-600 text-white px-3 py-1.5 rounded-2xl font-[1000] text-[10px] shadow-xl shadow-red-500/30 tracking-tighter">
-    -{{ ((product.price - product.promotionPrice!) / product.price * 100) | number:'1.0-0' }}%
-  </div>
-
-  <div class="aspect-[3/4] bg-slate-100 overflow-hidden relative">
-    <img [src]="product.imageUrl" 
-         class="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-110">
-    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/10 to-transparent"></div>
-  </div>
-
-  <div class="p-5 flex flex-col flex-1">
-    <div class="mb-4">
-      <div class="flex items-center gap-2 mb-1">
-         <div class="w-1.5 h-1.5 bg-blue-600 rounded-full"></div>
-         <p class="text-[9px] font-black text-blue-800 uppercase tracking-widest truncate">{{ product.shopName }}</p>
+    <!-- Products Grid -->
+    <div class="products-grid" *ngIf="promoProducts.length > 0">
+      <div
+        *ngFor="let product of promoProducts; let i = index"
+        class="promo-card"
+        [class.card-loading]="isLoading"
+        (click)="goToDetails(product.productId)"
+      >
+        <!-- Discount Badge -->
+        <div class="discount-badge">
+          <span class="discount-value">
+            -20%
+          </span>
+        </div>
+        
+        <!-- Image Section -->
+        <div class="image-container">
+          <img 
+            [src]="product.imageUrl" 
+            class="product-image" 
+            alt="{{ product.productName }}"
+            loading="lazy"
+          />
+          <div class="image-overlay"></div>
+        </div>
+        
+        <!-- Content Section -->
+        <div class="card-content">
+          <!-- Shop Info -->
+          <div class="shop-info">
+            <div class="shop-dot"></div>
+            <span class="shop-name">{{ product.shopName }}</span>
+          </div>
+          
+          <!-- Product Name -->
+          <h3 class="product-name">{{ product.productName }}</h3>
+          
+          <!-- Price Section -->
+          <div class="price-section">
+            <div class="price-group">
+              <span class="original-price">{{ product.price | number:'1.0-0' }} FCFA</span>
+              <div class="promo-price">
+                <span class="price-value">{{ product.promotionPrice | number:'1.0-0' }}</span>
+                <span class="price-currency">FCFA</span>
+              </div>
+            </div>
+            
+            <!-- Action Button -->
+            <button class="action-button" type="button" aria-label="Voir les détails">
+              <ion-icon name="chevron-forward"></ion-icon>
+            </button>
+          </div>
+        </div>
       </div>
-      <h2 class="text-sm font-black text-blue-950 leading-tight line-clamp-2 min-h-[2.5rem]">
-        {{ product.productName }}
-      </h2>
     </div>
     
-    <div class="mt-auto flex items-end justify-between">
-      <div class="flex flex-col">
-        <span class="text-[10px] text-slate-300 line-through font-black mb-0.5">{{ product.price }} FCFA</span>
-        <span class="text-xl font-[1000] text-blue-950 tracking-tighter leading-none">
-          {{ product.promotionPrice }} <small class="text-[10px]">CFA</small>
-        </span>
+    <!-- Empty State -->
+    <div *ngIf="promoProducts.length === 0 && !isLoading" class="empty-state">
+      <div class="empty-icon-container">
+        <div class="empty-icon-background"></div>
+        <div class="empty-icon-foreground">
+          <ion-icon name="gift-outline" class="empty-icon"></ion-icon>
+        </div>
       </div>
-      
-      <div class="w-8 h-8 rounded-full border border-slate-100 flex items-center justify-center text-slate-300 group-hover:bg-blue-950 group-hover:text-white group-hover:border-transparent transition-all duration-300">
-        <ion-icon name="chevron-forward" class="text-sm"></ion-icon>
+      <h3 class="empty-title">Presque là...</h3>
+      <p class="empty-description">
+        Nos équipes négocient les meilleures pépites pour vous. Revenez d'ici peu !
+      </p>
+    </div>
+    
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-grid">
+      <div *ngFor="let i of [1,2,3,4]" class="skeleton-card">
+        <div class="skeleton-image"></div>
+        <div class="skeleton-content">
+          <div class="skeleton-line line-shop"></div>
+          <div class="skeleton-line line-title"></div>
+          <div class="skeleton-line line-price"></div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-
-  </div>
-
-  <div *ngIf="promoProducts.length === 0" class="flex flex-col items-center justify-center py-40 px-12 text-center">
-    <div class="relative w-24 h-24 mb-8">
-      <div class="absolute inset-0 bg-blue-100 rounded-[2.5rem] rotate-6 animate-pulse"></div>
-      <div class="absolute inset-0 bg-white rounded-[2.5rem] shadow-xl flex items-center justify-center -rotate-3 border border-blue-50">
-        <ion-icon name="gift-outline" class="text-5xl text-blue-200"></ion-icon>
-      </div>
-    </div>
-    <h3 class="text-blue-950 font-[1000] text-2xl tracking-tighter mb-2">Presque là...</h3>
-    <p class="text-slate-400 text-sm font-medium italic leading-relaxed">
-      Nos équipes négocient les meilleures pépites pour vous. Revenez d'ici peu !
-    </p>
+    
   </div>
 </ion-content>
