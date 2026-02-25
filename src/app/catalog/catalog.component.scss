@@ -1,124 +1,972 @@
-/* --- 1. CONFIGURATION GLOBALE & UTILITAIRES --- */
-.no-scrollbar {
-  -ms-overflow-style: none; /* IE/Edge */
-  scrollbar-width: none;    /* Firefox */
-  &::-webkit-scrollbar {
-    display: none;          /* Chrome/Safari */
+// ═══════════════════════════════════════════════════════════════════════════
+// CENTRAL MARKET - IMPROVED DESIGN STYLES (FIXED SCROLL)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ─── DESIGN TOKENS ───
+$color-primary: #6366f1;
+$color-primary-dark: #4f46e5;
+$color-primary-light: #e0e7ff;
+$color-accent: #ec4899;
+$color-accent-light: #fce7f3;
+
+$color-bg-primary: #ffffff;
+$color-bg-secondary: #f8fafc;
+$color-bg-tertiary: #f1f5f9;
+
+$color-text-primary: #1e293b;
+$color-text-secondary: #64748b;
+$color-text-tertiary: #94a3b8;
+
+$color-border: #e2e8f0;
+$color-border-light: #f1f5f9;
+
+$color-success: #10b981;
+$color-warning: #f59e0b;
+$color-danger: #ef4444;
+
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 12px;
+$spacing-lg: 16px;
+$spacing-xl: 24px;
+$spacing-2xl: 32px;
+
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
+
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+$shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+$transition-fast: 150ms ease-out;
+$transition-base: 250ms ease-out;
+$transition-slow: 350ms ease-out;
+
+// ─── MIXINS ───
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin focus-ring {
+  outline: 2px solid $color-primary;
+  outline-offset: 2px;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// HEADER STYLES - OPTIMIZED FOR SMOOTH SCROLL
+// ═══════════════════════════════════════════════════════════════════════════
+
+ion-header.header-improved {
+  --background: #{$color-bg-primary};
+  --border-color: transparent;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  position: relative;
+  background: $color-bg-primary;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  z-index: 10;
+
+  .header-bg-gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.03) 0%, rgba(236, 72, 153, 0.02) 100%);
+    pointer-events: none;
+  }
+
+  .header-wrapper {
+    position: relative;
+    z-index: 1;
+    padding: $spacing-lg $spacing-lg 0;
+    will-change: auto;
   }
 }
 
-/* --- 2. HEADER DYNAMIQUE & GLASSMORPHISM --- */
-ion-header {
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  background: white; /* Fond par défaut */
+// ─── TOP BAR ───
+.top-bar {
+  @include flex-between;
+  padding: $spacing-md 0 $spacing-lg;
+  border-bottom: 1px solid $color-border-light;
+  will-change: auto;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
 
-  &.header-compact {
-    padding-top: 0 !important;
-    background: rgba(255, 255, 255, 0.8) !important;
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+  .brand-section {
+    flex: 1;
+  }
 
-    .max-w-screen-xl {
-      padding-top: 1rem !important;
-      padding-bottom: 0.5rem !important;
+  .brand-logo {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: $color-text-primary;
+    margin: 0;
+    will-change: font-size;
+    backface-visibility: hidden;
+
+    .brand-accent {
+      background: linear-gradient(135deg, $color-primary 0%, $color-accent 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 800;
+    }
+
+    &.compact {
+      font-size: 16px;
+    }
+  }
+
+  .top-actions {
+    @include flex-center;
+    gap: $spacing-lg;
+  }
+}
+
+// ─── ICON BUTTONS ───
+.icon-btn {
+  @include flex-center;
+  width: 40px;
+  height: 40px;
+  border-radius: $radius-md;
+  background: $color-bg-secondary;
+  border: none;
+  cursor: pointer;
+  transition: background $transition-fast, transform $transition-fast;
+  position: relative;
+  color: $color-text-primary;
+  flex-shrink: 0;
+  will-change: auto;
+
+  &:hover {
+    background: $color-bg-tertiary;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  ion-icon {
+    font-size: 20px;
+  }
+
+  .badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    background: $color-accent;
+    color: white;
+    min-width: 20px;
+    @include flex-center;
+  }
+}
+
+// ─── HERO SECTION ───
+.hero-section {
+  padding: $spacing-xl $spacing-lg;
+  overflow: hidden;
+  will-change: auto;
+  max-height: 200px;
+  transition: max-height $transition-base, padding $transition-base, opacity $transition-base;
+  opacity: 1;
+  visibility: visible;
+
+  &.collapsed {
+    max-height: 0;
+    padding: 0 $spacing-lg;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .hero-wrapper {
+    @include flex-between;
+    gap: $spacing-xl;
+    background: linear-gradient(135deg, $color-primary-light 0%, $color-accent-light 100%);
+    border-radius: $radius-lg;
+    padding: $spacing-xl;
+    position: relative;
+    overflow: hidden;
+    will-change: auto;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: drift 20s linear infinite;
+    }
+  }
+
+  .hero-content {
+    flex: 1;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-badge {
+    @include flex-center;
+    gap: $spacing-sm;
+    width: fit-content;
+    padding: $spacing-sm $spacing-md;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    margin-bottom: $spacing-md;
+    font-size: 12px;
+    font-weight: 600;
+    color: $color-text-primary;
+    backdrop-filter: blur(10px);
+
+    .badge-icon {
+      font-size: 14px;
+    }
+  }
+
+  .hero-title {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: $color-text-primary;
+    margin: 0 0 $spacing-md 0;
+
+    .gradient-text {
+      background: linear-gradient(135deg, $color-primary 0%, $color-accent 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
+
+  .hero-subtitle {
+    font-size: 14px;
+    color: $color-text-secondary;
+    margin: 0;
+  }
+
+  .hero-visual {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    @include flex-center;
+    flex-shrink: 0;
+
+    .hero-icon {
+      font-size: 60px;
+      color: $color-primary;
+      position: relative;
+      z-index: 2;
+    }
+  }
+
+  .visual-orb {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.6;
+
+    &.orb-1 {
+      width: 80px;
+      height: 80px;
+      background: rgba($color-primary, 0.2);
+      top: 10px;
+      left: 10px;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    &.orb-2 {
+      width: 60px;
+      height: 60px;
+      background: rgba($color-accent, 0.2);
+      bottom: 10px;
+      right: 10px;
+      animation: float 8s ease-in-out infinite reverse;
     }
   }
 }
 
-/* --- 3. SECTION HERO "PARLEUR" --- */
-.hero-banner {
-  animation: floatBanner 6s ease-in-out infinite;
-  transform-origin: top;
-  /* Transition complexe pour un repli ultra-fluide au scroll */
-  transition: 
-    transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
-    opacity 0.4s ease, 
-    height 0.5s ease, 
-    margin 0.5s ease;
-}
+// ─── SEARCH SECTION ───
+.search-section {
+  @include flex-between;
+  gap: $spacing-md;
+  padding: 0 0 $spacing-lg 0;
+  will-change: auto;
 
-@keyframes floatBanner {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
+  .search-container {
+    flex: 1;
+    @include flex-center;
+    position: relative;
+    background: $color-bg-secondary;
+    border-radius: $radius-md;
+    border: 1px solid $color-border-light;
+    padding: 0 $spacing-md;
+    transition: all $transition-fast;
+    will-change: auto;
 
-/* --- 4. BARRE DE RECHERCHE (STYLING & FIX WEB) --- */
-.custom-search-bar {
-  --background: #f1f5f9 !important; 
-  --border-radius: 20px;
-  --icon-color: #0f172a;
-  --placeholder-color: #94a3b8;
-  --placeholder-font-weight: 600;
-  padding: 0;
-  margin: 0;
-  opacity: 1 !important;
-  display: block !important;
-  contain: none !important;
+    &:focus-within {
+      background: $color-bg-primary;
+      border-color: $color-primary;
+      box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+    }
 
-  /* Force le style sur Chrome/Safari/Web */
-  &::part(container) {
-    background: #f1f5f9 !important;
-    border: 1px solid transparent;
-    transition: all 0.3s ease;
+    .search-icon {
+      color: $color-text-tertiary;
+      font-size: 18px;
+      margin-right: $spacing-sm;
+      flex-shrink: 0;
+    }
+
+    .search-field {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 14px;
+      color: $color-text-primary;
+      padding: $spacing-md 0;
+      outline: none;
+      min-width: 0;
+
+      &::placeholder {
+        color: $color-text-tertiary;
+      }
+    }
+
+    .clear-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: $color-text-tertiary;
+      padding: 0;
+      margin-left: $spacing-sm;
+      transition: color $transition-fast;
+      flex-shrink: 0;
+
+      &:hover {
+        color: $color-text-primary;
+      }
+
+      ion-icon {
+        font-size: 18px;
+      }
+    }
   }
 
-  &::part(native) {
-    padding-left: 48px !important;
-  }
+  .filter-btn {
+    @include flex-center;
+    width: 40px;
+    height: 40px;
+    border-radius: $radius-md;
+    background: $color-bg-secondary;
+    border: 1px solid $color-border-light;
+    cursor: pointer;
+    transition: all $transition-fast;
+    position: relative;
+    color: $color-text-primary;
+    flex-shrink: 0;
+    will-change: auto;
 
-  /* Effet focus : la barre s'illumine au clic */
-  &:focus-within::part(container) {
-    background: white !important;
-    border-color: #1e3a8a;
-    box-shadow: 0 10px 25px rgba(30, 58, 138, 0.08);
+    &:hover {
+      background: $color-bg-tertiary;
+    }
+
+    &.active {
+      background: $color-primary;
+      color: white;
+      border-color: $color-primary;
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        width: 8px;
+        height: 8px;
+        background: $color-accent;
+        border-radius: 50%;
+      }
+    }
+
+    ion-icon {
+      font-size: 20px;
+    }
   }
 }
 
-/* --- 5. RANGE SLIDER PREMIUM --- */
-.premium-range {
-  --bar-background: #f1f5f9;
-  --bar-background-active: #1e3a8a;
-  --knob-background: #1e3a8a;
-  --knob-size: 26px;
-  --knob-box-shadow: 0 5px 15px rgba(30, 58, 138, 0.3);
-  padding: 0;
+// ─── CATEGORIES SECTION ───
+.categories-section {
+  padding: $spacing-lg 0;
+  overflow: hidden;
+  will-change: auto;
+  max-height: 100px;
+  transition: max-height $transition-base, padding $transition-base, opacity $transition-base;
+  opacity: 1;
+  visibility: visible;
+
+  &.collapsed {
+    max-height: 0;
+    padding: 0;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .categories-scroll {
+    display: flex;
+    gap: $spacing-md;
+    overflow-x: auto;
+    padding-bottom: $spacing-sm;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    will-change: auto;
+
+    &.no-scrollbar {
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+  }
 }
 
-/* --- 6. ANIMATIONS & ÉTATS PRODUITS --- */
+// ─── CATEGORY CHIPS ───
+.category-chip {
+  @include flex-center;
+  flex-direction: column;
+  gap: $spacing-sm;
+  padding: $spacing-md;
+  border-radius: $radius-md;
+  background: $color-bg-secondary;
+  border: 1px solid $color-border-light;
+  cursor: pointer;
+  transition: all $transition-fast;
+  white-space: nowrap;
+  flex-shrink: 0;
+  will-change: auto;
 
-/* Lévitation des cartes au survol */
-.hover-up {
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   &:hover {
-    transform: translateY(-8px);
+    background: $color-bg-tertiary;
+    transform: translateY(-2px);
+  }
+
+  &.active {
+    background: $color-primary;
+    border-color: $color-primary;
+    color: white;
+
+    .chip-icon {
+      color: white;
+    }
+
+    .chip-label {
+      color: white;
+    }
+  }
+
+  .chip-icon {
+    font-size: 20px;
+    color: $color-text-primary;
+    transition: color $transition-fast;
+  }
+
+  .chip-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: $color-text-secondary;
+    transition: color $transition-fast;
   }
 }
 
-/* Skeleton Loading (Shimmer effect dynamique) */
-.animate-pulse {
-  background: linear-gradient(90deg, #f1f5f9 25%, #f8fafc 50%, #f1f5f9 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite linear;
+// ═══════════════════════════════════════════════════════════════════════════
+// CONTENT STYLES
+// ═══════════════════════════════════════════════════════════════════════════
+
+ion-content.content-improved {
+  --background: #{$color-bg-secondary};
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  --scroll-padding-top: 0;
 }
 
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+// ─── CONTENT HEADER ───
+.content-header {
+  padding: $spacing-xl $spacing-lg $spacing-lg;
+  background: $color-bg-primary;
+  border-bottom: 1px solid $color-border-light;
+
+  .header-info {
+    .section-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: $color-text-primary;
+      margin: 0 0 $spacing-sm 0;
+    }
+
+    .section-meta {
+      font-size: 13px;
+      color: $color-text-tertiary;
+      margin: 0;
+    }
+  }
 }
 
-/* Badge du panier animé */
-.zoom-in {
-  animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+// ─── PRODUCTS CONTAINER ───
+.products-container {
+  padding: $spacing-lg;
+  background: $color-bg-secondary;
 }
 
-@keyframes zoomIn {
-  from { transform: scale(0); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+// ─── PRODUCT GRID ───
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: $spacing-lg;
+  will-change: auto;
+
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-md;
+  }
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
 }
 
-/* --- 7. MODAL STYLING (ARRONDI PREMIUM) --- */
-ion-modal::part(content) {
-  --border-radius: 40px 40px 0 0;
-  box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
+// ─── SKELETON LOADER ───
+.skeleton-loader {
+  background: $color-bg-primary;
+  border-radius: $radius-md;
+  overflow: hidden;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+  .skeleton-image {
+    width: 100%;
+    aspect-ratio: 1;
+    background: $color-border-light;
+  }
+
+  .skeleton-content {
+    padding: $spacing-md;
+  }
+
+  .skeleton-line {
+    height: 12px;
+    background: $color-border-light;
+    border-radius: $radius-sm;
+    margin-bottom: $spacing-sm;
+
+    &.line-title {
+      width: 80%;
+    }
+
+    &.line-price {
+      width: 60%;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// ─── PRODUCT ITEM ───
+.product-item {
+  display: block;
+  transition: all $transition-base;
+  will-change: auto;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+}
+
+// ─── EMPTY STATE ───
+.empty-state-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: $spacing-2xl $spacing-lg;
+}
+
+.empty-state {
+  text-align: center;
+
+  .empty-icon {
+    font-size: 64px;
+    margin-bottom: $spacing-lg;
+    opacity: 0.6;
+  }
+
+  .empty-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: $color-text-primary;
+    margin: 0 0 $spacing-sm 0;
+  }
+
+  .empty-description {
+    font-size: 14px;
+    color: $color-text-secondary;
+    margin: 0 0 $spacing-xl 0;
+  }
+
+  .btn-reset {
+    @include flex-center;
+    gap: $spacing-sm;
+    padding: $spacing-md $spacing-lg;
+    background: $color-primary;
+    color: white;
+    border: none;
+    border-radius: $radius-md;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all $transition-fast;
+
+    &:hover {
+      background: $color-primary-dark;
+      transform: translateY(-2px);
+    }
+
+    ion-icon {
+      font-size: 16px;
+    }
+  }
+}
+
+// ─── CONTENT BOTTOM SPACING ───
+.content-bottom-spacing {
+  height: $spacing-2xl;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FILTER MODAL STYLES
+// ═══════════════════════════════════════════════════════════════════════════
+
+.filter-modal {
+  --background: transparent;
+  z-index: 100;
+
+  .modal-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: $color-bg-primary;
+    border-radius: $radius-lg $radius-lg 0 0;
+  }
+
+  .modal-header {
+    @include flex-between;
+    padding: $spacing-lg;
+    border-bottom: 1px solid $color-border-light;
+    flex-shrink: 0;
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: $color-text-primary;
+      margin: 0;
+    }
+
+    .btn-close {
+      @include flex-center;
+      width: 36px;
+      height: 36px;
+      border-radius: $radius-md;
+      background: $color-bg-secondary;
+      border: none;
+      cursor: pointer;
+      color: $color-text-primary;
+      transition: all $transition-fast;
+      flex-shrink: 0;
+
+      &:hover {
+        background: $color-bg-tertiary;
+      }
+
+      ion-icon {
+        font-size: 20px;
+      }
+    }
+  }
+
+  .modal-content {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .filter-group {
+    padding: $spacing-lg;
+  }
+
+  .filter-item {
+    background: $color-bg-secondary;
+    border-radius: $radius-md;
+    padding: $spacing-lg;
+    margin-bottom: $spacing-lg;
+    transition: all $transition-fast;
+
+    &:hover {
+      background: $color-bg-tertiary;
+    }
+
+    .filter-header {
+      @include flex-between;
+      margin-bottom: $spacing-md;
+
+      .filter-icon {
+        @include flex-center;
+        width: 40px;
+        height: 40px;
+        border-radius: $radius-md;
+        background: $color-bg-primary;
+        color: $color-primary;
+        font-size: 20px;
+        margin-right: $spacing-md;
+        flex-shrink: 0;
+      }
+
+      .filter-info {
+        flex: 1;
+        text-align: left;
+
+        .filter-title {
+          font-size: 14px;
+          font-weight: 600;
+          color: $color-text-primary;
+          margin: 0;
+        }
+
+        .filter-description {
+          font-size: 12px;
+          color: $color-text-tertiary;
+          margin: $spacing-xs 0 0 0;
+        }
+
+        .price-value {
+          font-size: 16px;
+          font-weight: 700;
+          color: $color-primary;
+          margin: 0;
+
+          .price-unit {
+            font-size: 12px;
+            color: $color-text-tertiary;
+            font-weight: 500;
+            margin-left: $spacing-xs;
+          }
+        }
+      }
+    }
+
+    .toggle-switch {
+      --background: $color-bg-primary;
+      --background-checked: $color-primary;
+      --handle-background: white;
+      --handle-background-checked: white;
+    }
+
+    .price-range {
+      --bar-background: $color-border;
+      --bar-background-active: $color-primary;
+      --pin-background: $color-primary;
+      --pin-color: white;
+      --thumb-background: $color-primary;
+      --thumb-border-radius: 50%;
+    }
+  }
+
+  .modal-footer {
+    @include flex-between;
+    gap: $spacing-md;
+    padding: $spacing-lg;
+    border-top: 1px solid $color-border-light;
+    background: $color-bg-secondary;
+    flex-shrink: 0;
+
+    button {
+      flex: 1;
+      padding: $spacing-md;
+      border-radius: $radius-md;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all $transition-fast;
+
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+
+    .btn-secondary {
+      background: $color-bg-tertiary;
+      color: $color-text-primary;
+
+      &:hover {
+        background: $color-border;
+      }
+    }
+
+    .btn-primary {
+      background: $color-primary;
+      color: white;
+
+      &:hover {
+        background: $color-primary-dark;
+      }
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ANIMATIONS
+// ═══════════════════════════════════════════════════════════════════════════
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes drift {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(50px, 50px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// UTILITY CLASSES
+// ═══════════════════════════════════════════════════════════════════════════
+
+.badge {
+  &-primary {
+    background: $color-primary;
+    color: white;
+  }
+
+  &-accent {
+    background: $color-accent;
+    color: white;
+  }
+
+  &-success {
+    background: $color-success;
+    color: white;
+  }
+
+  &-warning {
+    background: $color-warning;
+    color: white;
+  }
+
+  &-danger {
+    background: $color-danger;
+    color: white;
+  }
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RESPONSIVE DESIGN
+// ═══════════════════════════════════════════════════════════════════════════
+
+@media (max-width: 600px) {
+  .hero-section {
+    padding: $spacing-lg;
+
+    .hero-wrapper {
+      flex-direction: column;
+      padding: $spacing-lg;
+
+      .hero-visual {
+        width: 100px;
+        height: 100px;
+      }
+    }
+
+    .hero-title {
+      font-size: 24px;
+    }
+  }
+
+  .search-section {
+    flex-direction: column;
+
+    .search-container {
+      width: 100%;
+    }
+
+    .filter-btn {
+      width: 100%;
+    }
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-md;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
 }

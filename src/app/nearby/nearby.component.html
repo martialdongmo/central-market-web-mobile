@@ -1,102 +1,143 @@
-<ion-header class="ion-no-border sticky top-0 z-50 transition-all duration-500">
-  <div class="absolute inset-0 bg-white/80 backdrop-blur-xl -z-10"></div>
+<ion-header class="nearby-header ion-no-border sticky top-0 z-50">
+  <!-- Glassmorphism Background -->
+  <div class="header-backdrop"></div>
   
-  <div class="max-w-screen-xl mx-auto w-full px-5 pt-8 pb-6">
-    <div class="flex justify-between items-start">
-      <div>
-        <div class="flex items-center gap-2 mb-1 group cursor-pointer">
-          <div class="p-1.5 bg-yellow-50 rounded-lg group-hover:bg-yellow-100 transition-colors">
-            <ion-icon name="location" class="text-yellow-600 text-sm"></ion-icon>
-          </div>
-          <span class="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">Autour de vous</span>
+  <div class="header-content">
+    <!-- Left Section: Title & Subtitle -->
+    <div class="header-left">
+      <div class="location-badge">
+        <div class="location-icon-box">
+          <ion-icon name="location"></ion-icon>
         </div>
-        <h1 class="text-4xl font-[1000] text-blue-950 tracking-tighter leading-none italic">
-          À Proximité
-        </h1>
+        <span class="location-label">Autour de vous</span>
       </div>
       
-      <div class="bg-gradient-to-br from-blue-950 to-blue-800 px-4 py-2.5 rounded-[18px] flex items-center gap-3 shadow-xl shadow-blue-900/20 border border-white/10">
-        <div class="relative flex h-2 w-2">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-        </div>
-        <span class="text-[11px] font-[1000] text-white uppercase tracking-widest">Yaoundé</span>
-      </div>
+      <h1 class="header-title">
+        À Proximité
+      </h1>
     </div>
     
-    <div class="mt-5 flex items-center gap-3 bg-blue-50/50 p-3 rounded-2xl border border-blue-100/30">
-      <div class="w-8 h-8 bg-white rounded-xl flex items-center justify-center shadow-sm">
-        <ion-icon name="flash" class="text-yellow-500 text-lg"></ion-icon>
+    <!-- Right Section: Location Status -->
+    <div class="location-status">
+      <div class="status-indicator">
+        <span class="status-pulse"></span>
+        <span class="status-dot"></span>
       </div>
-      <p class="text-blue-900/70 text-[11px] font-bold italic leading-none">
-        Boutiques d'élite livrant en <span class="text-blue-900 font-black">-30 min</span>.
-      </p>
+      <span class="status-text">Yaoundé</span>
     </div>
+  </div>
+  
+  <!-- Promo Banner -->
+  <div class="promo-banner">
+    <div class="promo-icon">
+      <ion-icon name="flash"></ion-icon>
+    </div>
+    <p class="promo-text">
+      Boutiques d'élite livrant en <span class="promo-highlight">-30 min</span>
+    </p>
   </div>
 </ion-header>
 
-<ion-content class="bg-slate-50">
-  <div class="px-5 pt-6 space-y-6 pb-24 max-w-screen-xl mx-auto">
+<ion-content class="nearby-content">
+  <div class="content-wrapper">
     
-    <div *ngFor="let product of nearbyProducts" 
-         class="nearby-card group bg-white rounded-[2.5rem] p-4 flex items-center gap-5 shadow-2xl shadow-slate-200/40 active:scale-[0.96] transition-all duration-300 border border-transparent hover:border-blue-100"
-         (click)="goToDetails(product.productId)">
-      
-      <div class="relative w-28 h-28 rounded-[2rem] overflow-hidden bg-slate-100 shrink-0 shadow-inner group-hover:rotate-3 transition-transform duration-500">
-        <img [src]="product.imageUrl" class="w-full h-full object-cover" alt="product">
-        <div *ngIf="!product.shopOpen" class="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] flex items-center justify-center">
-          <ion-icon name="lock-closed" class="text-white text-2xl"></ion-icon>
-        </div>
-      </div>
-
-      <div class="flex-1 min-w-0 pr-2">
-        <div class="flex items-center justify-between mb-2">
-          <span [class]="product.shopOpen ? 'bg-green-50 text-green-600 border-green-100' : 'bg-red-50 text-red-600 border-red-100'" 
-                class="text-[9px] font-black px-3 py-1.5 rounded-xl uppercase tracking-tighter border">
-            {{ product.shopOpen ? 'Ouvert' : 'Fermé' }}
-          </span>
+    <!-- Products List -->
+    <div class="products-list" *ngIf="nearbyProducts.length > 0">
+      <div
+        *ngFor="let product of nearbyProducts; let i = index"
+        class="product-card"
+        [class.card-loading]="isLoading"
+        (click)="goToDetails(product.productId)"
+      >
+        <!-- Image Section -->
+        <div class="product-image-container">
+          <div class="image-wrapper">
+            <img 
+              [src]="product.imageUrl" 
+              class="product-image" 
+              alt="{{ product.productName }}"
+              loading="lazy"
+            />
+            
+            <!-- Closed Overlay -->
+            <div *ngIf="!product.shopOpen" class="shop-closed-overlay">
+              <div class="closed-icon">
+                <ion-icon name="lock-closed"></ion-icon>
+              </div>
+            </div>
+            
+            <!-- Gradient Overlay -->
+            <div class="image-gradient"></div>
+          </div>
           
-          <div class="flex items-center gap-1.5 bg-yellow-50 px-2.5 py-1.5 rounded-xl border border-yellow-100/50">
-             <ion-icon name="navigate" class="text-yellow-600 text-[12px]"></ion-icon>
-             <span class="text-yellow-700 text-[10px] font-black tracking-tighter">
-               {{ product.distanceKm | number:'1.1-1' }} KM
-             </span>
+          <!-- Status Badge (Floating) -->
+          <div class="status-badge" [class]="product.shopOpen ? 'status-open' : 'status-closed'">
+            <div class="status-badge-dot"></div>
+            <span class="status-badge-text">{{ product.shopOpen ? 'Ouvert' : 'Fermé' }}</span>
           </div>
-        </div>
-
-        <h3 class="font-[1000] text-blue-950 text-lg truncate group-hover:text-blue-600 transition-colors leading-tight">
-          {{ product.productName }}
-        </h3>
-        <div class="flex items-center gap-2 mb-3">
-          <div class="w-4 h-4 rounded-full bg-blue-100 flex items-center justify-center">
-            <ion-icon name="storefront" class="text-[8px] text-blue-800"></ion-icon>
-          </div>
-          <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest truncate">
-            {{ product.shopName }}
-          </p>
         </div>
         
-        <div class="flex items-center justify-between">
-          <div class="flex flex-col">
-            <span class="text-[9px] text-slate-400 font-bold uppercase">Prix direct</span>
-            <p class="text-blue-950 font-[1000] text-xl tracking-tighter">{{ product.price }} <small class="text-[10px]">FCFA</small></p>
+        <!-- Content Section -->
+        <div class="product-content">
+          <!-- Header: Title & Distance -->
+          <div class="product-header">
+            <div class="product-info">
+              <h3 class="product-name">{{ product.productName }}</h3>
+              <div class="shop-info">
+                <div class="shop-icon">
+                  <ion-icon name="storefront"></ion-icon>
+                </div>
+                <span class="shop-name">{{ product.shopName }}</span>
+              </div>
+            </div>
+            
+            <div class="distance-badge">
+              <ion-icon name="navigate"></ion-icon>
+              <span class="distance-text">{{ product.distanceKm | number:'1.1-1' }} km</span>
+            </div>
           </div>
           
-          <button class="w-12 h-12 bg-blue-950 text-white rounded-2xl flex items-center justify-center shadow-xl shadow-blue-900/10 group-hover:bg-blue-600 group-hover:rotate-12 transition-all">
-            <ion-icon name="arrow-forward" class="text-xl"></ion-icon>
-          </button>
+          <!-- Footer: Price & Action -->
+          <div class="product-footer">
+            <div class="price-section">
+              <span class="price-label">Prix</span>
+              <p class="price-value">
+                {{ product.price | number:'1.0-0' }}
+                <span class="price-currency">FCFA</span>
+              </p>
+            </div>
+            
+            <button class="action-button" type="button" aria-label="Voir les détails">
+              <ion-icon name="arrow-forward"></ion-icon>
+            </button>
+          </div>
         </div>
       </div>
     </div>
-
-    <div *ngIf="nearbyProducts.length === 0" class="flex flex-col items-center justify-center py-20 text-center animate-in fade-in zoom-in duration-500">
-      <div class="w-24 h-24 bg-blue-50/50 rounded-[2.5rem] flex items-center justify-center mb-6 relative">
-        <div class="absolute inset-0 bg-blue-100 rounded-[2.5rem] animate-ping opacity-20"></div>
-        <ion-icon name="map-outline" class="text-5xl text-blue-200"></ion-icon>
+    
+    <!-- Empty State -->
+    <div *ngIf="nearbyProducts.length === 0 && !isLoading" class="empty-state">
+      <div class="empty-icon-container">
+        <div class="empty-icon-background"></div>
+        <ion-icon name="map-outline" class="empty-icon"></ion-icon>
       </div>
-      <h3 class="text-blue-950 font-black text-xl mb-2">Zone en cours de déploiement</h3>
-      <p class="text-slate-400 text-sm font-medium italic px-10">Nos livreurs arrivent bientôt dans votre secteur. Restez à l'affût !</p>
+      <h3 class="empty-title">Zone en cours de déploiement</h3>
+      <p class="empty-description">
+        Nos livreurs arrivent bientôt dans votre secteur. Restez à l'affût !
+      </p>
     </div>
-
+    
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state">
+      <div *ngFor="let i of [1,2,3]" class="skeleton-card">
+        <div class="skeleton-image"></div>
+        <div class="skeleton-content">
+          <div class="skeleton-line line-title"></div>
+          <div class="skeleton-line line-shop"></div>
+          <div class="skeleton-line line-price"></div>
+        </div>
+      </div>
+    </div>
+    
   </div>
 </ion-content>
