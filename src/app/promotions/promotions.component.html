@@ -1,110 +1,39 @@
-<ion-header class="promo-header ion-no-border sticky top-0 z-50">
-  <!-- Glassmorphism Background -->
-  <div class="header-backdrop"></div>
-  
-  <div class="header-content">
-    <!-- Flash Badge -->
-    <div class="flash-badge">
-      <div class="flash-line"></div>
-      <span class="flash-text">Offres Flash</span>
+<div class="promos-header">
+  <div class="flash-badge"><div class="flash-line"></div><span>Offres Flash</span></div>
+  <div class="promos-title">Promotions</div>
+  <p class="promos-sub">Pépites de <strong>Central Market</strong> à prix d'exception.</p>
+</div>
+<ion-content>
+  <div *ngIf="isLoading" class="promos-grid">
+    <div *ngFor="let i of [1,2,3,4]" class="promo-skeleton">
+      <div class="promo-skeleton-img"></div>
+      <div class="promo-skeleton-body">
+        <div class="skeleton-line" style="width:35%"></div>
+        <div class="skeleton-line" style="width:80%"></div>
+        <div class="skeleton-line" style="width:55%"></div>
+      </div>
     </div>
-    
-    <!-- Main Title -->
-    <h1 class="header-title">
-      Promotions
-    </h1>
-    
-    <!-- Subtitle -->
-    <p class="header-subtitle">
-      Découvrez les pépites de <span class="highlight">Central Market</span> à prix d'exception.
-    </p>
   </div>
-</ion-header>
-
-<ion-content class="promo-content">
-  <div class="content-wrapper">
-    
-    <!-- Products Grid -->
-    <div class="products-grid" *ngIf="promoProducts.length > 0">
-      <div
-        *ngFor="let product of promoProducts; let i = index"
-        class="promo-card"
-        [class.card-loading]="isLoading"
-        (click)="goToDetails(product.productId)"
-      >
-        <!-- Discount Badge -->
-        <div class="discount-badge">
-          <span class="discount-value">
-            -20%
-          </span>
-        </div>
-        
-        <!-- Image Section -->
-        <div class="image-container">
-          <img 
-            [src]="product.imageUrl" 
-            class="product-image" 
-            alt="{{ product.productName }}"
-            loading="lazy"
-          />
-          <div class="image-overlay"></div>
-        </div>
-        
-        <!-- Content Section -->
-        <div class="card-content">
-          <!-- Shop Info -->
-          <div class="shop-info">
-            <div class="shop-dot"></div>
-            <span class="shop-name">{{ product.shopName }}</span>
+  <div *ngIf="!isLoading && promoProducts.length > 0" class="promos-grid">
+    <div *ngFor="let p of promoProducts" class="promo-card" (click)="goToDetails(p.productId)">
+      <div class="discount-ribbon">-{{ ((p.price - (p.promotionPrice || p.price)) / p.price * 100) | number:'1.0-0' }}%</div>
+      <div class="promo-card-img"><img [src]="p.imageUrl" [alt]="p.productName" loading="lazy"></div>
+      <div class="promo-card-body">
+        <div class="promo-shop-tag"><div class="promo-shop-dot"></div><span class="promo-shop-name">{{ p.shopName }}</span></div>
+        <h3 class="promo-name">{{ p.productName }}</h3>
+        <div class="promo-prices">
+          <div class="promo-price-group">
+            <div class="promo-old">{{ p.price | number:'1.0-0' }} FCFA</div>
+            <div class="promo-new">{{ p.promotionPrice | number:'1.0-0' }} <small>FCFA</small></div>
           </div>
-          
-          <!-- Product Name -->
-          <h3 class="product-name">{{ product.productName }}</h3>
-          
-          <!-- Price Section -->
-          <div class="price-section">
-            <div class="price-group">
-              <span class="original-price">{{ product.price | number:'1.0-0' }} FCFA</span>
-              <div class="promo-price">
-                <span class="price-value">{{ product.promotionPrice | number:'1.0-0' }}</span>
-                <span class="price-currency">FCFA</span>
-              </div>
-            </div>
-            
-            <!-- Action Button -->
-            <button class="action-button" type="button" aria-label="Voir les détails">
-              <ion-icon name="chevron-forward"></ion-icon>
-            </button>
-          </div>
+          <button class="promo-go-btn"><ion-icon name="chevron-forward"></ion-icon></button>
         </div>
       </div>
     </div>
-    
-    <!-- Empty State -->
-    <div *ngIf="promoProducts.length === 0 && !isLoading" class="empty-state">
-      <div class="empty-icon-container">
-        <div class="empty-icon-background"></div>
-        <div class="empty-icon-foreground">
-          <ion-icon name="gift-outline" class="empty-icon"></ion-icon>
-        </div>
-      </div>
-      <h3 class="empty-title">Presque là...</h3>
-      <p class="empty-description">
-        Nos équipes négocient les meilleures pépites pour vous. Revenez d'ici peu !
-      </p>
-    </div>
-    
-    <!-- Loading State -->
-    <div *ngIf="isLoading" class="loading-grid">
-      <div *ngFor="let i of [1,2,3,4]" class="skeleton-card">
-        <div class="skeleton-image"></div>
-        <div class="skeleton-content">
-          <div class="skeleton-line line-shop"></div>
-          <div class="skeleton-line line-title"></div>
-          <div class="skeleton-line line-price"></div>
-        </div>
-      </div>
-    </div>
-    
+  </div>
+  <div *ngIf="!isLoading && promoProducts.length === 0" class="promos-empty">
+    <ion-icon name="gift-outline"></ion-icon>
+    <h3>Presque là...</h3>
+    <p>Nos équipes négocient les meilleures pépites pour vous.</p>
   </div>
 </ion-content>

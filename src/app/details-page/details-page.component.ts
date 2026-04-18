@@ -1,91 +1,27 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { IonicModule, NavController, ToastController } from '@ionic/angular'; // Ajout de NavController et ToastController
-import { FormsModule } from '@angular/forms';
+import { IonContent, IonIcon, NavController, ToastController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { 
-  arrowBackOutline, cartOutline, heartOutline, 
-  locationOutline, storefrontOutline, storefront 
-} from 'ionicons/icons';
-
+import { arrowBackOutline, heartOutline, heart, storefront, cartOutline } from 'ionicons/icons';
 import { CatalogProductResponse } from '../model/catalog-product-response.model';
-import { Catalogue } from '../services/catalogue';
-import { Cart } from '../services/cart'; // Import du service Cart
+import { Cart } from '../services/cart';
+import { MOCK_PRODUCTS } from '../services/mock-data';
 
-@Component({
-  selector: 'app-details-page',
-  standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule],
-  templateUrl: './details-page.component.html',
-  styleUrls: ['./details-page.component.scss'],
-})
+@Component({ selector: 'app-details-page', standalone: true, imports: [CommonModule, IonContent, IonIcon], templateUrl: './details-page.component.html', styleUrls: ['./details-page.component.scss'] })
 export class DetailsPageComponent implements OnInit {
   product?: CatalogProductResponse;
   isLoading = true;
-
-  constructor(
-    private route: ActivatedRoute,
-    private catalogService: Catalogue,
-    private cartService: Cart,        // Injection
-    private navCtrl: NavController,   // Pour un goBack plus propre
-    private toastCtrl: ToastController // Pour la confirmation
-  ) {
-    addIcons({ 
-      arrowBackOutline, cartOutline, heartOutline, 
-      locationOutline, storefrontOutline, storefront 
-    });
+  isFav = false;
+  constructor(private route: ActivatedRoute, private cartService: Cart, private navCtrl: NavController, private toastCtrl: ToastController) {
+    addIcons({ arrowBackOutline, heartOutline, heart, storefront, cartOutline });
   }
-
-  ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-      const idFromUrl = params.get('productId'); 
-      if (idFromUrl) {
-        this.loadProduct(idFromUrl);
-      }
-    });
-  }
-
-  loadProduct(id: string) {
-    this.isLoading = true;
-    this.catalogService.getDetails(id).subscribe({
-      next: (data) => {
-        this.product = data;
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Produit introuvable', err);
-        this.isLoading = false;
-      }
-    });
-  }
-
-  // LOGIQUE D'AJOUT AU PANIER
+  ngOnInit() { this.route.paramMap.subscribe(p => { const id = p.get('productId'); if (id) { this.isLoading = true; setTimeout(() => { this.product = MOCK_PRODUCTS.find(x => x.productId === id) ?? MOCK_PRODUCTS[0]; this.isLoading = false; }, 350); } }); }
   async addToCart() {
-    if (this.product) {
-      this.cartService.addToCart(this.product);
-      
-      // Petit message de confirmation
-      const toast = await this.toastCtrl.create({
-        message: `${this.product.productName} ajouté au panier !`,
-        duration: 2000,
-        position: 'bottom',
-        mode: 'ios',
-        color: 'dark',
-        buttons: [
-          {
-            text: 'VOIR',
-            handler: () => {
-              this.navCtrl.navigateForward('/cart');
-            }
-          }
-        ]
-      });
-      await toast.present();
-    }
+    if (!this.product) return;
+    this.cartService.addToCart(this.product);
+    const t = await this.toastCtrl.create({ message:`${this.product.productName} ajouté au panier !`, duration:2000, position:'bottom', mode:'ios', color:'dark', buttons:[{ text:'VOIR', handler:()=>this.navCtrl.navigateForward('/cart') }] });
+    await t.present();
   }
-
-  goBack() {
-    this.navCtrl.back(); // Plus fluide que window.history.back() sur mobile
-  }
+  goBack() { this.navCtrl.back(); }
 }
