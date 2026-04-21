@@ -1,0 +1,101 @@
+<div class="checkout-header">
+  <button class="back-btn" (click)="navCtrl.back()">
+    <ion-icon name="arrow-back-outline"></ion-icon>
+  </button>
+  <h1>Finaliser</h1>
+  <div></div>
+</div>
+
+<ion-content>
+  <!-- Récap commande -->
+  <div class="checkout-section">
+    <h2 class="section-title">Votre commande</h2>
+    <div class="order-items">
+      <div *ngFor="let item of cartItems" class="order-item">
+        <div class="order-item-img"><img [src]="item.imageUrl" [alt]="item.productName"></div>
+        <div class="order-item-info">
+          <p class="order-item-name">{{ item.productName }}</p>
+          <p class="order-item-qty">Qté : {{ item.quantity }}</p>
+        </div>
+        <div class="order-item-price">
+          {{ ((item.promotionPrice || item.price) * item.quantity) | number:'1.0-0' }}
+          <small>FCFA</small>
+        </div>
+      </div>
+    </div>
+    <div class="order-summary">
+      <div class="summary-row"><span>Sous-total</span><span>{{ totalPrice | number:'1.0-0' }} FCFA</span></div>
+      <div class="summary-row"><span>Livraison</span><span class="free">Gratuite</span></div>
+      <div class="summary-row total"><span>Total</span><span>{{ totalPrice | number:'1.0-0' }} FCFA</span></div>
+    </div>
+  </div>
+
+  <!-- Adresse de livraison -->
+  <div class="checkout-section">
+    <h2 class="section-title">Adresse de livraison</h2>
+    <div class="address-cards">
+      <div *ngFor="let addr of addresses; let i = index"
+        class="address-card" [class.selected]="selectedAddress === i"
+        (click)="selectedAddress = i">
+        <div class="address-card-check">
+          <div class="check-circle" [class.active]="selectedAddress === i">
+            <ion-icon *ngIf="selectedAddress === i" name="checkmark"></ion-icon>
+          </div>
+        </div>
+        <div class="address-card-info">
+          <p class="address-label">{{ addr.label }}</p>
+          <p class="address-text">{{ addr.address }}</p>
+          <p class="address-sub">{{ addr.sub }}</p>
+        </div>
+        <ion-icon [name]="addr.icon" class="address-type-icon"></ion-icon>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mode de paiement -->
+  <div class="checkout-section">
+    <h2 class="section-title">Mode de paiement</h2>
+    <div class="payment-cards">
+      <div *ngFor="let pm of paymentMethods; let i = index"
+        class="payment-card" [class.selected]="selectedPayment === i"
+        (click)="selectedPayment = i">
+        <div class="check-circle" [class.active]="selectedPayment === i">
+          <ion-icon *ngIf="selectedPayment === i" name="checkmark"></ion-icon>
+        </div>
+        <div class="payment-logo">{{ pm.emoji }}</div>
+        <div class="payment-info">
+          <p class="payment-name">{{ pm.name }}</p>
+          <p class="payment-desc">{{ pm.desc }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- User connecté -->
+  <div class="checkout-section user-section">
+    <div class="user-badge">
+      <div class="user-avatar">{{ userInitial }}</div>
+      <div>
+        <p class="user-name">{{ userName }}</p>
+        <p class="user-email">{{ userEmail }}</p>
+      </div>
+      <ion-icon name="checkmark-circle" class="user-verified"></ion-icon>
+    </div>
+  </div>
+
+  <div style="height: 16px"></div>
+</ion-content>
+
+<div class="checkout-footer">
+  <div class="footer-total">
+    <span class="footer-total-label">Total à payer</span>
+    <span class="footer-total-val">{{ totalPrice | number:'1.0-0' }} <small>FCFA</small></span>
+  </div>
+  <button class="confirm-btn" (click)="confirmOrder()" [class.loading]="isLoading">
+    <span *ngIf="!isLoading">
+      <ion-icon name="bag-check-outline"></ion-icon>
+      CONFIRMER LA COMMANDE
+    </span>
+    <div *ngIf="isLoading" class="btn-spinner"></div>
+  </button>
+</div>

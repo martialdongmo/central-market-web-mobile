@@ -1,65 +1,51 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
-import { NavController, IonicModule } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
-import { Cart, CartItem } from '../services/cart'; // Import de l'interface CartItem
+import { IonContent, IonIcon, NavController } from '@ionic/angular/standalone';
+import { Cart, CartItem } from '../services/cart';
+import { AuthService } from '../services/auth.service';
 import { Subscription } from 'rxjs';
 import { addIcons } from 'ionicons';
-import { arrowForwardOutline, cartOutline, trashOutline } from 'ionicons/icons';
+import { trashOutline, arrowForwardOutline, cartOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-cart',
-  standalone: true, // N'oublie pas standalone si tu n'utilises pas de modules
-  imports: [IonicModule, CommonModule],
+  standalone: true,
+  imports: [CommonModule, IonContent, IonIcon],
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.scss'],
 })
 export class CartComponent implements OnInit, OnDestroy {
   cartItems: CartItem[] = [];
-  totalPrice: number = 0;
-  private cartSub!: Subscription;
+  totalPrice = 0;
+  private sub!: Subscription;
 
   constructor(
-    private cartService: Cart, 
+    private cartService: Cart,
+    private authService: AuthService,
     private navCtrl: NavController,
-    private router: Router
-  ) {}
-
-  ngOnInit() {
-    // On s'abonne au flux des articles pour une mise à jour automatique
-    this.cartSub = this.cartService.cartItems$.subscribe(items => {
-      this.cartItems = items;
-      this.totalPrice = this.cartService.getTotalPrice();
-    });
+  ) {
     addIcons({ trashOutline, arrowForwardOutline, cartOutline });
   }
 
-  ngOnDestroy() {
-    if (this.cartSub) this.cartSub.unsubscribe();
+  ngOnInit() {
+    this.sub = this.cartService.cartItems$.subscribe(items => {
+      this.cartItems = items;
+      this.totalPrice = this.cartService.getTotalPrice();
+    });
   }
+  ngOnDestroy() { this.sub?.unsubscribe(); }
 
-  goToCatalog() {
-    this.navCtrl.navigateRoot('/catalog'); // navigateRoot est plus propre pour l'accueil
-  }
-
-  // Utilise removeItem car c'est le nom dans ton service
-  removeItem(id: string) {
-    this.cartService.removeItem(id);
-  }
-
-  // Optionnel : Ajouter/Diminuer quantité directement depuis le panier
-  addQty(product: any) {
-    this.cartService.addToCart(product);
-  }
-
-  removeQty(id: string) {
-    this.cartService.decreaseQuantity(id);
-  }
+  goToCatalog() { this.navCtrl.navigateRoot('/catalog'); }
+  removeItem(id: string) { this.cartService.removeItem(id); }
+  addQty(p: any) { this.cartService.addToCart(p); }
+  removeQty(id: string) { this.cartService.decreaseQuantity(id); }
 
   checkout() {
-    console.log("Commande validée pour :", this.totalPrice);
-    // Simulation de succès
-    this.cartService.clearCart();
-    // Ici, tu pourrais naviguer vers une page 'success'
+    if (!this.authService.isLoggedIn) {
+      // Redirige vers login avec retour au checkout après
+      this.navCtrl.navigateForward('/login', { queryParams: { redirect: 'checkout' } });
+    } else {
+      this.navCtrl.navigateForward('/checkout');
+    }
   }
 }

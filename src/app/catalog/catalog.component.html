@@ -1,223 +1,137 @@
-<ion-header class="header-improved" [class.header-compact]="isHeaderCompact">
-  <!-- Subtle background gradient -->
-  <div class="header-bg-gradient"></div>
-
-  <div class="header-wrapper">
-    <!-- ─── STICKY TOP BAR ─── -->
-    <div class="top-bar">
-      <div class="brand-section">
-        <h1 class="brand-logo" [class.compact]="isHeaderCompact">
-          Central<span class="brand-accent">Market</span>
-        </h1>
-      </div>
-
-      <div class="top-actions">
-        <button class="icon-btn search-trigger" (click)="focusSearch()">
-          <ion-icon name="search-outline"></ion-icon>
-        </button>
-        <button class="icon-btn cart-btn" (click)="goToCart()">
-          <ion-icon name="bag-outline"></ion-icon>
-          <span *ngIf="cartCount > 0" class="badge badge-primary">
-            {{ cartCount > 99 ? '99+' : cartCount }}
-          </span>
-        </button>
-      </div>
-    </div>
-
-    <!-- ─── HERO SECTION (Collapsible) ─── -->
-    <div class="hero-section" [class.collapsed]="isHeaderCompact">
-      <div class="hero-wrapper">
-        <div class="hero-content">
-          <div class="hero-badge">
-            <span class="badge-icon">⚡</span>
-            <span class="badge-text">Ventes Flash</span>
-          </div>
-          <h2 class="hero-title">
-            Découvrez nos<br>
-            <span class="gradient-text">Pépites du jour</span>
-          </h2>
-          <p class="hero-subtitle">Premium qualité, livraison rapide</p>
-        </div>
-        <div class="hero-visual">
-          <div class="visual-orb orb-1"></div>
-          <div class="visual-orb orb-2"></div>
-          <ion-icon name="bag-handle" class="hero-icon"></ion-icon>
-        </div>
-      </div>
-    </div>
-
-    <!-- ─── SEARCH BAR ─── -->
-    <div class="search-section">
-      <div class="search-container">
-        <ion-icon name="search-outline" class="search-icon"></ion-icon>
-        <input
-          type="search"
-          class="search-field"
-          placeholder="Rechercher une pépite..."
-          [value]="queryParams.keyword"
-          (input)="onSearch($event)"
-          #searchInput
-        />
-        <button 
-          *ngIf="queryParams.keyword" 
-          class="clear-btn"
-          (click)="clearSearch()"
-          type="button"
-        >
-          <ion-icon name="close-circle"></ion-icon>
-        </button>
-      </div>
-      <button class="filter-btn" [class.active]="hasActiveFilters" (click)="openFilters()" type="button">
-        <ion-icon name="options-outline"></ion-icon>
+<!-- ══ HEADER ══ -->
+<div class="catalog-header">
+  <div class="header-topbar">
+    <div class="brand-logo">Central<span>Market</span></div>
+    <div class="header-actions">
+      <button class="icon-btn" (click)="searchOverlayOpen = true">
+        <ion-icon name="search-outline"></ion-icon>
       </button>
-    </div>
-
-    <!-- ─── CATEGORIES SCROLL ─── -->
-    <div class="categories-section" [class.collapsed]="isHeaderCompact">
-      <div class="categories-scroll no-scrollbar">
-        <div
-          *ngFor="let cat of categories; let i = index"
-          class="category-chip"
-          [class.active]="activeCategory === cat.id"
-          (click)="selectCategory(cat.id)"
-          role="button"
-          tabindex="0"
-        >
-          <div class="chip-icon">
-            <ion-icon [name]="cat.icon"></ion-icon>
-          </div>
-          <span class="chip-label">{{ cat.label }}</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</ion-header>
-
-<!-- ─── MAIN CONTENT ─── -->
-<ion-content [scrollEvents]="true" (ionScroll)="onScroll($event)" class="content-improved" scrollX="false" scrollY="true">
-
-  <!-- Section Header -->
-  <div class="content-header" *ngIf="!isLoading">
-    <div class="header-info">
-      <h3 class="section-title">Catalogue</h3>
-      <p class="section-meta">{{ products.length }} articles disponibles</p>
-    </div>
-  </div>
-
-  <!-- Loading Skeleton -->
-  <div *ngIf="isLoading" class="products-container">
-    <div class="product-grid">
-      <div *ngFor="let i of [1,2,3,4,5,6]" class="skeleton-loader">
-        <div class="skeleton-image"></div>
-        <div class="skeleton-content">
-          <div class="skeleton-line line-title"></div>
-          <div class="skeleton-line line-price"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Product Grid -->
-  <div *ngIf="!isLoading && products.length > 0" class="products-container">
-    <div class="product-grid">
-      <app-product-card
-        *ngFor="let product of products; trackBy: trackById"
-        [product]="product"
-        class="product-item"
-      ></app-product-card>
-    </div>
-  </div>
-
-  <!-- Empty State -->
-  <div *ngIf="!isLoading && products.length === 0" class="empty-state-container">
-    <div class="empty-state">
-      <div class="empty-icon">🔍</div>
-      <h3 class="empty-title">Aucun résultat</h3>
-      <p class="empty-description">Essayez d'autres mots-clés ou modifiez vos filtres</p>
-      <button class="btn-reset" (click)="resetFilters()" type="button">
-        <ion-icon name="refresh-outline"></ion-icon>
-        Réinitialiser
+      <button class="icon-btn primary" (click)="goToCart()">
+        <ion-icon name="bag-outline"></ion-icon>
+        <span *ngIf="cartCount > 0" class="tab-badge">{{ cartCount > 99 ? '99+' : cartCount }}</span>
       </button>
     </div>
   </div>
 
-  <!-- Padding for bottom navigation -->
-  <div class="content-bottom-spacing"></div>
+  <div class="hero-band">
+    <div>
+      <div class="hero-badge"><span>⚡</span><span>Ventes Flash</span></div>
+      <div class="hero-title">Découvrez nos<br><em>Pépites du jour</em></div>
+      <div class="hero-sub">Premium qualité · Livraison rapide</div>
+    </div>
+    <div class="hero-icon-wrap"><ion-icon name="bag-handle"></ion-icon></div>
+  </div>
 
+  <div class="search-row">
+    <div class="search-box">
+      <ion-icon name="search-outline"></ion-icon>
+      <input #searchInput type="search" placeholder="Rechercher une pépite..."
+        [value]="queryParams.keyword" (input)="onSearch($event)" />
+      <button *ngIf="queryParams.keyword" class="clear-btn" (click)="clearSearch()">
+        <ion-icon name="close-circle"></ion-icon>
+      </button>
+    </div>
+    <button class="filter-btn" [class.has-filter]="hasActiveFilters" (click)="openFilters()">
+      <ion-icon name="options-outline"></ion-icon>
+    </button>
+  </div>
+
+  <div class="cats-row">
+    <div *ngFor="let cat of categories" class="cat-chip"
+      [class.active]="activeCategory === cat.id" (click)="selectCategory(cat.id)">
+      <ion-icon [name]="cat.icon"></ion-icon>
+      <span>{{ cat.label }}</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CONTENT ══ -->
+<ion-content [scrollEvents]="true" (ionScroll)="onScroll($event)">
+  <div class="section-hd" *ngIf="!isLoading">
+    <h3>Catalogue</h3>
+    <small>{{ products.length }} articles</small>
+  </div>
+
+  <div *ngIf="isLoading" class="product-grid">
+    <div *ngFor="let i of [1,2,3,4,5,6]" class="skeleton-card">
+      <div class="skeleton-img"></div>
+      <div class="skeleton-body">
+        <div class="skeleton-line" style="width:80%"></div>
+        <div class="skeleton-line" style="width:50%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && products.length > 0" class="product-grid">
+    <app-product-card *ngFor="let p of products; trackBy: trackById" [product]="p"></app-product-card>
+  </div>
+
+  <div *ngIf="!isLoading && products.length === 0" class="empty-state">
+    <div class="empty-icon">🔍</div>
+    <h3>Aucun résultat</h3>
+    <p>Essayez d'autres mots-clés ou modifiez vos filtres</p>
+    <button class="btn-reset" (click)="resetFilters()">
+      <ion-icon name="refresh-outline"></ion-icon> Réinitialiser
+    </button>
+  </div>
+  <div style="height:16px"></div>
 </ion-content>
 
-<!-- ─── FILTER MODAL (Bottom Sheet) ─── -->
-<ion-modal
-  [isOpen]="isFilterModalOpen"
-  (didDismiss)="closeFilters()"
-  [initialBreakpoint]="0.75"
-  [breakpoints]="[0, 0.75, 1]"
-  [handle]="true"
-  [handleBehavior]="'cycle'"
-  class="filter-modal"
->
+<!-- ══ SEARCH OVERLAY ══ -->
+<div class="search-overlay" [class.open]="searchOverlayOpen">
+  <div class="search-overlay-hd">
+    <button class="search-overlay-back" (click)="searchOverlayOpen = false">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </button>
+    <input #overlayInput class="search-overlay-input" type="text"
+      placeholder="Rechercher une pépite..." (input)="onSearch($event)" />
+  </div>
+  <div class="overlay-scroll">
+    <div class="section-hd"><h3>Résultats</h3><small>{{ products.length }} articles</small></div>
+    <div class="product-grid">
+      <app-product-card *ngFor="let p of products; trackBy: trackById" [product]="p"></app-product-card>
+    </div>
+    <div style="height:16px"></div>
+  </div>
+</div>
+
+<!-- ══ FILTER MODAL ══ -->
+<ion-modal [isOpen]="isFilterModalOpen" (didDismiss)="closeFilters()"
+  [initialBreakpoint]="0.75" [breakpoints]="[0, 0.75, 1]" [handle]="true">
   <ng-template>
     <div class="modal-container">
-      <div class="modal-header">
-        <h2 class="modal-title">Filtrer les résultats</h2>
-        <button class="btn-close" (click)="closeFilters()" type="button">
-          <ion-icon name="close"></ion-icon>
-        </button>
+      <div class="modal-handle"></div>
+      <div class="modal-hd">
+        <h2>Filtrer les résultats</h2>
+        <button class="modal-close-btn" (click)="closeFilters()"><ion-icon name="close"></ion-icon></button>
       </div>
-
-      <ion-content [scrollY]="true" class="modal-content">
+      <ion-content [scrollY]="true" style="--background:#fff">
         <div class="filter-group">
-          <!-- Promotions Filter -->
-          <div class="filter-item promo-filter">
-            <div class="filter-header">
-              <div class="filter-icon">
-                <ion-icon name="pricetag-outline"></ion-icon>
-              </div>
-              <div class="filter-info">
-                <p class="filter-title">Promotions</p>
-                <p class="filter-description">Afficher uniquement les offres</p>
+          <div class="filter-item">
+            <div class="filter-item-left">
+              <div class="filter-icon-box"><ion-icon name="pricetag-outline"></ion-icon></div>
+              <div class="filter-item-info">
+                <p>Promotions</p><small>Afficher uniquement les offres</small>
               </div>
             </div>
-            <ion-toggle
-              [(ngModel)]="queryParams.promotionOnly"
-              mode="ios"
-              class="toggle-switch"
-            ></ion-toggle>
+            <ion-toggle [(ngModel)]="queryParams.promotionOnly" mode="ios"></ion-toggle>
           </div>
-
-          <!-- Price Range Filter -->
-          <div class="filter-item price-filter">
-            <div class="filter-header">
-              <div class="filter-icon">
-                <ion-icon name="wallet-outline"></ion-icon>
-              </div>
-              <div class="filter-info">
-                <p class="filter-title">Budget Maximum</p>
-                <p class="price-value">
-                  {{ queryParams.maxPrice | number:'1.0-0' }}
-                  <span class="price-unit">FCFA</span>
-                </p>
+          <div class="filter-item column">
+            <div class="filter-item-left">
+              <div class="filter-icon-box"><ion-icon name="wallet-outline"></ion-icon></div>
+              <div class="filter-item-info">
+                <p>Budget Maximum</p>
+                <div class="range-val">{{ queryParams.maxPrice | number:'1.0-0' }} <small>FCFA</small></div>
               </div>
             </div>
-            <ion-range
-              [min]="0"
-              [max]="10000"
-              [step]="500"
-              [(ngModel)]="queryParams.maxPrice"
-              class="price-range"
-              [pin]="false"
-            ></ion-range>
+            <ion-range [min]="0" [max]="10000" [step]="500"
+              [(ngModel)]="queryParams.maxPrice" style="width:100%;padding:0"></ion-range>
           </div>
         </div>
       </ion-content>
-
       <div class="modal-footer">
-        <button class="btn-secondary" (click)="resetFilters()" type="button">
-          Réinitialiser
-        </button>
-        <button class="btn-primary" (click)="applyFilters()" type="button">
-          Appliquer les filtres
-        </button>
+        <button class="modal-reset-btn" (click)="resetFilters()">Réinitialiser</button>
+        <button class="modal-apply-btn" (click)="applyFilters()">Appliquer les filtres</button>
       </div>
     </div>
   </ng-template>

@@ -1,0 +1,110 @@
+:host { display: flex; flex-direction: column; height: 100%; }
+ion-content { flex: 1; --background: var(--bg2); }
+
+/* ── HEADER ── */
+.tracking-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px; background: var(--navy); flex-shrink: 0;
+  &.delivered { background: var(--green); }
+}
+.back-btn, .help-btn {
+  width: 40px; height: 40px; border-radius: var(--r-md);
+  background: rgba(255,255,255,.15); backdrop-filter: blur(8px);
+  border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: #fff; transition: all .2s;
+  &:active { transform: scale(.9); }
+}
+.header-center { text-align: center; }
+.header-label { font-size: 10px; color: rgba(255,255,255,.65); text-transform: uppercase; letter-spacing: .1em; margin: 0; }
+.header-id { font-family: var(--font-display); font-size: 18px; font-weight: 800; color: #fff; margin: 0; }
+
+/* ── STATUS HERO ── */
+.status-hero {
+  margin: 16px 16px 0; border-radius: var(--r-xl); padding: 20px;
+  display: flex; align-items: center; gap: 14px;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+  box-shadow: var(--shadow-lg);
+
+  &.status-confirmed { background: linear-gradient(135deg, #1e3a8a, #4f46e5); }
+  &.status-preparing { background: linear-gradient(135deg, #92400e, #d97706); }
+  &.status-shipped    { background: linear-gradient(135deg, #065f46, #059669); }
+  &.status-delivered  { background: linear-gradient(135deg, #065f46, #10b981); }
+}
+.status-hero-icon {
+  width: 56px; height: 56px; border-radius: 50%; background: rgba(255,255,255,.2);
+  display: flex; align-items: center; justify-content: center; font-size: 26px; color: #fff; flex-shrink: 0;
+}
+.status-hero-text { flex: 1; h2 { font-family: var(--font-display); font-size: 17px; font-weight: 800; color: #fff; margin: 0 0 3px; } p { font-size: 12px; color: rgba(255,255,255,.75); margin: 0; } }
+.eta-badge {
+  display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,.2);
+  padding: 6px 10px; border-radius: 20px; flex-shrink: 0;
+  ion-icon { color: #fff; font-size: 12px; }
+  span { font-size: 12px; font-weight: 700; color: #fff; }
+}
+
+/* ── CARDS ── */
+.tracking-card {
+  background: var(--bg); margin: 12px 16px; border-radius: var(--r-xl); padding: 18px;
+  box-shadow: var(--shadow-sm), 0 0 0 1px var(--border-light);
+}
+.card-title { font-family: var(--font-display); font-size: 15px; font-weight: 800; color: var(--navy); margin: 0 0 16px; }
+
+/* ── TIMELINE ── */
+.timeline { display: flex; flex-direction: column; }
+.timeline-step { display: flex; gap: 14px; }
+.step-left { display: flex; flex-direction: column; align-items: center; }
+.step-dot {
+  width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border);
+  background: var(--bg3); display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; position: relative; transition: all .3s;
+  ion-icon { font-size: 14px; color: #fff; }
+}
+.timeline-step.done .step-dot { background: var(--green); border-color: var(--green); }
+.timeline-step.active .step-dot { background: var(--primary); border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99,102,241,.2); }
+.step-pulse {
+  width: 10px; height: 10px; border-radius: 50%; background: #fff;
+  animation: pulseDot 1.2s infinite;
+}
+@keyframes pulseDot { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(.5);opacity:.6} }
+.step-line { width: 2px; flex: 1; min-height: 28px; background: var(--border); margin: 4px 0; transition: background .3s; }
+.timeline-step.done .step-line { background: var(--green); }
+.step-content { padding-bottom: 20px; flex: 1; }
+.step-label { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--text2); margin: 2px 0 3px; }
+.timeline-step.done .step-label, .timeline-step.active .step-label { color: var(--navy); }
+.step-desc { font-size: 12px; color: var(--text3); margin: 0 0 4px; line-height: 1.4; }
+.step-time { font-size: 11px; font-weight: 700; color: var(--primary); margin: 0; }
+
+/* ── ITEMS ── */
+.items-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.tracking-item { display: flex; align-items: center; gap: 10px; }
+.tracking-item-img { width: 48px; height: 48px; border-radius: 12px; overflow: hidden; background: var(--bg3); flex-shrink: 0; img { width: 100%; height: 100%; object-fit: cover; display: block; } }
+.tracking-item-info { flex: 1; min-width: 0; }
+.tracking-item-name { font-size: 13px; font-weight: 700; color: var(--navy); margin: 0 0 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tracking-item-qty { font-size: 11px; color: var(--text3); margin: 0; }
+.tracking-item-price { font-family: var(--font-display); font-size: 13px; font-weight: 800; color: var(--navy); white-space: nowrap; small { font-family: var(--font-body); font-size: 9px; } }
+.total-row { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-light); padding-top: 12px; font-size: 13px; color: var(--text2); }
+.total-amount { font-family: var(--font-display); font-size: 16px; font-weight: 800; color: var(--navy); }
+
+/* ── ADDRESS ── */
+.address-row { display: flex; align-items: flex-start; gap: 12px; }
+.address-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--primary-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; ion-icon { color: var(--primary); font-size: 18px; } }
+.address-text { font-size: 13px; font-weight: 600; color: var(--navy); margin: 0 0 4px; line-height: 1.4; }
+.address-date { font-size: 11px; color: var(--text3); margin: 0; }
+
+/* ── FOOTER ── */
+.tracking-footer {
+  background: var(--bg); padding: 12px 16px 20px; flex-shrink: 0;
+  box-shadow: 0 -4px 20px rgba(0,0,0,.06); border-radius: var(--r-xl) var(--r-xl) 0 0;
+  display: flex; gap: 10px;
+}
+.action-btn {
+  flex: 1; height: 50px; border: none; border-radius: var(--r-lg);
+  font-family: var(--font-display); font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  cursor: pointer; transition: all .2s;
+  ion-icon { font-size: 17px; }
+  &:active { transform: scale(.97); }
+  &.secondary { background: var(--bg3); color: var(--navy); }
+  &.primary { background: var(--navy); color: #fff; box-shadow: 0 4px 16px rgba(30,58,138,.3); }
+}

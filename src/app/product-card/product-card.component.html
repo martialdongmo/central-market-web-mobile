@@ -1,52 +1,25 @@
-<div 
-  [routerLink]="['/details', product.productId]"
-  class="product-card group relative flex flex-col bg-white rounded-[2.5rem] overflow-hidden shadow-2xl shadow-slate-200/50 hover:shadow-blue-900/10 transition-all duration-500 h-full cursor-pointer active:scale-[0.97]">
-  
-  <div class="aspect-square relative overflow-hidden bg-slate-50">
-    <img [src]="product.imageUrl" 
-         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out">
-    
-    <div *ngIf="product.promotionActive" 
-         class="absolute top-4 left-4 bg-gradient-to-r from-yellow-400 to-orange-400 text-blue-950 text-[10px] font-[1000] px-3 py-1.5 rounded-xl shadow-xl z-10 tracking-widest animate-pulse">
-      PROMO
-    </div>
-
-    <button class="absolute top-4 right-4 w-11 h-11 bg-white/70 backdrop-blur-md rounded-[18px] flex items-center justify-center shadow-lg border border-white/20 text-blue-950 active:scale-75 transition-all z-10 group-hover:bg-blue-900 group-hover:text-white">
-      <ion-icon name="eye-outline" class="text-xl"></ion-icon>
-    </button>
+<div class="product-card" [routerLink]="['/details', product.productId]">
+  <div class="card-img">
+    <img [src]="product.imageUrl" [alt]="product.productName" loading="lazy">
+    <div *ngIf="product.promotionActive" class="promo-tag">PROMO</div>
+    <div *ngIf="!product.inStock" class="stock-badge">Épuisé</div>
   </div>
-
-  <div class="p-6 flex flex-col flex-1">
-    <div class="flex-1">
-      <div class="flex justify-between items-start mb-2">
-        <p class="text-[9px] font-black text-blue-600 uppercase tracking-[0.2em]">{{ product.shopName }}</p>
-        <div *ngIf="product.distanceKm" class="flex items-center gap-1 text-slate-400 bg-slate-50 px-2 py-1 rounded-lg">
-          <ion-icon name="location-outline" class="text-[10px]"></ion-icon>
-          <span class="text-[9px] font-black">{{ product.distanceKm | number:'1.1-1' }} KM</span>
-        </div>
+  <div class="card-body">
+    <div class="card-shop">
+      <span class="card-shop-name">{{ product.shopName }}</span>
+      <div *ngIf="product.distanceKm" class="card-dist">
+        <ion-icon name="location-outline"></ion-icon>
+        <span>{{ product.distanceKm | number:'1.1-1' }} km</span>
       </div>
-
-      <h3 class="font-black text-blue-950 text-sm leading-tight line-clamp-2 group-hover:text-blue-600 transition-colors">
-        {{ product.productName }}
-      </h3>
     </div>
-
-    <div class="mt-5 pt-4 border-t border-slate-50 flex items-end justify-between">
-      <div class="flex flex-col">
-        <ng-container *ngIf="product.promotionActive">
-          <span class="text-slate-300 line-through text-[10px] font-black mb-0.5">{{ product.price }} FCFA</span>
-          <span class="text-blue-950 font-[1000] text-xl tracking-tighter leading-none">{{ product.promotionPrice }} <small class="text-[10px]">FCFA</small></span>
-        </ng-container>
-        
-        <ng-container *ngIf="!product.promotionActive">
-          <span class="text-blue-950 font-[1000] text-xl tracking-tighter leading-none">{{ product.price }} <small class="text-[10px]">FCFA</small></span>
-        </ng-container>
+    <h3 class="card-name">{{ product.productName }}</h3>
+    <div class="card-footer">
+      <div class="card-price-wrap">
+        <div *ngIf="product.promotionActive" class="card-old-price">{{ product.price | number:'1.0-0' }} FCFA</div>
+        <div class="card-price">{{ (product.promotionActive ? product.promotionPrice : product.price) | number:'1.0-0' }} <small>FCFA</small></div>
       </div>
-
-      <button 
-        (click)="addToCart($event)" 
-        class="w-13 h-13 bg-blue-950 text-white rounded-[20px] flex items-center justify-center shadow-xl shadow-blue-900/20 active:scale-75 transition-all hover:bg-blue-600 hover:-rotate-6">
-        <ion-icon name="cart-outline" class="text-2xl"></ion-icon>
+      <button class="add-btn" (click)="addToCart($event)" [disabled]="!product.inStock">
+        <ion-icon name="cart-outline"></ion-icon>
       </button>
     </div>
   </div>

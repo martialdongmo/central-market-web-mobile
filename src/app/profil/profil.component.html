@@ -1,40 +1,108 @@
+<ion-content>
 
-<ion-content class="ion-padding bg-white">
-  <div class="flex flex-col justify-between h-full max-w-md mx-auto py-12 px-2">
-    
-    <div class="text-center mt-6">
-      <div class="inline-flex p-6 bg-slate-50 rounded-[2.5rem] mb-6">
-        <ion-icon name="person-circle-outline" class="text-7xl text-slate-800"></ion-icon>
-      </div>
-      <h1 class="text-3xl font-black text-slate-900 tracking-tight italic">Mon Compte</h1>
-      <p class="text-slate-500 mt-4 text-base px-6">
-        Rejoignez-nous pour découvrir toutes nos fonctionnalités.
-      </p>
+  <!-- ═══ VUE NON CONNECTÉE ═══ -->
+  <div *ngIf="!isLoggedIn" class="profile-wrap">
+    <div class="profile-avatar-box"><ion-icon name="person-circle-outline"></ion-icon></div>
+    <div class="profile-name">Mon Compte</div>
+    <p class="profile-sub">Rejoignez-nous pour découvrir toutes nos fonctionnalités et bénéficier d'offres exclusives.</p>
+    <div class="profile-btns">
+      <button class="profile-btn-primary" routerLink="/login">SE CONNECTER</button>
+      <button class="profile-btn-outline" routerLink="/register">CRÉER UN COMPTE</button>
     </div>
-
-    <div class="flex flex-col gap-4 mb-8">
-      
-      <ion-button 
-        routerLink="/login" 
-        expand="block" 
-        shape="round" 
-        class="h-16 shadow-lg shadow-slate-200 main-btn">
-        <span class="font-bold tracking-widest uppercase">Se connecter</span>
-      </ion-button>
-
-      <ion-button 
-        routerLink="/register" 
-        expand="block" 
-        shape="round" 
-        fill="outline" 
-        class="h-16 secondary-btn">
-        <span class="font-bold tracking-widest uppercase">Créer un compte</span>
-      </ion-button>
-
-      <ion-button fill="clear" color="medium" class="mt-4 text-[10px] font-bold uppercase tracking-[0.2em]">
-        Continuer sans compte
-      </ion-button>
+    <div class="profile-features">
+      <div class="profile-feature"><div class="pf-icon">🎁</div><div><p class="pf-label">Offres exclusives</p><p class="pf-desc">Accédez aux ventes privées</p></div></div>
+      <div class="profile-feature"><div class="pf-icon">📦</div><div><p class="pf-label">Suivi de commande</p><p class="pf-desc">En temps réel</p></div></div>
+      <div class="profile-feature"><div class="pf-icon">⭐</div><div><p class="pf-label">Programme fidélité</p><p class="pf-desc">Gagnez des points à chaque achat</p></div></div>
     </div>
-
   </div>
+
+  <!-- ═══ VUE CONNECTÉE ═══ -->
+  <div *ngIf="isLoggedIn" class="logged-wrap">
+
+    <!-- Hero user -->
+    <div class="user-hero">
+      <div class="user-avatar-big">{{ userInitial }}</div>
+      <div class="user-hero-info">
+        <h2 class="user-hero-name">{{ userName }}</h2>
+        <p class="user-hero-email">{{ userEmail }}</p>
+      </div>
+      <div class="user-hero-badge">
+        <ion-icon name="shield-checkmark"></ion-icon>
+        <span>Vérifié</span>
+      </div>
+    </div>
+
+    <!-- Quick stats -->
+    <div class="quick-stats">
+      <div class="stat-card" (click)="goToOrders()">
+        <div class="stat-val">{{ ordersCount }}</div>
+        <div class="stat-label">Commandes</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-card">
+        <div class="stat-val">0</div>
+        <div class="stat-label">Points</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-card">
+        <div class="stat-val">0</div>
+        <div class="stat-label">Favoris</div>
+      </div>
+    </div>
+
+    <!-- Menu items -->
+    <div class="menu-section">
+      <div class="menu-item" (click)="goToOrders()">
+        <div class="menu-item-icon primary"><ion-icon name="bag-outline"></ion-icon></div>
+        <div class="menu-item-info">
+          <p class="menu-item-label">Mes commandes</p>
+          <p class="menu-item-desc">Suivre et gérer vos commandes</p>
+        </div>
+        <ion-icon name="chevron-forward" class="menu-item-arrow"></ion-icon>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-icon accent"><ion-icon name="heart-outline"></ion-icon></div>
+        <div class="menu-item-info">
+          <p class="menu-item-label">Mes favoris</p>
+          <p class="menu-item-desc">Vos produits sauvegardés</p>
+        </div>
+        <ion-icon name="chevron-forward" class="menu-item-arrow"></ion-icon>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-icon yellow"><ion-icon name="location-outline"></ion-icon></div>
+        <div class="menu-item-info">
+          <p class="menu-item-label">Adresses de livraison</p>
+          <p class="menu-item-desc">Gérer vos adresses</p>
+        </div>
+        <ion-icon name="chevron-forward" class="menu-item-arrow"></ion-icon>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-icon green"><ion-icon name="card-outline"></ion-icon></div>
+        <div class="menu-item-info">
+          <p class="menu-item-label">Modes de paiement</p>
+          <p class="menu-item-desc">Mobile Money, Carte bancaire</p>
+        </div>
+        <ion-icon name="chevron-forward" class="menu-item-arrow"></ion-icon>
+      </div>
+
+      <div class="menu-item">
+        <div class="menu-item-icon grey"><ion-icon name="settings-outline"></ion-icon></div>
+        <div class="menu-item-info">
+          <p class="menu-item-label">Paramètres</p>
+          <p class="menu-item-desc">Notifications, langue, thème</p>
+        </div>
+        <ion-icon name="chevron-forward" class="menu-item-arrow"></ion-icon>
+      </div>
+    </div>
+
+    <!-- Logout -->
+    <button class="logout-btn" (click)="logout()">
+      <ion-icon name="log-out-outline"></ion-icon>
+      Se déconnecter
+    </button>
+  </div>
+
 </ion-content>
