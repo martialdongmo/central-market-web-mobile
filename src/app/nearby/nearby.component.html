@@ -1,0 +1,61 @@
+<div class="nearby-header">
+  <div class="nearby-hd-top">
+    <div class="nearby-loc-badge"><ion-icon name="location"></ion-icon><span>Autour de vous</span></div>
+    <div class="nearby-status">
+      <div class="status-dot-wrap"><div class="status-dot-inner"></div><div class="status-dot-ring"></div></div>
+      <span>Yaoundé</span>
+    </div>
+  </div>
+  <div class="nearby-title">À Proximité</div>
+  <div class="nearby-promo-banner">
+    <ion-icon name="flash"></ion-icon>
+    <p>Boutiques d'élite livrant en <strong>-30 min</strong></p>
+  </div>
+</div>
+
+<ion-content>
+  <div *ngIf="isLoading" class="nearby-list">
+    <div *ngFor="let i of [1,2,3,4]" class="skeleton-card">
+      <div class="skeleton-img"></div>
+      <div class="skeleton-body">
+        <div class="skeleton-line" style="width:70%"></div>
+        <div class="skeleton-line" style="width:50%"></div>
+        <div class="skeleton-line" style="width:35%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && nearbyProducts.length > 0" class="nearby-list">
+    <div *ngFor="let p of nearbyProducts" class="nearby-card" (click)="goToDetails(p.productId)">
+      <div class="nearby-card-img">
+        <img [src]="p.imageUrl" [alt]="p.productName" loading="lazy">
+        <div class="nearby-open-badge">
+          <div class="dot" [class.open]="p.shopOpen" [class.closed]="!p.shopOpen"></div>
+          <span>{{ p.shopOpen ? 'Ouvert' : 'Fermé' }}</span>
+        </div>
+      </div>
+      <div class="nearby-card-body">
+        <div class="nearby-card-header">
+          <div>
+            <div class="nearby-card-name">{{ p.productName }}</div>
+            <div class="nearby-card-shop"><ion-icon name="storefront"></ion-icon><span>{{ p.shopName }}</span></div>
+          </div>
+          <div class="nearby-dist-badge"><ion-icon name="navigate"></ion-icon><span>{{ p.distanceKm | number:'1.1-1' }} km</span></div>
+        </div>
+        <div class="nearby-card-footer">
+          <div>
+            <div class="nearby-price-label">Prix</div>
+            <div class="nearby-price">{{ (p.promotionActive ? p.promotionPrice : p.price) | number:'1.0-0' }} <span>FCFA</span></div>
+          </div>
+          <button class="nearby-arrow-btn"><ion-icon name="arrow-forward"></ion-icon></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && nearbyProducts.length === 0" class="nearby-empty">
+    <ion-icon name="map-outline"></ion-icon>
+    <h3>Zone en cours de déploiement</h3>
+    <p>Nos livreurs arrivent bientôt dans votre secteur.</p>
+  </div>
+</ion-content>

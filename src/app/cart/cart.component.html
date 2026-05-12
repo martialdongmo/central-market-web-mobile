@@ -1,0 +1,49 @@
+<div class="cart-header">
+  <h1>Mon Panier</h1>
+  <p>Vérifiez vos pépites avant de commander.</p>
+</div>
+
+<ion-content>
+  <div *ngIf="cartItems.length > 0" class="cart-list">
+    <div *ngFor="let item of cartItems" class="cart-item">
+      <div class="cart-item-img"><img [src]="item.imageUrl" [alt]="item.productName"></div>
+      <div class="cart-item-body">
+        <h3 class="cart-item-name">{{ item.productName }}</h3>
+        <p class="cart-item-price">{{ (item.promotionPrice || item.price) | number:'1.0-0' }} <small>FCFA</small></p>
+        <div class="qty-row">
+          <div class="qty-ctrl">
+            <button class="qty-btn minus" (click)="removeQty(item.productId)">−</button>
+            <span class="qty-val">{{ item.quantity }}</span>
+            <button class="qty-btn plus" (click)="addQty(item)">+</button>
+          </div>
+          <button class="del-btn" (click)="removeItem(item.productId)">
+            <ion-icon name="trash-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="cartItems.length === 0" class="cart-empty">
+    <div class="cart-empty-icon"><ion-icon name="cart-outline"></ion-icon></div>
+    <h3>Votre panier est vide</h3>
+    <p>Votre panier attend vos pépites...</p>
+    <button class="cart-empty-cta" (click)="goToCatalog()">Découvrir nos pépites</button>
+  </div>
+</ion-content>
+
+<div *ngIf="cartItems.length > 0" class="cart-footer">
+  <div class="cart-total-row">
+    <div>
+      <div class="cart-total-label">Total Estimé</div>
+      <div class="cart-total-val">{{ totalPrice | number:'1.0-0' }} <small>FCFA</small></div>
+    </div>
+    <div class="cart-count-pill">
+      <span>{{ cartItems.length }} Article{{ cartItems.length > 1 ? 's' : '' }}</span>
+    </div>
+  </div>
+  <button class="checkout-btn" (click)="checkout()">
+    <span>PAYER MAINTENANT</span>
+    <div class="arrow-box"><ion-icon name="arrow-forward-outline"></ion-icon></div>
+  </button>
+</div>

@@ -1,0 +1,26 @@
+<div class="product-card" [routerLink]="['/details', product.productId]">
+  <div class="card-img">
+    <img [src]="product.imageUrl" [alt]="product.productName" loading="lazy">
+    <div *ngIf="product.promotionActive" class="promo-tag">PROMO</div>
+    <div *ngIf="!product.inStock" class="stock-badge">Épuisé</div>
+  </div>
+  <div class="card-body">
+    <div class="card-shop">
+      <span class="card-shop-name">{{ product.shopName }}</span>
+      <div *ngIf="product.distanceKm" class="card-dist">
+        <ion-icon name="location-outline"></ion-icon>
+        <span>{{ product.distanceKm | number:'1.1-1' }} km</span>
+      </div>
+    </div>
+    <h3 class="card-name">{{ product.productName }}</h3>
+    <div class="card-footer">
+      <div class="card-price-wrap">
+        <div *ngIf="product.promotionActive" class="card-old-price">{{ product.price | number:'1.0-0' }} FCFA</div>
+        <div class="card-price">{{ (product.promotionActive ? product.promotionPrice : product.price) | number:'1.0-0' }} <small>FCFA</small></div>
+      </div>
+      <button class="add-btn" (click)="addToCart($event)" [disabled]="!product.inStock">
+        <ion-icon name="cart-outline"></ion-icon>
+      </button>
+    </div>
+  </div>
+</div>

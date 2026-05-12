@@ -1,0 +1,56 @@
+<div class="auth-header">
+  <button class="auth-back-btn" (click)="navCtrl.back()">
+    <ion-icon name="arrow-back-outline"></ion-icon>
+  </button>
+</div>
+
+<ion-content>
+  <div class="auth-body">
+    <h1 class="auth-title">Créer un<br>compte.</h1>
+    <p class="auth-sub">Rejoignez notre communauté shopping.</p>
+
+    <div class="auth-field">
+      <label class="auth-label">Nom complet</label>
+      <div class="auth-input-wrap">
+        <div class="auth-input-icon"><ion-icon name="person-outline"></ion-icon></div>
+        <input type="text" placeholder="John Doe" [(ngModel)]="name">
+      </div>
+    </div>
+    <div class="auth-field">
+      <label class="auth-label">Email</label>
+      <div class="auth-input-wrap">
+        <div class="auth-input-icon"><ion-icon name="mail-outline"></ion-icon></div>
+        <input type="email" placeholder="votre@email.com" [(ngModel)]="email">
+      </div>
+    </div>
+    <div class="auth-field">
+      <label class="auth-label">Mot de passe</label>
+      <div class="auth-input-wrap">
+        <div class="auth-input-icon"><ion-icon name="lock-closed-outline"></ion-icon></div>
+        <input type="password" placeholder="Min. 8 caractères" [(ngModel)]="password">
+      </div>
+    </div>
+    <div class="auth-field">
+      <label class="auth-label">Confirmer</label>
+      <div class="auth-input-wrap">
+        <div class="auth-input-icon"><ion-icon name="lock-closed-outline"></ion-icon></div>
+        <input type="password" placeholder="Répétez le mot de passe" [(ngModel)]="confirm">
+      </div>
+    </div>
+
+    <div *ngIf="errorMsg" class="auth-error">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+      {{ errorMsg }}
+    </div>
+
+    <button class="auth-submit-btn" (click)="register()" [class.loading]="isLoading">
+      <span *ngIf="!isLoading">S'INSCRIRE MAINTENANT</span>
+      <div *ngIf="isLoading" class="btn-spinner"></div>
+    </button>
+
+    <div class="auth-switch">
+      <p>Vous avez déjà un compte ?</p>
+      <button routerLink="/login">SE CONNECTER</button>
+    </div>
+  </div>
+</ion-content>

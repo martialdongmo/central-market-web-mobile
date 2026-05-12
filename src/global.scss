@@ -1,37 +1,114 @@
-/*
- * App Global CSS
- * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
- */
-
-/* Core CSS required for Ionic components to work properly */
+/* ── Ionic Core ── */
 @import "@ionic/angular/css/core.css";
-
-/* Basic CSS for apps built with Ionic */
 @import "@ionic/angular/css/normalize.css";
 @import "@ionic/angular/css/structure.css";
 @import "@ionic/angular/css/typography.css";
 @import "@ionic/angular/css/display.css";
-
-/* Optional CSS utils that can be commented out */
 @import "@ionic/angular/css/padding.css";
 @import "@ionic/angular/css/float-elements.css";
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
+/* ── Design Tokens (identiques au mock HTML) ── */
+:root {
+  --primary:       #6366f1;
+  --primary-dark:  #4f46e5;
+  --primary-light: #e0e7ff;
+  --navy:          #1e3a8a;
+  --navy-mid:      #1e40af;
+  --accent:        #ec4899;
+  --accent-light:  #fce7f3;
+  --yellow:        #f59e0b;
+  --green:         #10b981;
+  --red:           #ef4444;
+  --bg:            #ffffff;
+  --bg2:           #f8fafc;
+  --bg3:           #f1f5f9;
+  --border:        #e2e8f0;
+  --border-light:  #f1f5f9;
+  --text1:         #1e293b;
+  --text2:         #64748b;
+  --text3:         #94a3b8;
+  --shadow-sm:     0 1px 3px rgba(0,0,0,.06);
+  --shadow-md:     0 4px 12px rgba(0,0,0,.08);
+  --shadow-lg:     0 10px 30px rgba(0,0,0,.12);
+  --r-sm: 12px; --r-md: 18px; --r-lg: 24px; --r-xl: 32px; --r-2xl: 40px;
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+}
 
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+/* ── Base ── */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+* { font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+
+/* ── Scrollbars masquées ── */
+::-webkit-scrollbar { display: none; }
+* { scrollbar-width: none; }
+
+/* ── ion-app : plein écran partout ── */
+ion-app {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── ion-router-outlet prend tout l'espace disponible ── */
+ion-router-outlet {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: block;
+}
+
+/* ── Tab bar : collé en bas, hauteur fixe ── */
+ion-tab-bar {
+  --background: var(--bg);
+  --border: 1px solid var(--border-light);
+  height: 64px;
+  min-height: 64px;
+  flex-shrink: 0;
+  box-shadow: 0 -4px 20px rgba(0,0,0,.06);
+  position: relative;
+  z-index: 100;
+}
+
+ion-tab-button {
+  --color:          var(--text3);
+  --color-selected: var(--primary);
+  font-family: var(--font-body);
+
+  ion-icon { font-size: 20px; }
+  ion-label { font-size: 10px; font-weight: 600; }
+}
+
+/* ── Content ── */
+ion-content { --background: var(--bg2); }
+ion-header   { --background: var(--bg); box-shadow: none; }
+ion-toolbar  { --background: var(--bg); --border-color: transparent; --padding-start: 0; --padding-end: 0; }
+ion-footer   { --background: var(--bg); box-shadow: none; }
+
+/* ── Ionic widgets ── */
+ion-range {
+  --bar-background: var(--border);
+  --bar-background-active: var(--primary);
+  --bar-height: 6px;
+  --knob-background: var(--primary);
+  --knob-size: 22px;
+  --knob-box-shadow: 0 2px 8px rgba(99,102,241,.4);
+  padding: 0;
+}
+ion-toggle {
+  --track-background:          var(--border);
+  --track-background-checked:  var(--primary);
+  --handle-background:         #fff;
+  --handle-background-checked: #fff;
+}
+ion-modal {
+  --border-radius: var(--r-2xl) var(--r-2xl) 0 0;
+  --box-shadow: 0 -10px 40px rgba(0,0,0,.15);
+}

@@ -1,0 +1,60 @@
+<div class="detail-float-btns">
+  <button class="detail-back-btn" (click)="goBack()"><ion-icon name="arrow-back-outline"></ion-icon></button>
+  <button class="detail-fav-btn" (click)="isFav=!isFav"><ion-icon [name]="isFav?'heart':'heart-outline'"></ion-icon></button>
+</div>
+
+<ion-content [fullscreen]="true">
+  <div *ngIf="isLoading" class="detail-skeleton">
+    <div class="detail-skeleton-img"></div>
+    <div class="detail-skeleton-body">
+      <div class="skeleton-line" style="width:40%"></div>
+      <div class="skeleton-line" style="width:85%"></div>
+      <div class="skeleton-line" style="width:85%"></div>
+      <div class="skeleton-line" style="width:60%"></div>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && product">
+    <div class="detail-img-wrap">
+      <img [src]="product.imageUrl" [alt]="product.productName">
+      <div class="detail-img-fade"></div>
+    </div>
+    <div class="detail-body">
+      <div *ngIf="product.promotionActive" class="detail-promo-badge">
+        Offre -{{ ((product.price - (product.promotionPrice || product.price)) / product.price * 100) | number:'1.0-0' }}%
+      </div>
+      <div class="detail-shop-row">
+        <div class="detail-shop-icon-box"><ion-icon name="storefront"></ion-icon></div>
+        <span class="detail-shop-name">{{ product.shopName }}</span>
+      </div>
+      <h1 class="detail-title">{{ product.productName }}</h1>
+      <div class="detail-cards">
+        <div class="detail-info-card primary">
+          <div class="detail-info-label">Prix unitaire</div>
+          <div class="detail-info-val">{{ (product.promotionActive ? product.promotionPrice : product.price) | number:'1.0-0' }} <small>FCFA</small></div>
+          <div *ngIf="product.promotionActive" class="detail-info-sub">{{ product.price | number:'1.0-0' }} FCFA</div>
+        </div>
+        <div class="detail-info-card">
+          <div class="detail-info-label">Livraison</div>
+          <div class="detail-info-val">{{ product.distanceKm }} <small>km</small></div>
+          <div class="detail-stock-row">
+            <div class="detail-stock-dot" [class.out]="!product.inStock"></div>
+            <span class="detail-stock-text" [class.out]="!product.inStock">{{ product.inStock ? 'En stock' : 'Épuisé' }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="detail-desc-section">
+        <h4>Description</h4>
+        <div class="detail-desc-box"><p>{{ product.description }}</p></div>
+      </div>
+      <div style="height:100px"></div>
+    </div>
+  </div>
+</ion-content>
+
+<div class="detail-footer" *ngIf="!isLoading && product">
+  <button class="add-to-cart-btn" (click)="addToCart()" [disabled]="!product.inStock">
+    <span>AJOUTER AU PANIER</span>
+    <div class="cart-icon-box"><ion-icon name="cart-outline"></ion-icon></div>
+  </button>
+</div>
