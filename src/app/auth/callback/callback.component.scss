@@ -1,0 +1,87 @@
+.callback-theme {
+  --background: #ffffff;
+
+  .auth-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    text-align: center;
+  }
+
+  .animation-wrapper {
+    position: relative;
+    margin-bottom: 50px;
+
+    .icon-box {
+      width: 90px;
+      height: 90px;
+      background: #2e6bd4; // Your corporate blue
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 2.2rem;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 12px 24px rgba(0, 70, 190, 0.15);
+    }
+
+    .pulse-ring {
+      position: absolute;
+      top: 0; left: 0;
+      width: 90px; height: 90px;
+      border: 2px solid #0046be;
+      border-radius: 50%;
+      animation: pulse-ring 2s infinite ease-out;
+      z-index: 1;
+    }
+  }
+
+  .status-text {
+    margin-bottom: 40px;
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #1e293b;
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+    }
+    p {
+      color: #64748b;
+      font-size: 1rem;
+      line-height: 1.5;
+      max-width: 280px;
+      margin: 0 auto;
+    }
+  }
+
+  .loader-wrapper {
+    width: 220px;
+    margin-bottom: 50px;
+    ion-progress-bar {
+      height: 8px;
+      border-radius: 20px;
+    }
+  }
+
+  .security-note {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #94a3b8;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+}
+
+// Security Pulse Animation
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(2.2); opacity: 0; }
+}

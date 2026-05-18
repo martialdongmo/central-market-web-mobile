@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
-import { CatalogQueryParams } from '../model/catalog-query-params.model';
+import { CatalogQueryParams } from '../model/utils/catalog-query-params.model';
 import { CatalogProductResponse } from '../model/catalog-product-response.model';
-import { PageResponse } from '../model/page-response.model';
+import { PageResponse } from '../model/response/page-response.model';
 import { MOCK_PRODUCTS } from './mock-data';
 
 @Injectable({ providedIn: 'root' })
 export class Catalogue {
+
+
   private page(params?: CatalogQueryParams): Observable<PageResponse<CatalogProductResponse>> {
     let list = [...MOCK_PRODUCTS];
     if (params?.keyword)      list = list.filter(p => p.productName.toLowerCase().includes(params.keyword!.toLowerCase()) || p.shopName.toLowerCase().includes(params.keyword!.toLowerCase()));
