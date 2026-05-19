@@ -52,5 +52,5 @@ jobs:
           push: true
           platforms: linux/amd64
           tags: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/central-market-web:latest
+            ${{ secrets.DOCKER_HUB_USERNAME }}/central-market-web:v1.0.0
             ${{ secrets.DOCKER_HUB_USERNAME }}/central-market-web:${{ github.sha }}
