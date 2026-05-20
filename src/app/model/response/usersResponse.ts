@@ -14,5 +14,6 @@ export interface UserResponse {
     mfaSecret: string;
 
     failedLoginAttempts: number;
-    lastLogin: string;      
+    lastLogin: string;   
+    roles: string;   
 }
