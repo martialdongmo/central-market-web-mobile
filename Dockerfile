@@ -1,5 +1,5 @@
 # =========================
-# 1️ Build stage
+# 1️ Build stage   central-market-web-mobile
 # =========================
 FROM node:22-alpine AS build
 
