@@ -21,7 +21,6 @@ import {
   storefrontOutline
 } from 'ionicons/icons';
 import { CatalogQueryParams } from '../model/utils/catalog-query-params.model';
-import { Catalogue } from '../services/catalogue';
 import { Subscription, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { CategoryResponse } from '../model/response/categoryResponse';
@@ -96,7 +95,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
   // ─── lifecycle ────────────────────────────────────────────────────────────
 
   ngOnInit() {
-    this.loadUser();
+    // this.loadUser();
     this.locationService.getCurrentLocation();  // get user location for nearby sorting
     this.loadProducts();
     this.loadCategories();
