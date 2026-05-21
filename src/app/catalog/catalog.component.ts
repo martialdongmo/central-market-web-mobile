@@ -167,10 +167,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
   }
 
   loadCategories() {
-    this.categoryService.getAllCategories().subscribe({
-      next: cats => { this.categories = cats; this.cdr.markForCheck(); },
-      error: err => console.error('Failed to load categories', err),
-    });
+    // todo:
   }
 
    loadUser() {
