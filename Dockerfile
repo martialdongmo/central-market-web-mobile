@@ -29,6 +29,8 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # Copy built files from build stage
 COPY --from=build /app/www /usr/share/nginx/html
 
-EXPOSE 80
+# EXPOSE 80
+EXPOSE 443
+
 
 CMD ["nginx", "-g", "daemon off;"]
