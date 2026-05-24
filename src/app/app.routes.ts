@@ -7,15 +7,17 @@ import { VerifyOtpComponent } from './auth/verify-otp/verify-otp.component';
 
 export const routes: Routes = [
 
-  {
-    path: 'catalog',
-    loadComponent: () => import('./catalog/catalog.component').then(m => m.CatalogComponent)
-  },
-
-  {
+ {
     path: '',
     redirectTo: 'catalog',
     pathMatch: 'full'
+  },
+
+  {
+    path: 'catalog',
+    loadComponent: () =>
+      import('./catalog/catalog.component')
+        .then(m => m.CatalogComponent)
   },
 
   {
