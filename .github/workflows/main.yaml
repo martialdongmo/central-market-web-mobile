@@ -7,9 +7,8 @@ on:
 
   pull_request:
     branches:
-      - main
       - deployment
-      - test
+      - development
 
 jobs:
   build-and-push:
