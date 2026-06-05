@@ -71,3 +71,5 @@ jobs:
             docker compose up -d --remove-orphans central-market-web
 
             docker image prune -f
+
+            # Optional: Check container status
