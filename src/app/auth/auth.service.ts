@@ -160,8 +160,7 @@ export class AuthService {
 
   verifyOtp(request: VerifyOtpRequest): Observable<string> {
     return this.http.post(
-      `${this.API_URL}/api/v1/bis/auth/verify-otp`,
-      request,
+      `${this.API_URL}/api/v1/bis/auth/verify-otp`,request,
       { responseType: 'text' }
     );
   }

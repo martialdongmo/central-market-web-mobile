@@ -9,14 +9,14 @@ import { IonContent, IonIcon, NavController } from '@ionic/angular/standalone';
   selector: 'app-verify-otp',
   templateUrl: './verify-otp.component.html',
   styleUrl: './verify-otp.component.scss',
-  imports: [IonContent, IonIcon,ReactiveFormsModule],
+  imports: [IonContent, IonIcon, ReactiveFormsModule],
 })
-export class VerifyOtpComponent  implements OnInit {
+export class VerifyOtpComponent implements OnInit {
 
   private authService = inject(AuthService);
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
-   public navCtrl = inject(NavController);
+  public navCtrl = inject(NavController);
 
   otpForm = this.fb.group({
     email: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
@@ -31,12 +31,12 @@ export class VerifyOtpComponent  implements OnInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-    const email = params['email'];
+      const email = params['email'];
 
-    if (email) {
-      this.otpForm.patchValue({ email });
-    }
-  });
+      if (email) {
+        this.otpForm.patchValue({ email });
+      }
+    });
   }
 
   onVerifyOtp() {
@@ -48,27 +48,25 @@ export class VerifyOtpComponent  implements OnInit {
 
 
     const request: VerifyOtpRequest = {
-  email: this.otpForm.getRawValue().email!,
-  code: this.otpForm.value.otp!
-};
+      email: this.otpForm.getRawValue().email!,
+      code: this.otpForm.value.otp!
+    };
 
     this.authService.verifyOtp(request).subscribe({
       next: (response) => {
-        console.log('OTP verification successful', response); 
+        console.log('OTP verification successful', response);
         this.messageSuccess = 'OTP verified successfully!';
         this.messageError = '';
         this.isLoading = false;
-         this.navCtrl.navigateRoot('/secure-app');
+        this.navCtrl.navigateRoot('/secure-app');
       },
       error: (err) => {
-        console.error('OTP verification failed', err); 
+        console.error('OTP verification failed', err);
         this.messageError = 'Failed to verify OTP. Please try again.';
         this.isLoading = false;
       }
     });
 
   }
-
-       
 
 }

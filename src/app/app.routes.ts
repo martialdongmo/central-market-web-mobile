@@ -4,6 +4,7 @@ import { CallbackComponent } from './auth/callback/callback.component';
 import { authGuard } from './auth/guards/auth-guard';
 import { ConfirmationOrderComponent } from './orders/confirmation-order/confirmation-order.component';
 import { VerifyOtpComponent } from './auth/verify-otp/verify-otp.component';
+import { CatalogComponent } from './catalog/catalog.component';
 
 export const routes: Routes = [
 
@@ -15,9 +16,8 @@ export const routes: Routes = [
 
   {
     path: 'catalog',
-    loadComponent: () =>
-      import('./catalog/catalog.component')
-        .then(m => m.CatalogComponent)
+    component:CatalogComponent,
+    title: 'Catalog'
   },
 
   {

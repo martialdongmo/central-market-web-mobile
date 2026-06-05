@@ -1,7 +1,7 @@
 export interface DeliveryAddressRequest{
-    label?: string;
+         label?: string;
         addressLine: string;
-         fullName: string;
+        fullName: string;
         city: string;
         region?: string;
         latitude: string;

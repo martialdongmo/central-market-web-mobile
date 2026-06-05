@@ -7,8 +7,8 @@ import { environment } from 'src/environments/environment.development';
 })
 export class TokenService {
   
-  private ACCESS_TOKEN_KEY = 'access_token';
-  private REFRESH_TOKEN_KEY = 'refresh_token';
+  private ACCESS_TOKEN_KEY = 'CENTRAL_MARKET_MOBILE_ACCESS_TOKEN';
+  private REFRESH_TOKEN_KEY = 'CENTRAL_MARKET_MOBILE_REFRESH_TOKEN';
   private AUTH_ENDPOINT = environment.AUTH_API_URL;
 
   constructor() { }
@@ -29,6 +29,7 @@ export class TokenService {
   // Get refresh token
   async getRefreshToken(): Promise<string | null> {
     const { value } = await Preferences.get({ key: this.REFRESH_TOKEN_KEY });
+    console.log("Retrieved refresh token:", value);  // 👈 DEBUG
     return value;
   }
 

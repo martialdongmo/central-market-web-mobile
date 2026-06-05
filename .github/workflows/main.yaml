@@ -12,7 +12,7 @@ on:
       - test
 
 jobs:
-  build-deploy:
+  build-and-push:
     name: Build and Deploy Web App
     runs-on: ubuntu-latest
 
@@ -52,5 +52,30 @@ jobs:
           push: true
           platforms: linux/amd64
           tags: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/central-market-web:v1.0.0
-            ${{ secrets.DOCKER_HUB_USERNAME }}/central-market-web:${{ github.sha }}
+            ${{ secrets.DOCKER_HUB_USERNAME }}/central-market-web:latest
+            ${{ secrets.DOCKER_HUB_USERNAME }}/central-market-web:${{ secrets.IMAGE_TAG }}
+  
+      # Deploy to server using SSH
+  deploy-to-vps:
+    name: Deploy to VPS
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/deployment'
+    steps:
+      - name: SSH & Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          script: |
+            cd ~/central-market-app
+
+            echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login \
+              -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+
+            docker compose pull central-market-web
+            docker compose up -d --remove-orphans central-market-web
+
+            docker image prune -f

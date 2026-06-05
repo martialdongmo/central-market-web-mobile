@@ -34,7 +34,7 @@ import {
   selector: 'app-checkout',
   standalone: true,
   imports: [CommonModule, IonContent, IonIcon, ReactiveFormsModule, IonHeader, IonButtons, 
-    IonToolbar, IonTitle, IonButton, IonSpinner, IonSkeletonText, IonFooter, IonToggle,
+    IonToolbar, IonTitle, IonButton, IonSpinner, IonSkeletonText, IonToggle,
   CustomCurrencyPipe,CommonModule,ReactiveFormsModule, UpperCasePipe,
 ],
   templateUrl: './checkout.component.html',
@@ -117,7 +117,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 }
 
  
-
   ngOnInit(): void {
     this.locationService.getCurrentLocation();
     this.loadUser();
@@ -176,7 +175,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           this.customer = customer;
 
           const orderRequest = this.buildOrderRequest(customer, this.user!);
-          console.log('▶ OrderRequest payload:', JSON.stringify(orderRequest, null, 2));
+          console.log(' OrderRequest payload:', JSON.stringify(orderRequest, null, 2));
 
           return this.orderService.createNewOrder(
             orderRequest
