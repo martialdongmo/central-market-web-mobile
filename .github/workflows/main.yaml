@@ -3,6 +3,7 @@ name: Central Market Web Mobile CI/CD
 on:
   push:
     branches:
+      - deployment
       - sidof-dev
 
   pull_request:
