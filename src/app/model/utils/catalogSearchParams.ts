@@ -1,4 +1,5 @@
-export interface CatalogQueryParams {
+export interface CatalogSearchParams {
+
   inStockOnly?: boolean;
   promotionOnly?: boolean;
 
@@ -7,11 +8,11 @@ export interface CatalogQueryParams {
 
   lat?: number;
   lng?: number;
-  radiusKm?: number;
 
-  keyword?: string;
-  categoryId?: string;
+  radiusKm?: number;
 
   page?: number;
   size?: number;
+
+  sort?: string;
 }

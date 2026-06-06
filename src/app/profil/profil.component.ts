@@ -7,9 +7,10 @@ import {
   personCircleOutline, shieldCheckmark, bagOutline, heartOutline,
   locationOutline, cardOutline, settingsOutline, chevronForward, logOutOutline
 } from 'ionicons/icons';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../auth/auth.service';
 import { OrderService } from '../services/order.service';
 import { Subscription } from 'rxjs';
+import { UserResponse } from '../model/response/usersResponse';
 
 @Component({
   selector: 'app-profil',
@@ -19,6 +20,8 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./profil.component.scss'],
 })
 export class ProfilComponent implements OnInit, OnDestroy {
+
+  user:UserResponse | null = null;
   isLoggedIn = false;
   userName = '';
   userEmail = '';
@@ -39,16 +42,23 @@ export class ProfilComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.subs.push(
-      this.authService.user$.subscribe(user => {
-        this.isLoggedIn = !!user;
-        this.userName  = user?.name ?? '';
-        this.userEmail = user?.email ?? '';
-      }),
-      this.orderService.orders$.subscribe(orders => {
-        this.ordersCount = orders.length;
-      })
-    );
+
+
+     this.me();
+
+  }
+
+   me():void{
+    this.authService.me().subscribe({
+      next: (response) => {
+        this.user = response;
+        console.log('User info:', response);
+      },
+      error: (err) => {
+        console.error('Error fetching user info:', err);
+        alert('Failed to fetch user info. Check console for details.');
+      }
+    });
   }
 
   ngOnDestroy() { this.subs.forEach(s => s.unsubscribe()); }

@@ -1,0 +1,89 @@
+<ion-content class="auth-page">
+
+  <!-- HEADER -->
+  <div class="auth-header">
+    <button class="auth-back-btn" (click)="navCtrl.back()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </button>
+  </div>
+
+  <div class="auth-body">
+
+    <h1 class="auth-title">Verify OTP</h1>
+    <p class="auth-sub">Enter the code sent to your email</p>
+
+    <!-- FORM -->
+    <form [formGroup]="otpForm" (ngSubmit)="onVerifyOtp()">
+
+      <!-- EMAIL (DISABLED BUT STILL DISPLAYED) -->
+      <div class="auth-field">
+        <label>Email</label>
+
+        <div class="input-box disabled">
+          <ion-icon name="mail-outline"></ion-icon>
+
+          <!-- IMPORTANT: still formControlName works even if disabled -->
+          <input type="email" formControlName="email" readonly>
+        </div>
+
+      </div>
+
+      <!-- OTP INPUT -->
+      <div class="auth-field">
+        <label>OTP Code</label>
+
+        <div class="input-box">
+          <ion-icon name="key-outline"></ion-icon>
+
+          <input
+            type="text"
+            formControlName="otp"
+            maxlength="6"
+            placeholder="6-digit code"
+            inputmode="numeric"
+          >
+        </div>
+
+        <!-- validation hint -->
+        @if (otpForm.controls['otp'].invalid && otpForm.controls['otp'].touched) {
+          <small class="error-text">
+            Enter a valid 6-digit code
+          </small>
+        }
+
+      </div>
+
+      <!-- ERROR -->
+      @if (messageError) {
+        <div class="error-box">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          {{ messageError }}
+        </div>
+      }
+
+      <!-- SUCCESS -->
+      @if (messageSuccess) {
+        <div class="success-box">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          {{ messageSuccess }}
+        </div>
+      }
+
+      <!-- BUTTON -->
+      <button type="submit"
+              class="primary-btn"
+              [disabled]="isLoading || otpForm.invalid">
+
+        @if (!isLoading) {
+          <span>Verify OTP</span>
+        } @else {
+          <div class="spinner"></div>
+        }
+
+      </button>
+
+    </form>
+
+  </div>
+
+</ion-content>

@@ -7,6 +7,7 @@ export interface PageResponse<T> {
     offset: number;
     paged: boolean;
     unpaged: boolean;
+    
   };
 
   totalElements: number;

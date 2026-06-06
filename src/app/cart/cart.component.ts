@@ -1,11 +1,13 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonContent, IonIcon, NavController } from '@ionic/angular/standalone';
-import { Cart, CartItem } from '../services/cart';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../auth/auth.service';
 import { Subscription } from 'rxjs';
 import { addIcons } from 'ionicons';
 import { trashOutline, arrowForwardOutline, cartOutline } from 'ionicons/icons';
+import { CartService } from '../services/cart.service';
+import { CartItem } from '../model/cartItem';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-cart',
@@ -15,15 +17,19 @@ import { trashOutline, arrowForwardOutline, cartOutline } from 'ionicons/icons';
   styleUrls: ['./cart.component.scss'],
 })
 export class CartComponent implements OnInit, OnDestroy {
+ 
+
   cartItems: CartItem[] = [];
   totalPrice = 0;
+
   private sub!: Subscription;
 
-  constructor(
-    private cartService: Cart,
-    private authService: AuthService,
-    private navCtrl: NavController,
-  ) {
+  private cartService = inject(CartService);
+  private authService = inject(AuthService);
+  private navCtrl = inject(NavController);
+  private router = inject(Router);
+
+  constructor() {
     addIcons({ trashOutline, arrowForwardOutline, cartOutline });
   }
 
@@ -33,19 +39,34 @@ export class CartComponent implements OnInit, OnDestroy {
       this.totalPrice = this.cartService.getTotalPrice();
     });
   }
-  ngOnDestroy() { this.sub?.unsubscribe(); }
 
-  goToCatalog() { this.navCtrl.navigateRoot('/catalog'); }
-  removeItem(id: string) { this.cartService.removeItem(id); }
-  addQty(p: any) { this.cartService.addToCart(p); }
-  removeQty(id: string) { this.cartService.decreaseQuantity(id); }
+  ngOnDestroy() {
+    this.sub?.unsubscribe();
+  }
+
+  // =========================
+  // UI ACTIONS
+  // =========================
+
+  goToCatalog() {
+    this.navCtrl.navigateRoot('/catalog');
+  }
+
+  removeItem(id: string) {
+    this.cartService.removeItem(id);
+  }
+
+  addQty(item: CartItem) {
+    // reuse product-like structure from cart item
+    this.cartService.addToCart(item as any);
+  }
+
+  removeQty(id: string) {
+    this.cartService.decreaseQuantity(id);
+  }
 
   checkout() {
-    if (!this.authService.isLoggedIn) {
-      // Redirige vers login avec retour au checkout après
-      this.navCtrl.navigateForward('/login', { queryParams: { redirect: 'checkout' } });
-    } else {
-      this.navCtrl.navigateForward('/checkout');
-    }
+    // TODO: implement order flow
+    this.router.navigate(['/checkout']);
   }
 }

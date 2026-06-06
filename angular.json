@@ -49,13 +49,13 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "1mb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "5mb",
+                  "maximumError": "5mb"
                 }
               ],
               "fileReplacements": [
                 {
-                  "replace": "src/environments/environment.ts",
+                  "replace": "src/environments/environment.development.ts",
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
@@ -68,7 +68,7 @@
               "namedChunks": true,
               "fileReplacements": [
                 {
-                  "replace": "src/environments/environment.ts",
+                  "replace": "src/environments/environment.prod.ts",
                   "with": "src/environments/environment.development.ts"
                 }
               ]

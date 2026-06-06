@@ -1,14 +1,19 @@
 import { Injectable } from '@angular/core';
-import { CatalogProductResponse } from '../model/catalog-product-response.model';
 import { BehaviorSubject } from 'rxjs';
+import { CatalogProductResponse } from '../model/response/catalogProductResponse';
+
+
 export interface CartItem extends CatalogProductResponse {
   quantity: number;
 }
+
+
 @Injectable({
   providedIn: 'root',
 })
 
 export class Cart {
+  
 // Liste interne des articles
   private items: CartItem[] = [];
 
@@ -61,6 +66,7 @@ export class Cart {
   getTotalPrice(): number {
     return this.items.reduce((total, item) => {
       const price = item.promotionPrice || item.price;
+      
       return total + (price * item.quantity);
     }, 0);
   }

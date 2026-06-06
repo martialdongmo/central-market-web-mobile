@@ -1,56 +1,109 @@
-<div class="auth-header">
-  <button class="auth-back-btn" (click)="navCtrl.back()">
-    <ion-icon name="arrow-back-outline"></ion-icon>
-  </button>
-</div>
+<ion-content class="auth-page">
 
-<ion-content>
-  <div class="auth-body">
-    <h1 class="auth-title">Créer un<br>compte.</h1>
-    <p class="auth-sub">Rejoignez notre communauté shopping.</p>
-
-    <div class="auth-field">
-      <label class="auth-label">Nom complet</label>
-      <div class="auth-input-wrap">
-        <div class="auth-input-icon"><ion-icon name="person-outline"></ion-icon></div>
-        <input type="text" placeholder="John Doe" [(ngModel)]="name">
-      </div>
-    </div>
-    <div class="auth-field">
-      <label class="auth-label">Email</label>
-      <div class="auth-input-wrap">
-        <div class="auth-input-icon"><ion-icon name="mail-outline"></ion-icon></div>
-        <input type="email" placeholder="votre@email.com" [(ngModel)]="email">
-      </div>
-    </div>
-    <div class="auth-field">
-      <label class="auth-label">Mot de passe</label>
-      <div class="auth-input-wrap">
-        <div class="auth-input-icon"><ion-icon name="lock-closed-outline"></ion-icon></div>
-        <input type="password" placeholder="Min. 8 caractères" [(ngModel)]="password">
-      </div>
-    </div>
-    <div class="auth-field">
-      <label class="auth-label">Confirmer</label>
-      <div class="auth-input-wrap">
-        <div class="auth-input-icon"><ion-icon name="lock-closed-outline"></ion-icon></div>
-        <input type="password" placeholder="Répétez le mot de passe" [(ngModel)]="confirm">
-      </div>
-    </div>
-
-    <div *ngIf="errorMsg" class="auth-error">
-      <ion-icon name="alert-circle-outline"></ion-icon>
-      {{ errorMsg }}
-    </div>
-
-    <button class="auth-submit-btn" (click)="register()" [class.loading]="isLoading">
-      <span *ngIf="!isLoading">S'INSCRIRE MAINTENANT</span>
-      <div *ngIf="isLoading" class="btn-spinner"></div>
+  <!-- HEADER -->
+  <div class="auth-header">
+    <button class="auth-back-btn" (click)="navCtrl.back()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
     </button>
-
-    <div class="auth-switch">
-      <p>Vous avez déjà un compte ?</p>
-      <button routerLink="/login">SE CONNECTER</button>
-    </div>
   </div>
+
+  <div class="auth-body">
+
+    <h1 class="auth-title">Create account</h1>
+    <p class="auth-sub">Join Central Market today</p>
+
+    <!-- FORM -->
+    <form [formGroup]="registerForm" (ngSubmit)="register()">
+
+      <!-- FIRST NAME -->
+      <div class="auth-field">
+        <label>First name</label>
+        <div class="input-box">
+          <ion-icon name="person-outline"></ion-icon>
+          <input type="text" formControlName="firstName" placeholder="John">
+        </div>
+      </div>
+
+      <!-- LAST NAME -->
+      <div class="auth-field">
+        <label>Last name</label>
+        <div class="input-box">
+          <ion-icon name="person-outline"></ion-icon>
+          <input type="text" formControlName="lastName" placeholder="Doe">
+        </div>
+      </div>
+
+      <!-- USERNAME -->
+      <div class="auth-field">
+        <label>Username</label>
+        <div class="input-box">
+          <ion-icon name="at-outline"></ion-icon>
+          <input type="text" formControlName="username" placeholder="johndoe">
+        </div>
+      </div>
+
+      <!-- EMAIL -->
+      <div class="auth-field">
+        <label>Email</label>
+        <div class="input-box">
+          <ion-icon name="mail-outline"></ion-icon>
+          <input type="email" formControlName="email" placeholder="you@email.com">
+        </div>
+      </div>
+
+      <!-- PHONE -->
+      <div class="auth-field">
+        <label>Phone number</label>
+        <div class="input-box">
+          <ion-icon name="call-outline"></ion-icon>
+          <input type="text" formControlName="phoneNumber" placeholder="+237...">
+        </div>
+      </div>
+
+      <!-- PASSWORD -->
+      <div class="auth-field">
+        <label>Password</label>
+        <div class="input-box">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+          <input type="password" formControlName="password" placeholder="Min 6 characters">
+        </div>
+      </div>
+
+      <!-- ERROR -->
+      @if (errorMessage) {
+        <div class="error-box">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          {{ errorMessage }}
+        </div>
+      }
+
+      <!-- SUCCESS -->
+      @if (successMessage) {
+        <div class="success-box">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          {{ successMessage }}
+        </div>
+      }
+
+      <!-- BUTTON -->
+      <button type="submit" class="primary-btn" [disabled]="isLoading || registerForm.invalid">
+
+        @if (!isLoading) {
+          <span>Create account</span>
+        } @else {
+          <div class="spinner"></div>
+        }
+
+      </button>
+
+    </form>
+
+    <!-- LOGIN SWITCH -->
+    <div class="switch">
+      <span>Already have an account?</span>
+      <button routerLink="/secure-app">Sign in</button>
+    </div>
+
+  </div>
+
 </ion-content>
