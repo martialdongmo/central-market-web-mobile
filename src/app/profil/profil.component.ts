@@ -5,12 +5,12 @@ import { IonContent, IonIcon, NavController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   personCircleOutline, shieldCheckmark, bagOutline, heartOutline,
-  locationOutline, cardOutline, settingsOutline, chevronForward, logOutOutline
+  locationOutline, cardOutline, settingsOutline, chevronForward, logOutOutline,
 } from 'ionicons/icons';
 import { AuthService } from '../auth/auth.service';
-import { OrderService } from '../services/order.service';
 import { Subscription } from 'rxjs';
 import { UserResponse } from '../model/response/usersResponse';
+import { CustomerOrderService } from '../services/order.service';
 
 @Component({
   selector: 'app-profil',
@@ -21,51 +21,48 @@ import { UserResponse } from '../model/response/usersResponse';
 })
 export class ProfilComponent implements OnInit, OnDestroy {
 
-  user:UserResponse | null = null;
-  isLoggedIn = false;
-  userName = '';
-  userEmail = '';
+  user: UserResponse | null = null;
   ordersCount = 0;
-  get userInitial(): string { return this.userName.charAt(0).toUpperCase(); }
+
+  get userInitial(): string {
+    return (this.user?.firstName ?? this.user?.lastName ?? '?').charAt(0).toUpperCase();
+  }
 
   private subs: Subscription[] = [];
 
   constructor(
     private authService: AuthService,
-    private orderService: OrderService,
+    private orderService: CustomerOrderService,
     public navCtrl: NavController,
   ) {
     addIcons({
       personCircleOutline, shieldCheckmark, bagOutline, heartOutline,
-      locationOutline, cardOutline, settingsOutline, chevronForward, logOutOutline
+      locationOutline, cardOutline, settingsOutline, chevronForward, logOutOutline,
     });
   }
 
-  ngOnInit() {
-
-
-     this.me();
-
+  ngOnInit(): void {
+    this.me();
+    this.loadOrdersCount();
   }
 
-   me():void{
+  me(): void {
     this.authService.me().subscribe({
-      next: (response) => {
-        this.user = response;
-        console.log('User info:', response);
-      },
-      error: (err) => {
-        console.error('Error fetching user info:', err);
-        alert('Failed to fetch user info. Check console for details.');
-      }
+      next: (response) => { this.user = response; },
+      error: (err) => { console.error('Error fetching user info:', err); },
     });
   }
 
-  ngOnDestroy() { this.subs.forEach(s => s.unsubscribe()); }
-
-  goToOrders() { this.navCtrl.navigateForward('/orders'); }
-
-  logout() {
-    this.authService.logout();
+  private loadOrdersCount(): void {
+    const sub = this.orderService
+      .getMyOrders({ page: 0, size: 1 })
+      .subscribe(page => { this.ordersCount = page.totalElements; });
+    this.subs.push(sub);
   }
+
+  ngOnDestroy(): void { this.subs.forEach(s => s.unsubscribe()); }
+
+  goToOrders(): void { this.navCtrl.navigateForward('/orders'); }
+
+  logout(): void { this.authService.logout(); }
 }
