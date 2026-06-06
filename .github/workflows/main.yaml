@@ -5,7 +5,6 @@ on:
     branches:
       - deployment
       - sidof-dev
-
   pull_request:
     branches:
       - main
@@ -14,38 +13,32 @@ on:
 
 jobs:
   build-and-push:
-    name: Build and Deploy Web App
+    name: Build & Push Docker Image
     runs-on: ubuntu-latest
-
     steps:
-      # Checkout source code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Setup Node.js
       - name: Use Node.js 22
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
 
-      # Install dependencies
       - name: Install dependencies
         run: npm ci
 
-      # Build application
       - name: Build the app
         run: npm run build --if-present
 
-      # Docker login
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      # Build & Push Docker image
       - name: Build and push Docker image
+        if: github.ref == 'refs/heads/sidof-dev'
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -55,13 +48,12 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_HUB_USERNAME }}/central-market-web:latest
             ${{ secrets.DOCKER_HUB_USERNAME }}/central-market-web:${{ secrets.IMAGE_TAG }}
-  
-      # Deploy to server using SSH
+
   deploy-to-vps:
     name: Deploy to VPS
     needs: build-and-push
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/deployment'
+    if: github.ref == 'refs/heads/sidof-dev'
     steps:
       - name: SSH & Deploy to VPS
         uses: appleboy/ssh-action@v1.0.3
@@ -80,3 +72,5 @@ jobs:
             docker compose up -d --remove-orphans central-market-web
 
             docker image prune -f
+
+          

@@ -1,104 +1,234 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { CartItem } from './cart';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { environment } from 'src/environments/environment.prod';
 
-export type OrderStatus = 'confirmed' | 'preparing' | 'shipped' | 'delivered';
+// ══════════════════════════════════════════════════════
+//  ENUMS  (from API contract)
+// ══════════════════════════════════════════════════════
+export const OrderStatus = {
+  CREATED:              'CREATED',
+  DRAFF:                'DRAFF',
+  PAYMENT_PENDING:      'PAYMENT_PENDING',
+  PENDING_CONFIRMATION: 'PENDING_CONFIRMATION',
+  PAID:                 'PAID',
+  CONFIRMED:            'CONFIRMED',
+  SHIPPED:              'SHIPPED',
+  DELIVERED:            'DELIVERED',
+  COMPLETED:            'COMPLETED',
+  CANCELED:             'CANCELED',
+  FAILED:               'FAILED',
+} as const;
+export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus];
+
+export const PaymentMethod = {
+  CASH:             'CASH',
+  ORANGE_MONEY:     'ORANGE_MONEY',
+  MTN_MOBILE_MONEY: 'MTN_MOBILE_MONEY',
+  PAYPAL:           'PAYPAL',
+  CREDIT_CARD:      'CREDIT_CARD',
+} as const;
+export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod];
+
+export const DeliveryType = {
+  DELIVERY: 'DELIVERY',
+  PICKUP:   'PICKUP',
+} as const;
+export type DeliveryType = (typeof DeliveryType)[keyof typeof DeliveryType];
+
+// ══════════════════════════════════════════════════════
+//  MODELS  (from API contract)
+// ══════════════════════════════════════════════════════
+
+/** Used in paginated list screens */
+export interface OrderSummaryResponse {
+  id:            string;
+  reference:     string;
+  status:        OrderStatus;
+  totalAmount:   number;
+  deliveryFee:   number;
+  paymentMethod: PaymentMethod;
+  deliveryType:  DeliveryType;
+  itemCount:     number;
+  createdAt:     string;
+}
+
+/** Single item inside an order */
+export interface OrderItemResponse {
+  productId:       string;
+  productName:     string;
+  imageUrl:        string;
+  priceAtPurchase: number;
+  quantity:        number;
+  shopId:          string;
+  shopName:        string;
+}
+
+/** Full detail — returns ALL products across all shops */
+export interface CustomerOrderDetailResponse {
+  id:                  string;
+  reference:           string;
+  status:              OrderStatus;
+  subtotalAmount:      number;
+  deliveryFee:         number;
+  totalAmount:         number;
+  paymentMethod:       PaymentMethod;
+  deliveryType:        DeliveryType;
+  deliveryAddressId:   string;
+  addressLine:         string;
+  customerFullName:    string;
+  customerPhoneNumber: string;
+  note:                string;
+  createdAt:           string;
+  items:               OrderItemResponse[];
+}
+
+/** Generic pagination wrapper */
+export interface PageResponse<T> {
+  content:       T[];
+  page:          number;
+  size:          number;
+  totalElements: number;
+  totalPages:    number;
+  first:         boolean;
+  last:          boolean;
+}
+
+// ══════════════════════════════════════════════════════
+//  LOCAL TRACKING  (for real-time UI simulation)
+// ══════════════════════════════════════════════════════
+export type TrackingStatus = 'confirmed' | 'preparing' | 'shipped' | 'delivered';
 
 export interface OrderStep {
-  status: OrderStatus;
-  label: string;
+  status:      TrackingStatus;
+  label:       string;
   description: string;
-  time?: string;
-  done: boolean;
-  active: boolean;
+  time?:       string;
+  done:        boolean;
+  active:      boolean;
 }
 
-export interface Order {
-  id: string;
-  date: Date;
-  items: CartItem[];
-  total: number;
-  status: OrderStatus;
-  estimatedDelivery: string;
-  address: string;
-  trackingSteps: OrderStep[];
-}
-
+// ══════════════════════════════════════════════════════
+//  SERVICE
+// ══════════════════════════════════════════════════════
 @Injectable({ providedIn: 'root' })
-export class OrderService {
-  private ordersSource = new BehaviorSubject<Order[]>([]);
-  orders$ = this.ordersSource.asObservable();
+export class CustomerOrderService {
 
-  get orders(): Order[] { return this.ordersSource.value; }
+  private readonly base = `${environment.orderEndpoint}`;
+  private http = inject(HttpClient);
 
-  placeOrder(items: CartItem[], total: number, address: string): Order {
-    const id = `CM-${Date.now().toString().slice(-6)}`;
-    const now = new Date();
+  private emptyPage: PageResponse<OrderSummaryResponse> = {
+    content: [], page: 0, size: 20,
+    totalElements: 0, totalPages: 0, first: true, last: true,
+  };
 
-    const order: Order = {
-      id,
-      date: now,
-      items: [...items],
-      total,
-      status: 'confirmed',
-      estimatedDelivery: this.getEstimatedDelivery(),
-      address,
-      trackingSteps: this.buildSteps('confirmed', now),
+  // ── LIST ──────────────────────────────────────────
+  /**
+   * GET /api/v1/bis/orders/customer
+   * Returns paginated orders for the authenticated customer.
+   */
+  getMyOrders(params?: {
+    page?:   number;
+    size?:   number;
+    status?: OrderStatus;
+    from?:   string;   // yyyy-MM-dd
+    to?:     string;   // yyyy-MM-dd
+  }): Observable<PageResponse<OrderSummaryResponse>> {
+    const p = this.buildParams(params);
+    return this.http
+      .get<PageResponse<OrderSummaryResponse>>(`${this.base}/customer`, { params: p })
+      .pipe(catchError(() => of(this.emptyPage)));
+  }
+
+  // ── DETAIL ────────────────────────────────────────
+  /**
+   * GET /api/v1/bis/orders/customer/:orderId
+   * Returns full order detail with ALL items (across all shops).
+   */
+  getOrderDetail(orderId: string): Observable<CustomerOrderDetailResponse | undefined> {
+    return this.http
+      .get<CustomerOrderDetailResponse>(`${this.base}/customer/${orderId}`)
+      .pipe(catchError(() => of(undefined)));
+  }
+
+  // ── CANCEL ────────────────────────────────────────
+  /**
+   * PATCH /api/v1/bis/orders/:orderId/cancel
+   * Allows the customer to cancel their order.
+   */
+  cancelOrder(orderId: string): Observable<void> {
+    return this.http
+      .patch<void>(`${this.base}/${orderId}/cancel`, {})
+      .pipe(catchError(() => of(void 0)));
+  }
+
+  // ══════════════════════════════════════════════════
+  //  LOCAL TRACKING HELPERS
+  //  Map API status → local TrackingStatus for UI
+  // ══════════════════════════════════════════════════
+
+  /** Maps API OrderStatus to a local TrackingStatus for the stepper UI */
+  toTrackingStatus(status: OrderStatus): TrackingStatus {
+    const map: { [key: string]: TrackingStatus } = {
+      CREATED:              'confirmed',
+      DRAFF:                'confirmed',
+      PAYMENT_PENDING:      'confirmed',
+      PENDING_CONFIRMATION: 'confirmed',
+      PAID:                 'confirmed',
+      CONFIRMED:            'confirmed',
+      SHIPPED:              'shipped',
+      DELIVERED:            'delivered',
+      COMPLETED:            'delivered',
+      CANCELED:             'confirmed',
+      FAILED:               'confirmed',
     };
-
-    const current = this.ordersSource.value;
-    this.ordersSource.next([order, ...current]);
-
-    // Simulate progression after delays
-    this.simulateProgression(id);
-
-    return order;
+    return map[status as string] ?? 'confirmed';
   }
 
-  getOrder(id: string): Order | undefined {
-    return this.ordersSource.value.find(o => o.id === id);
-  }
+  /** Builds the tracking steps array for the stepper UI */
+  buildTrackingSteps(status: OrderStatus, createdAt: string): OrderStep[] {
+    const trackingStatus = this.toTrackingStatus(status);
+    const statuses: TrackingStatus[] = ['confirmed', 'preparing', 'shipped', 'delivered'];
+    const currentIdx = statuses.indexOf(trackingStatus);
+    const orderDate = new Date(createdAt);
 
-  private simulateProgression(orderId: string) {
-    // preparing after 8s
-    setTimeout(() => this.advanceOrder(orderId, 'preparing'), 8000);
-    // shipped after 20s
-    setTimeout(() => this.advanceOrder(orderId, 'shipped'), 20000);
-  }
-
-  private advanceOrder(orderId: string, status: OrderStatus) {
-    const orders = this.ordersSource.value.map(o => {
-      if (o.id !== orderId) return o;
-      const now = new Date();
-      return { ...o, status, trackingSteps: this.buildSteps(status, o.date, now) };
-    });
-    this.ordersSource.next(orders);
-  }
-
-  private buildSteps(currentStatus: OrderStatus, orderDate: Date, now?: Date): OrderStep[] {
-    const statuses: OrderStatus[] = ['confirmed', 'preparing', 'shipped', 'delivered'];
-    const currentIdx = statuses.indexOf(currentStatus);
-    const t = now ?? orderDate;
-
-    const definitions = [
-      { status: 'confirmed' as OrderStatus, label: 'Commande confirmée', description: 'Votre commande a été reçue et validée.' },
-      { status: 'preparing' as OrderStatus, label: 'En préparation', description: 'Votre commande est en cours de préparation par le vendeur.' },
-      { status: 'shipped' as OrderStatus, label: 'En livraison', description: 'Votre colis est en route ! Le livreur arrive bientôt.' },
-      { status: 'delivered' as OrderStatus, label: 'Livré', description: 'Votre commande a été livrée avec succès.' },
+    const definitions: { status: TrackingStatus; label: string; description: string }[] = [
+      { status: 'confirmed',  label: 'Commande confirmée', description: 'Votre commande a été reçue et validée.' },
+      { status: 'preparing',  label: 'En préparation',     description: 'Votre commande est en cours de préparation par le vendeur.' },
+      { status: 'shipped',    label: 'En livraison',       description: 'Votre colis est en route ! Le livreur arrive bientôt.' },
+      { status: 'delivered',  label: 'Livré',              description: 'Votre commande a été livrée avec succès.' },
     ];
 
     return definitions.map((def, i) => ({
       ...def,
-      done: i < currentIdx,
+      done:   i < currentIdx,
       active: i === currentIdx,
-      time: i <= currentIdx ? this.formatTime(new Date(t.getTime() - (currentIdx - i) * 300000)) : undefined,
+      time:   i <= currentIdx
+        ? this.formatTime(new Date(orderDate.getTime() + i * 300000))
+        : undefined,
     }));
   }
 
-  private getEstimatedDelivery(): string {
-    const d = new Date();
+  /** Returns a human-readable estimated delivery string */
+  getEstimatedDelivery(createdAt: string): string {
+    const d = new Date(createdAt);
     d.setMinutes(d.getMinutes() + 30);
     return d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  // ── PRIVATE ───────────────────────────────────────
+  private buildParams(params?: {
+    page?: number; size?: number;
+    status?: OrderStatus; from?: string; to?: string;
+  }): HttpParams {
+    let p = new HttpParams();
+    if (params?.page   != null) p = p.set('page',   params.page);
+    if (params?.size   != null) p = p.set('size',   params.size);
+    if (params?.status)         p = p.set('status', params.status);
+    if (params?.from)           p = p.set('from',   params.from);
+    if (params?.to)             p = p.set('to',     params.to);
+    return p;
   }
 
   private formatTime(d: Date): string {
