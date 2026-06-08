@@ -1,100 +1,160 @@
 <!-- Header -->
-<div class="tracking-header" [class.delivered]="order?.status === 'delivered'">
+<div class="tracking-header" [class.delivered]="trackingStatus === 'delivered'">
   <button class="back-btn" (click)="goToOrders()">
     <ion-icon name="arrow-back-outline"></ion-icon>
   </button>
   <div class="header-center">
     <p class="header-label">Commande</p>
-    <h1 class="header-id">{{ order?.id }}</h1>
+    <h1 class="header-id">{{ order?.reference }}</h1>
   </div>
   <button class="help-btn">
     <ion-icon name="help-circle-outline"></ion-icon>
   </button>
 </div>
 
-<ion-content *ngIf="order">
+<ion-content>
 
-  <!-- Status hero card -->
-  <div class="status-hero" [class]="'status-' + order.status">
-    <div class="status-hero-icon">
-      <ion-icon [name]="statusIcon"></ion-icon>
+  @if (loading) {
+    <div class="loading-state">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Chargement...</p>
     </div>
-    <div class="status-hero-text">
-      <h2>{{ statusTitle }}</h2>
-      <p>{{ statusSubtitle }}</p>
-    </div>
-    <div *ngIf="order.status !== 'delivered'" class="eta-badge">
-      <ion-icon name="time-outline"></ion-icon>
-      <span>{{ order.estimatedDelivery }}</span>
-    </div>
-  </div>
+  }
 
-  <!-- Timeline tracking -->
-  <div class="tracking-card">
-    <h3 class="card-title">Suivi en temps réel</h3>
-    <div class="timeline">
-      <div *ngFor="let step of order.trackingSteps; let last = last"
-        class="timeline-step" [class.done]="step.done" [class.active]="step.active">
-        <div class="step-left">
-          <div class="step-dot">
-            <ion-icon *ngIf="step.done" name="checkmark"></ion-icon>
-            <div *ngIf="step.active" class="step-pulse"></div>
+  @if (!loading && order) {
+
+    <!-- Status hero card -->
+    <div class="status-hero" [class]="'status-' + trackingStatus">
+      <div class="status-hero-icon">
+        <ion-icon [name]="statusIcon"></ion-icon>
+      </div>
+      <div class="status-hero-text">
+        <h2>{{ statusTitle }}</h2>
+        <p>{{ statusSubtitle }}</p>
+      </div>
+      @if (trackingStatus !== 'delivered') {
+        <div class="eta-badge">
+          <ion-icon name="time-outline"></ion-icon>
+          <span>{{ estimatedDelivery }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- Timeline tracking -->
+    <div class="tracking-card">
+      <h3 class="card-title">Suivi en temps réel</h3>
+      <div class="timeline">
+        @for (step of trackingSteps; track step.status; let last = $last) {
+          <div class="timeline-step" [class.done]="step.done" [class.active]="step.active">
+            <div class="step-left">
+              <div class="step-dot">
+                @if (step.done) { <ion-icon name="checkmark"></ion-icon> }
+                @if (step.active) { <div class="step-pulse"></div> }
+              </div>
+              @if (!last) {
+                <div class="step-line" [class.filled]="step.done"></div>
+              }
+            </div>
+            <div class="step-content">
+              <p class="step-label">{{ step.label }}</p>
+              <p class="step-desc">{{ step.description }}</p>
+              @if (step.time) { <p class="step-time">{{ step.time }}</p> }
+            </div>
           </div>
-          <div *ngIf="!last" class="step-line" [class.filled]="step.done"></div>
+        }
+      </div>
+    </div>
+
+    <!-- Articles commandés -->
+    <div class="tracking-card">
+      <h3 class="card-title">Articles ({{ order.items.length }})</h3>
+      <div class="items-list">
+        @for (item of order.items; track item.productId) {
+          <div class="tracking-item">
+            <div class="tracking-item-img">
+              @if (item.imageUrl) {
+                <img [src]="item.imageUrl" [alt]="item.productName">
+              } @else {
+                <div class="img-placeholder"><ion-icon name="bag-outline"></ion-icon></div>
+              }
+            </div>
+            <div class="tracking-item-info">
+              <p class="tracking-item-name">{{ item.productName }}</p>
+              <p class="tracking-item-shop">{{ item.shopName }}</p>
+              <p class="tracking-item-qty">× {{ item.quantity }}</p>
+            </div>
+            <p class="tracking-item-price">
+              {{ item.priceAtPurchase * item.quantity | number:'1.0-0' }}
+              <small>FCFA</small>
+            </p>
+          </div>
+        }
+      </div>
+
+      <!-- Totaux -->
+      <div class="total-section">
+        <div class="total-row sub">
+          <span>Sous-total</span>
+          <span>{{ order.subtotalAmount | number:'1.0-0' }} FCFA</span>
         </div>
-        <div class="step-content">
-          <p class="step-label">{{ step.label }}</p>
-          <p class="step-desc">{{ step.description }}</p>
-          <p *ngIf="step.time" class="step-time">{{ step.time }}</p>
+        <div class="total-row sub">
+          <span>Frais de livraison</span>
+          <span>{{ order.deliveryFee | number:'1.0-0' }} FCFA</span>
+        </div>
+        <div class="total-row main">
+          <span>Total payé</span>
+          <span class="total-amount">{{ order.totalAmount | number:'1.0-0' }} FCFA</span>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Articles commandés -->
-  <div class="tracking-card">
-    <h3 class="card-title">Articles ({{ order.items.length }})</h3>
-    <div class="items-list">
-      <div *ngFor="let item of order.items" class="tracking-item">
-        <div class="tracking-item-img"><img [src]="item.imageUrl" [alt]="item.productName"></div>
-        <div class="tracking-item-info">
-          <p class="tracking-item-name">{{ item.productName }}</p>
-          <p class="tracking-item-qty">× {{ item.quantity }}</p>
+    <!-- Infos de livraison -->
+    <div class="tracking-card">
+      <h3 class="card-title">Livraison</h3>
+      <div class="address-row">
+        <div class="address-icon"><ion-icon name="location"></ion-icon></div>
+        <div>
+          <p class="address-text">{{ order.addressLine }}</p>
+          <p class="address-sub">{{ order.deliveryType }}</p>
+          <p class="address-date">
+            Commandé le {{ order.createdAt | date:'dd MMMM yyyy à HH:mm':'':'fr' }}
+          </p>
         </div>
-        <p class="tracking-item-price">
-          {{ ((item.promotionPrice || item.price) * item.quantity) | number:'1.0-0' }} <small>FCFA</small>
-        </p>
       </div>
-    </div>
-    <div class="total-row">
-      <span>Total payé</span>
-      <span class="total-amount">{{ order.total | number:'1.0-0' }} FCFA</span>
-    </div>
-  </div>
-
-  <!-- Adresse de livraison -->
-  <div class="tracking-card">
-    <h3 class="card-title">Adresse de livraison</h3>
-    <div class="address-row">
-      <div class="address-icon"><ion-icon name="location"></ion-icon></div>
-      <div>
-        <p class="address-text">{{ order.address }}</p>
-        <p class="address-date">Commandé le {{ order.date | date:'dd MMMM yyyy à HH:mm':'':'fr' }}</p>
+      <div class="payment-row">
+        <ion-icon name="card-outline"></ion-icon>
+        <span>{{ order.paymentMethod }}</span>
       </div>
+      @if (order.note) {
+        <div class="note-row">
+          <ion-icon name="document-text-outline"></ion-icon>
+          <span>{{ order.note }}</span>
+        </div>
+      }
     </div>
-  </div>
 
-  <div style="height:16px"></div>
+    <div style="height:16px"></div>
+  }
+
+  @if (!loading && !order) {
+    <div class="empty-state">
+      <ion-icon name="bag-outline"></ion-icon>
+      <p>Commande introuvable</p>
+    </div>
+  }
+
 </ion-content>
 
 <!-- Footer actions -->
-<div class="tracking-footer" *ngIf="order">
-  <button class="action-btn secondary" (click)="goToOrders()">
-    <ion-icon name="list-outline"></ion-icon>
-    <span>Mes commandes</span>
-  </button>
-  <button class="action-btn primary" (click)="goToCatalog()">
-    <ion-icon name="storefront-outline"></ion-icon>
-    <span>Continuer mes achats</span>
-  </button>
-</div>
+@if (!loading && order) {
+  <div class="tracking-footer">
+    <button class="action-btn secondary" (click)="goToOrders()">
+      <ion-icon name="list-outline"></ion-icon>
+      <span>Mes commandes</span>
+    </button>
+    <button class="action-btn primary" (click)="goToCatalog()">
+      <ion-icon name="storefront-outline"></ion-icon>
+      <span>Continuer mes achats</span>
+    </button>
+  </div>
+}

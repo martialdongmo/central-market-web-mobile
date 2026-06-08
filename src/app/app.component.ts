@@ -8,7 +8,8 @@ import {
 import { addIcons } from 'ionicons';
 import {
   storefrontOutline, locationOutline, flameOutline,
-  cartOutline, personCircleOutline
+  cartOutline, personCircleOutline,
+  receiptOutline
 } from 'ionicons/icons';
 
 @Component({
@@ -24,6 +25,6 @@ import {
 })
 export class AppComponent {
   constructor() {
-    addIcons({ storefrontOutline, locationOutline, flameOutline, cartOutline, personCircleOutline });
+    addIcons({ storefrontOutline, locationOutline, flameOutline, cartOutline, personCircleOutline ,receiptOutline });
   }
 }
