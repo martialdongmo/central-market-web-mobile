@@ -1,13 +1,13 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonContent, IonIcon, NavController } from '@ionic/angular/standalone';
-import { AuthService } from '../auth/auth.service';
 import { Subscription } from 'rxjs';
 import { addIcons } from 'ionicons';
 import { trashOutline, arrowForwardOutline, cartOutline } from 'ionicons/icons';
-import { CartService } from '../services/cart.service';
-import { CartItem } from '../model/cartItem';
 import { Router } from '@angular/router';
+import { CartItem } from 'src/app/model/cartItem';
+import { AuthService } from 'src/app/auth/auth.service';
+import { CartService } from 'src/app/services/cart.service';
 
 @Component({
   selector: 'app-cart',

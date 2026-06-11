@@ -1,7 +1,7 @@
-import { OrderStatus } from "src/app/services/order.service";
 import { PaymentMethod } from "../enums/payment-method";
 import { OrderItemResponse } from "./orderItemResponse";
 import { DeliveryType } from "../enums/deliveryType";
+import { OrderStatus } from "./orders/orderStatus";
 
 export interface OrderResponse{
     id: string;
