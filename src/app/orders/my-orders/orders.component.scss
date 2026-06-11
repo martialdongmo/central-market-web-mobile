@@ -1,0 +1,37 @@
+:host {
+  display: block;
+  height: 100%;
+  background-color: #f8fafc;
+}
+
+ion-content {
+  --background: transparent;
+  --padding-top: 0px;
+  --padding-bottom: 0px;
+}
+
+/* Sticky Header Drop Shadow Border */
+.sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* High-Quality Native Card Pressed Simulation */
+.cursor-pointer {
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:active {
+    transform: scale(0.97); // Smooth card shrinking animation when clicked
+    background-color: #f1f5f9 !important; /* Tailwind slate-100 */
+  }
+}
+
+/* Dynamic Badge Thickness Tuning */
+span.border {
+  border-width: 1px;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+}

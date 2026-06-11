@@ -1,0 +1,154 @@
+<div class="bg-white border-b border-slate-100 px-4 py-3.5 flex items-center justify-between sticky top-0 z-50">
+  <button (click)="goBack()" class="p-1 rounded-full active:bg-slate-100 text-slate-700 flex items-center justify-center">
+    <ion-icon name="arrow-back-outline" class="text-2xl"></ion-icon>
+  </button>
+  <h1 class="text-lg font-bold text-slate-800 tracking-tight">Order Tracking</h1>
+  <div class="w-8"></div>
+</div>
+
+<ion-content class="bg-slate-50">
+  <div class="p-5 font-sans space-y-4">
+
+    @if (isLoading) {
+      <div class="flex flex-col items-center justify-center py-16 space-y-3">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+        <p class="text-sm text-slate-400 font-medium">Fetching details context...</p>
+      </div>
+    }
+
+    @if (!isLoading && order) {
+      
+      <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm flex items-center justify-between">
+        <div class="space-y-1">
+          <span class="text-xs uppercase font-bold text-slate-400 tracking-wider">Reference Code</span>
+          <h2 class="text-lg font-bold text-slate-800 m-0">#{{ order.reference }}</h2>
+          <div class="flex items-center space-x-1 text-xs text-slate-400 font-light pt-0.5">
+            <ion-icon name="time-outline"></ion-icon>
+            <span>{{ order.createdAt | date:'medium' }}</span>
+          </div>
+        </div>
+        <span [className]="getStatusClass(order.status)" class="text-xs px-3 py-1.5 rounded-full border font-bold tracking-wide shadow-sm">
+          {{ getStatusLabel(order.status) }}
+        </span>
+      </div>
+<div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-3">
+  <div class="flex items-center space-x-2 pb-2 border-b border-slate-50">
+    <ion-icon name="cube-outline" class="text-blue-600 text-lg"></ion-icon>
+    <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wide m-0">Items Ordered</h3>
+  </div>
+  
+  <div class="divide-y divide-slate-100">
+    @for (item of order.items; track item.productId) {
+      <div class="py-3.5 flex items-center justify-between first:pt-1 last:pb-1">
+        
+        <div class="flex items-center space-x-3 max-w-[75%]">
+          
+          <div class="w-14 h-14 rounded-xl border border-slate-100 bg-slate-50 flex-shrink-0 overflow-hidden flex items-center justify-center relative">
+            @if (item.imageUrl) {
+              <img [src]="item.imageUrl" [alt]="item.productName" class="w-full h-full object-cover" />
+            } @else {
+              <ion-icon name="cube-outline" class="text-slate-300 text-xl"></ion-icon>
+            }
+          </div>
+
+          <div class="space-y-0.5">
+            <h4 class="text-sm font-semibold text-slate-800 m-0 line-clamp-1">
+              {{ item.productName }}
+            </h4>
+            
+            <div class="flex items-center space-x-2 pt-0.5">
+              <span class="text-xs text-slate-400 font-normal">
+                Qty: {{ item.quantity }} × {{ item.priceAtPurchase | customCurrency }}
+              </span>
+              
+              <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 font-medium tracking-tight">
+                {{ item.shopName }}
+              </span>
+            </div>
+          </div>
+
+        </div>
+
+        <span class="text-sm font-bold text-slate-800 flex-shrink-0">
+          {{ (item.priceAtPurchase * item.quantity) | customCurrency }}
+        </span>
+
+      </div>
+    }
+  </div>
+</div>
+
+      <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-3.5">
+        <div class="flex items-center space-x-2 pb-1 border-b border-slate-50">
+          <ion-icon name="location-outline" class="text-blue-600 text-lg"></ion-icon>
+          <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wide m-0">Delivery Details</h3>
+        </div>
+
+        <div class="space-y-3 text-slate-600 text-xs">
+          <div class="flex items-start space-x-3">
+            <ion-icon name="person-outline" class="text-slate-400 text-base pt-0.5"></ion-icon>
+            <div>
+              <p class="font-bold text-slate-700 text-sm mb-0.5">{{ order.customerFullName }}</p>
+              <div class="flex items-center space-x-1 text-slate-400">
+                <ion-icon name="call-outline" class="text-xs"></ion-icon>
+                <span>{{ order.customerPhoneNumber }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-start space-x-3 pt-1 border-t border-slate-50/60">
+            <ion-icon name="location-outline" class="text-slate-400 text-base pt-0.5"></ion-icon>
+            <div>
+              <p class="text-slate-400 font-medium mb-0.5">Destination ({{ order.deliveryType }})</p>
+              <p class="text-slate-700 font-medium leading-relaxed">{{ order.addressLine || 'No explicit address line provided.' }}</p>
+            </div>
+          </div>
+
+          @if (order.note) {
+            <div class="flex items-start space-x-3 pt-2.5 border-t border-slate-50/60 bg-amber-50/40 p-2.5 rounded-xl border border-amber-100/50">
+              <ion-icon name="document-text-outline" class="text-amber-600 text-base pt-0.5"></ion-icon>
+              <div>
+                <p class="text-amber-800 font-bold mb-0.5">Customer Delivery Note</p>
+                <p class="text-amber-700 italic leading-relaxed font-medium">"{{ order.note }}"</p>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-3">
+        <div class="flex items-center space-x-2 pb-1 border-b border-slate-50">
+          <ion-icon name="wallet-outline" class="text-blue-600 text-lg"></ion-icon>
+          <h3 class="text-sm font-bold text-slate-700 uppercase tracking-wide m-0">Payment Summary</h3>
+        </div>
+
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between text-slate-500 font-medium">
+            <span>Subtotal Items</span>
+            <span>{{ order.subtotalAmount | customCurrency }}</span>
+          </div>
+          <div class="flex justify-between text-slate-500 font-medium">
+            <span>Delivery Logistics Fee</span>
+            <span>{{ order.deliveryFee | customCurrency }}</span>
+          </div>
+          
+          <div class="pt-3 border-t border-slate-100 flex justify-between items-baseline">
+            <span class="text-sm font-bold text-slate-800">Total Charged</span>
+            <span class="text-xl font-extrabold text-blue-600">
+              {{ order.totalAmount | customCurrency }}
+            </span>
+          </div>
+        </div>
+
+        <div class="mt-2 bg-slate-50 rounded-xl px-3 py-2 flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+          <span>Payment Gateway</span>
+          <span class="text-slate-600 bg-white border px-2 py-0.5 rounded-md shadow-2xs">
+            {{ order.paymentMethod.replace('_', ' ') }}
+          </span>
+        </div>
+      </div>
+
+    }
+
+  </div>
+</ion-content>

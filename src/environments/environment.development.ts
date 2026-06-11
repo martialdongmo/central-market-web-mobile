@@ -7,6 +7,7 @@ export const environment = {
   customersEndpoint: 'http://localhost:9003/api/v1/bis/customers',
   orderEndpoint: 'http://localhost:9004/api/v1/bis/orders',
   paymentEndpoint: 'http://localhost:9007/api/v1/bis/payments',
+    invoiceEndpoint: 'http://kapexpert.cloud:9009/api/v1/bis/invoices',
   redirectUri: 'http://localhost:3000/callback'
 
 

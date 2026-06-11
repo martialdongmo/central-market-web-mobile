@@ -7,6 +7,8 @@ export const environment = {
   customersEndpoint: 'https://kapexpert.cloud:9009/api/v1/bis/customers',
   orderEndpoint: 'https://kapexpert.cloud:9009/api/v1/bis/orders',
    paymentEndpoint: 'https://kapexpert.cloud:9009/api/v1/bis/payments',
+    invoiceEndpoint: 'https://kapexpert.cloud:9009/api/v1/bis/invoices',
+
   redirectUri: 'https://kapexpert.cloud:3000/callback'
 
 };

@@ -1,108 +1,125 @@
-<ion-content>
+<ion-content class="bg-slate-50">
+  <div class="min-h-full pb-10 font-sans text-slate-800">
+    
+    <div class="bg-blue-600 rounded-b-[2.5rem] pt-12 pb-20 px-6 text-white shadow-md relative">
+      <div class="flex items-center space-x-4">
+        @if (user?.firstName) {
+          <div class="w-16 h-16 rounded-full bg-white text-blue-600 font-bold text-2xl flex items-center justify-center shadow">
+            {{ user?.firstName?.charAt(0) }}{{ user?.lastName?.charAt(0) }}
+          </div>
+        } @else {
+          <ion-icon name="person-circle-outline" class="text-6xl text-white opacity-90"></ion-icon>
+        }
+        
+        <div>
+          @if (user) {
+            <h1 class="text-xl font-bold tracking-tight m-0">{{ user.firstName }} {{ user.lastName }}</h1>
+            <p class="text-blue-100 text-sm opacity-90 font-light mt-0.5">{{ user.email }}</p>
+          } @else if (isLoading) {
+            <div class="h-5 w-32 bg-blue-400 animate-pulse rounded mb-2"></div>
+            <div class="h-4 w-48 bg-blue-400 animate-pulse rounded"></div>
+          } @else {
+            <h1 class="text-xl font-bold m-0">Welcome Guest</h1>
+            <p class="text-blue-100 text-sm font-light mt-0.5">Log in to manage your orders</p>
+          }
+        </div>
+      </div>
+    </div>
 
-  <!-- ═══ VUE NON CONNECTÉE ═══ -->
-  <div *ngIf="!isLoggedIn" class="profile-wrap">
-    <div class="profile-avatar-box"><ion-icon name="person-circle-outline"></ion-icon></div>
-    <div class="profile-name">Mon Compte</div>
-    <p class="profile-sub">Rejoignez-nous pour découvrir toutes nos fonctionnalités et bénéficier d'offres exclusives.</p>
-    <div class="profile-btns">
-      <button class="profile-btn-primary" routerLink="/login">SE CONNECTER</button>
-      <button class="profile-btn-outline" routerLink="/register">CRÉER UN COMPTE</button>
+    @if (user) {
+      <div class="mx-6 -mt-10 bg-white rounded-2xl p-4 shadow-sm border border-slate-100 grid grid-cols-2 gap-4">
+        <div class="flex items-center space-x-3 border-r border-slate-100">
+          <ion-icon name="shield-checkmark-outline" class="text-xl text-green-500"></ion-icon>
+          <div>
+            <p class="text-xs text-slate-400 font-medium">Account</p>
+            <p class="text-sm font-semibold text-slate-700">
+              {{ user.accountLocked ? 'Locked' : 'Active' }}
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-3 pl-2">
+          <ion-icon name="shield-checkmark-outline" [class]="user.mfaVerified ? 'text-blue-600' : 'text-slate-300'" class="text-xl"></ion-icon>
+          <div>
+            <p class="text-xs text-slate-400 font-medium">2FA Option</p>
+            <p class="text-sm font-semibold text-slate-700">
+              {{ user.mfaVerified ? 'Verified' : 'Disabled' }}
+            </p>
+          </div>
+        </div>
+      </div>
+    }
+
+    <div class="mt-6 px-6 space-y-4">
+      <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 ml-1">My Dashboard</h3>
+      
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden divide-y divide-slate-50">
+        
+        <button [routerLink]="['/orders']" class="w-full flex items-center justify-between p-4 bg-white active:bg-slate-50 transition-colors text-left">
+          <div class="flex items-center space-x-3.5">
+            <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+              <ion-icon name="bag-handle-outline" class="text-lg"></ion-icon>
+            </div>
+            <span class="font-medium text-slate-700 text-sm">Order History</span>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="text-slate-300 text-sm"></ion-icon>
+        </button>
+
+        <button class="w-full flex items-center justify-between p-4 bg-white active:bg-slate-50 transition-colors text-left">
+          <div class="flex items-center space-x-3.5">
+            <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+              <ion-icon name="heart-outline" class="text-lg"></ion-icon>
+            </div>
+            <span class="font-medium text-slate-700 text-sm">Favorites List</span>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="text-slate-300 text-sm"></ion-icon>
+        </button>
+
+        <button class="w-full flex items-center justify-between p-4 bg-white active:bg-slate-50 transition-colors text-left">
+          <div class="flex items-center space-x-3.5">
+            <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+              <ion-icon name="location-outline" class="text-lg"></ion-icon>
+            </div>
+            <span class="font-medium text-slate-700 text-sm">Shipping Addresses</span>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="text-slate-300 text-sm"></ion-icon>
+        </button>
+
+        <button class="w-full flex items-center justify-between p-4 bg-white active:bg-slate-50 transition-colors text-left">
+          <div class="flex items-center space-x-3.5">
+            <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+              <ion-icon name="card-outline" class="text-lg"></ion-icon>
+            </div>
+            <span class="font-medium text-slate-700 text-sm">Payment Configurations</span>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="text-slate-300 text-sm"></ion-icon>
+        </button>
+      </div>
+
+      <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 ml-1 pt-2">System</h3>
+      
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden divide-y divide-slate-50">
+        <button class="w-full flex items-center justify-between p-4 bg-white active:bg-slate-50 transition-colors text-left">
+          <div class="flex items-center space-x-3.5">
+            <div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600">
+              <ion-icon name="settings-outline" class="text-lg"></ion-icon>
+            </div>
+            <span class="font-medium text-slate-700 text-sm">Preferences & Settings</span>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="text-slate-300 text-sm"></ion-icon>
+        </button>
+
+        @if (user) {
+          <button (click)="logout()" class="w-full flex items-center justify-between p-4 bg-white active:bg-red-50/30 transition-colors text-left">
+            <div class="flex items-center space-x-3.5">
+              <div class="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center text-red-500">
+                <ion-icon name="log-out-outline" class="text-lg"></ion-icon>
+              </div>
+              <span class="font-medium text-red-600 text-sm">Sign Out Account</span>
+            </div>
+          </button>
+        }
+      </div>
     </div>
-    <div class="profile-features">
-      <div class="profile-feature"><div class="pf-icon">🎁</div><div><p class="pf-label">Offres exclusives</p><p class="pf-desc">Accédez aux ventes privées</p></div></div>
-      <div class="profile-feature"><div class="pf-icon">📦</div><div><p class="pf-label">Suivi de commande</p><p class="pf-desc">En temps réel</p></div></div>
-      <div class="profile-feature"><div class="pf-icon">⭐</div><div><p class="pf-label">Programme fidélité</p><p class="pf-desc">Gagnez des points à chaque achat</p></div></div>
-    </div>
+
   </div>
-
-  <!-- ═══ VUE CONNECTÉE ═══ -->
-  <div *ngIf="isLoggedIn" class="logged-wrap">
-
-    <!-- Hero user -->
-    <div class="user-hero">
-      <div class="user-avatar-big">{{ userInitial }}</div>
-      <div class="user-hero-info">
-        <h2 class="user-hero-name">{{ userName }}</h2>
-        <p class="user-hero-email">{{ userEmail }}</p>
-      </div>
-      <div class="user-hero-badge">
-        <ion-icon name="shield-checkmark"></ion-icon>
-        <span>Vérifié</span>
-      </div>
-    </div>
-
-    <!-- Quick stats -->
-    <div class="quick-stats">
-      <div class="stat-card" (click)="goToOrders()">
-        <div class="stat-val">{{ ordersCount }}</div>
-        <div class="stat-label">Commandes</div>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat-card">
-        <div class="stat-val">0</div>
-        <div class="stat-label">Points</div>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat-card">
-        <div class="stat-val">0</div>
-        <div class="stat-label">Favoris</div>
-      </div>
-    </div>
-
-    <!-- Menu items -->
-    <div class="menu-section">
-      <div class="menu-item" (click)="goToOrders()">
-        <div class="menu-item-icon primary"><ion-icon name="bag-outline"></ion-icon></div>
-        <div class="menu-item-info">
-          <p class="menu-item-label">Mes commandes</p>
-          <p class="menu-item-desc">Suivre et gérer vos commandes</p>
-        </div>
-        <ion-icon name="chevron-forward" class="menu-item-arrow"></ion-icon>
-      </div>
-
-      <div class="menu-item">
-        <div class="menu-item-icon accent"><ion-icon name="heart-outline"></ion-icon></div>
-        <div class="menu-item-info">
-          <p class="menu-item-label">Mes favoris</p>
-          <p class="menu-item-desc">Vos produits sauvegardés</p>
-        </div>
-        <ion-icon name="chevron-forward" class="menu-item-arrow"></ion-icon>
-      </div>
-
-      <div class="menu-item">
-        <div class="menu-item-icon yellow"><ion-icon name="location-outline"></ion-icon></div>
-        <div class="menu-item-info">
-          <p class="menu-item-label">Adresses de livraison</p>
-          <p class="menu-item-desc">Gérer vos adresses</p>
-        </div>
-        <ion-icon name="chevron-forward" class="menu-item-arrow"></ion-icon>
-      </div>
-
-      <div class="menu-item">
-        <div class="menu-item-icon green"><ion-icon name="card-outline"></ion-icon></div>
-        <div class="menu-item-info">
-          <p class="menu-item-label">Modes de paiement</p>
-          <p class="menu-item-desc">Mobile Money, Carte bancaire</p>
-        </div>
-        <ion-icon name="chevron-forward" class="menu-item-arrow"></ion-icon>
-      </div>
-
-      <div class="menu-item">
-        <div class="menu-item-icon grey"><ion-icon name="settings-outline"></ion-icon></div>
-        <div class="menu-item-info">
-          <p class="menu-item-label">Paramètres</p>
-          <p class="menu-item-desc">Notifications, langue, thème</p>
-        </div>
-        <ion-icon name="chevron-forward" class="menu-item-arrow"></ion-icon>
-      </div>
-    </div>
-
-    <!-- Logout -->
-    <button class="logout-btn" (click)="logout()">
-      <ion-icon name="log-out-outline"></ion-icon>
-      Se déconnecter
-    </button>
-  </div>
-
 </ion-content>

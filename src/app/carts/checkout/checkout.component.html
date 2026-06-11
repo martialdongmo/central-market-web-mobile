@@ -112,16 +112,16 @@
             </p>
             @if (item.promotionPrice) {
               <p class="item-price">
-                <span class="promo">{{ item.promotionPrice | currency:'XAF':'symbol':'1.0-0' }}</span>
-                <span class="struck">{{ item.price | currency:'XAF':'symbol':'1.0-0' }}</span>
+                <span class="promo">{{ item.promotionPrice | customCurrency }}</span>
+                <span class="struck">{{ item.price | customCurrency }}</span>
               </p>
             } @else {
-              <p class="item-price">{{ item.price | currency:'XAF':'symbol':'1.0-0' }}</p>
+              <p class="item-price">{{ item.price | customCurrency }}</p>
             }
           </div>
 
           <p class="line-total">
-            {{ ((item.promotionPrice ?? item.price) * item.quantity) | currency:'XAF':'symbol':'1.0-0' }}
+            {{ ((item.promotionPrice ?? item.price) * item.quantity) | customCurrency }}
           </p>
 
           </div>
@@ -131,7 +131,7 @@
         <div class="total-strip">
           <div class="s-row s-total">
             <span>Grand Total</span>
-            <span class="s-total-val">{{ totalPrice | currency:'XAF':'symbol':'1.0-0' }}</span>
+            <span class="s-total-val">{{ totalPrice | customCurrency }}</span>
           </div>
         </div>
         </div>
@@ -311,7 +311,7 @@
         @if (!isLoading) {
           <ion-icon name="bag-check-outline"></ion-icon>
           <span class="btn-lbl">Place Order</span>
-          <span class="btn-amt">{{ totalPrice | currency:'XAF':'symbol':'1.0-0' }}</span>
+          <span class="btn-amt">{{ totalPrice | customCurrency }}</span>
         } @else {
           <ion-spinner name="crescent"></ion-spinner>
           <span>Processing…</span>

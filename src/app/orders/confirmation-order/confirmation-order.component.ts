@@ -13,14 +13,14 @@ import { UserResponse } from 'src/app/model/response/usersResponse';
 import { CustomCurrencyPipe } from "../../services/custom-currency-pipe";
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, checkmarkOutline, receiptOutline, bagCheckOutline, bicycleOutline, bagHandleOutline, walletOutline, locationOutline, personOutline, callOutline, homeOutline, businessOutline, shieldCheckmarkOutline, lockClosedOutline, phonePortraitOutline, cashOutline, storefrontOutline, alertCircleOutline, timeOutline } from 'ionicons/icons';
-import { LowerCasePipe, TitleCasePipe, UpperCasePipe } from '@angular/common';
+import { LowerCasePipe, TitleCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-confirmation-order',
   templateUrl: './confirmation-order.component.html',
   styleUrls: ['./confirmation-order.component.scss'],
-  imports: [IonContent, IonSpinner,  IonBadge, IonHeader, IonToolbar, IonTitle, IonButton, IonIcon, IonButtons, CustomCurrencyPipe, IonSkeletonText,
-    TitleCasePipe,LowerCasePipe,RouterLink],
+  imports: [IonContent, IonSpinner, IonBadge, IonHeader, IonToolbar, IonTitle, IonButton, IonIcon, IonButtons, CustomCurrencyPipe, IonSkeletonText,
+    TitleCasePipe, LowerCasePipe, RouterLink],
 })
 export class ConfirmationOrderComponent implements OnInit {
 
@@ -44,16 +44,16 @@ export class ConfirmationOrderComponent implements OnInit {
 
 
   constructor() {
-  addIcons({
-    arrowBackOutline, checkmarkOutline, receiptOutline,
-    bagCheckOutline, bicycleOutline, bagHandleOutline,
-    walletOutline, locationOutline, personOutline,
-    callOutline, homeOutline, businessOutline,
-    shieldCheckmarkOutline, lockClosedOutline,
-    phonePortraitOutline, cashOutline, storefrontOutline,
-    alertCircleOutline, timeOutline
-  });
-}
+    addIcons({
+      arrowBackOutline, checkmarkOutline, receiptOutline,
+      bagCheckOutline, bicycleOutline, bagHandleOutline,
+      walletOutline, locationOutline, personOutline,
+      callOutline, homeOutline, businessOutline,
+      shieldCheckmarkOutline, lockClosedOutline,
+      phonePortraitOutline, cashOutline, storefrontOutline,
+      alertCircleOutline, timeOutline
+    });
+  }
 
   ngOnInit() {
     this.initOrderFromRoute();
@@ -167,6 +167,10 @@ export class ConfirmationOrderComponent implements OnInit {
         this.createMTNPayment(request);
         break;
 
+      case PaymentMethod.ORANGE_MONEY:
+        this.createORANGEMONEYPayment(request);
+        break;
+
       case PaymentMethod.CASH:
         this.createCASHPayment(request);
         break;
@@ -174,11 +178,11 @@ export class ConfirmationOrderComponent implements OnInit {
       default:
         this.errorMessage = 'Unsupported payment method';
         this.isPaying = false;
-    }   
+    }
   }
 
   createMTNPayment(request: PaymentRequest): void {
-     if (!this.order) {
+    if (!this.order) {
       this.errorMessage = 'Order not loaded';
       return;
     }
@@ -190,24 +194,56 @@ export class ConfirmationOrderComponent implements OnInit {
 
     this.isPaying = true;
     this.errorMessage = '';
-    this.phoneMessageCode='Please check your phone for the confirmation code.'
+    this.phoneMessageCode = 'Please check your phone for the confirmation code.'
     this.paymentService.initiateMtnPayment(request).subscribe({
       next: (response) => {
         console.log('Payment started:', response);
         this.isPaying = false;
+        this.router.navigate([`/payment-success/${this.order.id}`]);
       },
       error: (err) => {
         console.error('Payment error:', err);
         this.errorMessage = 'Payment failed. Try again.';
         this.isPaying = false;
-        this.phoneMessageCode=''
+        this.phoneMessageCode = ''
       }
     });
   }
 
 
-  createCASHPayment(request:PaymentRequest):void{
-     if (!this.order) {
+
+  createORANGEMONEYPayment(request: PaymentRequest): void {
+    if (!this.order) {
+      this.errorMessage = 'Order not loaded';
+      return;
+    }
+
+    if (!request) {
+      this.errorMessage = 'Missing payment data';
+      return;
+    }
+
+    this.isPaying = true;
+    this.errorMessage = '';
+    this.phoneMessageCode = 'Please check your phone for the confirmation code.'
+    this.paymentService.initiateMtnPayment(request).subscribe({
+      next: (response) => {
+        console.log('Payment started:', response);
+        this.isPaying = false;
+        this.router.navigate([`/payment-success/${this.order.id}`]);
+      },
+      error: (err) => {
+        console.error('Payment error:', err);
+        this.errorMessage = 'Payment failed. Try again.';
+        this.isPaying = false;
+        this.phoneMessageCode = ''
+      }
+    });
+  }
+
+
+  createCASHPayment(request: PaymentRequest): void {
+    if (!this.order) {
       this.errorMessage = 'Order not loaded';
       return;
     }
@@ -225,6 +261,7 @@ export class ConfirmationOrderComponent implements OnInit {
       next: (response) => {
         console.log('Payment started:', response);
         this.isPaying = false;
+        this.router.navigate([`/payment-success/${this.order.id}`]);
       },
       error: (err) => {
         console.error('Payment error:', err);

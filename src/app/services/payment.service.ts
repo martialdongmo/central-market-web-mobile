@@ -27,6 +27,16 @@ export class PaymentService {
     );
   }
 
+
+
+  initiateOMPayment( request: PaymentRequest): Observable<any> {
+
+    return this.http.post<any>(
+      `${this.API_URL}/om`,
+      request
+    ).pipe(tap(console.log));
+  }
+
   // =====================================================
   // CHECK PAYMENT STATUS
   // =====================================================

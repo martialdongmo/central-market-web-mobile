@@ -5,6 +5,8 @@ import { authGuard } from './auth/guards/auth-guard';
 import { ConfirmationOrderComponent } from './orders/confirmation-order/confirmation-order.component';
 import { VerifyOtpComponent } from './auth/verify-otp/verify-otp.component';
 import { CatalogComponent } from './catalog/catalog.component';
+import { PaymentService } from './services/payment.service';
+import { PaymentSuccessComponent } from './carts/payment-success/payment-success.component';
 
 export const routes: Routes = [
 
@@ -51,7 +53,7 @@ export const routes: Routes = [
 
   {
     path: 'cart',
-    loadComponent: () => import('./cart/cart.component').then(m => m.CartComponent)
+    loadComponent: () => import('./carts/cart/cart.component').then(m => m.CartComponent)
   },
 
   {
@@ -65,15 +67,15 @@ export const routes: Routes = [
       canActivate: [authGuard],
     title: 'Checkout',
     path: 'checkout',
-    loadComponent: () => import('./checkout/checkout.component').then(m => m.CheckoutComponent)
+    loadComponent: () => import('./carts/checkout/checkout.component').then(m => m.CheckoutComponent)
   },
   {
     path: 'orders',
-    loadComponent: () => import('./orders/orders.component').then(m => m.OrdersComponent)
+    loadComponent: () => import('./orders/my-orders/orders.component').then(m => m.OrdersComponent)
   },
   {
-    path: 'order-tracking/:orderId',
-    loadComponent: () => import('./order-tracking/order-tracking.component').then(m => m.OrderTrackingComponent)
+    path: 'order-tracking/:id',
+    loadComponent: () => import('./orders/order-tracking/order-tracking.component').then(m => m.OrderTrackingComponent)
   },
 
   {
@@ -81,6 +83,13 @@ export const routes: Routes = [
     component: ConfirmationOrderComponent,
     title: 'Order Confirmation',
     path: 'order-confirmation/:orderId'
+  },
+
+  {
+    component: PaymentSuccessComponent,
+    title: 'payment-success',
+    path: 'payment-success/:orderId',
+    canActivate:[authGuard]
   },
 
   { path: 'callback', component: CallbackComponent },
