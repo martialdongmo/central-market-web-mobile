@@ -54,7 +54,6 @@ jobs:
     name: Deploy Web App to VPS
     needs: build-and-push
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/deployment'
     steps:
       - name: SSH & Deploy to VPS
         uses: appleboy/ssh-action@v1.0.3
