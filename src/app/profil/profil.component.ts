@@ -1,60 +1,98 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { IonContent, IonIcon, NavController } from '@ionic/angular/standalone';
-import { Subscription } from 'rxjs'; // Import Subscription
+import { addIcons } from 'ionicons';
+import {
+  storefrontOutline,
+  personCircleOutline,
+  shieldCheckmarkOutline,
+  bagHandleOutline,
+  heartOutline,
+  locationOutline,
+  cardOutline,
+  notificationsOutline,
+  settingsOutline,
+  helpCircleOutline,
+  chevronForwardOutline,
+  logOutOutline,
+  mailOutline,
+  timeOutline,
+  lockClosedOutline,
+  warningOutline,
+  checkmarkCircleOutline,
+  closeCircleOutline,
+} from 'ionicons/icons';
+import { Subscription } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { UserResponse } from '../model/response/usersResponse';
 
 @Component({
   selector: 'app-profil',
   standalone: true,
-  imports: [CommonModule, RouterLink, IonContent, IonIcon],
+  imports: [CommonModule, RouterLink, DatePipe, IonContent, IonIcon],
   templateUrl: './profil.component.html',
   styleUrls: ['./profil.component.scss'],
 })
 export class ProfilComponent implements OnInit, OnDestroy {
+
   user: UserResponse | null = null;
   isLoggedIn = false;
-  isLoading = false;
 
-  // Array to track open subscriptions manually
+  /** Populate these from your order / wishlist / payment services */
+  orderCount    = 0;
+  wishlistCount = 0;
+  savedCards    = 0;
+
   private subs: Subscription[] = [];
 
-  private authService = inject(AuthService);
-  private navCtrl = inject(NavController);
-
-  ngOnInit() {
-    this.me();
-  }
-
-  // Clear memory when leaving the screen
-  ngOnDestroy() {
-    this.subs.forEach(sub => sub.unsubscribe());
-  }
-
-  me(): void {
-    this.isLoading = true;
-
-    // Explicitly cast the Observable response type to <UserResponse>
-    const userSub = this.authService.me().subscribe({
-      next: (response: UserResponse) => {
-        this.user = response;
-        this.isLoggedIn = !!response;
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Error fetching user info:', err);
-        this.isLoading = false;
-        this.isLoggedIn = false;
-      }
+  constructor(
+    private authService: AuthService,
+    public  navCtrl: NavController,
+  ) {
+    addIcons({
+      storefrontOutline,
+      personCircleOutline,
+      shieldCheckmarkOutline,
+      bagHandleOutline,
+      heartOutline,
+      locationOutline,
+      cardOutline,
+      notificationsOutline,
+      settingsOutline,
+      helpCircleOutline,
+      chevronForwardOutline,
+      logOutOutline,
+      mailOutline,
+      timeOutline,
+      lockClosedOutline,
+      warningOutline,
+      checkmarkCircleOutline,
+      closeCircleOutline,
     });
-
-    // Save subscription tracking reference
-    this.subs.push(userSub);
   }
 
-  logout() {
+  ngOnInit(): void {
+    this.loadMe();
+  }
+
+  ngOnDestroy(): void {
+    this.subs.forEach(s => s.unsubscribe());
+  }
+
+  private loadMe(): void {
+    const sub = this.authService.me().subscribe({
+      next: (user) => {
+        this.user = user;
+        this.isLoggedIn = true;
+      },
+      error: (err) => console.error('Error fetching user info:', err),
+    });
+    this.subs.push(sub);
+  }
+
+  logout(): void {
+    this.authService.logout();
     this.navCtrl.navigateRoot('/login');
   }
 }
