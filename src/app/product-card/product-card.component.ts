@@ -4,8 +4,7 @@ import { RouterModule } from '@angular/router';
 import { IonIcon, NavController, ToastController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { locationOutline, cartOutline } from 'ionicons/icons';
-import { Cart } from '../services/cart';
-import { CustomCurrencyPipe } from "../services/custom-currency-pipe";
+import { CustomCurrencyPipe } from "../services/custom.currency.pipe";
 import { CatalogProductResponse } from '../model/response/catalogProductResponse';
 import { CartService } from '../services/cart.service';
 

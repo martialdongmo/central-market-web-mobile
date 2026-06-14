@@ -13,7 +13,7 @@ import {
 import { OrdersService } from 'src/app/services/orders.service';
 import { OrderResponse } from 'src/app/model/response/orderResponse';
 import { InvoiceService } from 'src/app/services/invoice.service';
-import { CustomCurrencyPipe } from "../../services/custom-currency-pipe";
+import { CustomCurrencyPipe } from "../../services/custom.currency.pipe";
 
 
 @Component({

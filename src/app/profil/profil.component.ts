@@ -93,6 +93,5 @@ export class ProfilComponent implements OnInit, OnDestroy {
 
   logout(): void {
     this.authService.logout();
-    this.navCtrl.navigateRoot('/login');
   }
 }

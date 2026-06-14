@@ -3,20 +3,37 @@ import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { IonContent, IonIcon, NavController, IonSpinner } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { 
-  arrowBackOutline, 
-  locationOutline, 
-  callOutline, 
-  personOutline, 
-  documentTextOutline, 
+import {
+  arrowBackOutline,
+  locationOutline,
+  callOutline,
+  personOutline,
+  documentTextOutline,
   walletOutline,
   cubeOutline,
-  timeOutline
+  timeOutline,
+  storefrontOutline,
+  checkmarkOutline,
+  checkmarkCircleOutline,
+  ellipse,
+  ellipseOutline,
+  calendarOutline,
+  cardOutline,
+  imageOutline,
+  alertCircleOutline,
+  refreshOutline,
+  gitBranchOutline,
 } from 'ionicons/icons';
 import { Subscription } from 'rxjs';
 import { OrdersService } from 'src/app/services/orders.service';
 import { CustomerOrderDetailResponse } from 'src/app/model/response/orders/customer.order.detail.response';
-import { CustomCurrencyPipe } from "../../services/custom-currency-pipe";
+import { CustomCurrencyPipe } from "../../services/custom.currency.pipe";
+import { PaymentMethod } from 'src/app/model/enums/payment-method';
+import { ShopDeliveryStatus } from 'src/app/model/enums/shopDeliveryStatus';
+
+
+interface ProgressStep { key: string; label: string; }
+
 
 @Component({
   selector: 'app-order-tracking',
@@ -26,93 +43,168 @@ import { CustomCurrencyPipe } from "../../services/custom-currency-pipe";
   styleUrls: ['./order-tracking.component.scss'],
 })
 export class OrderTrackingComponent implements OnInit, OnDestroy {
+ 
   order: CustomerOrderDetailResponse | null = null;
   isLoading = false;
-  
+ 
+  readonly progressSteps: ProgressStep[] = [
+    { key: 'CREATED',              label: 'Order Placed'         },
+    { key: 'PAYMENT_PENDING',      label: 'Awaiting Payment'     },
+    { key: 'PAID',                 label: 'Payment Confirmed'    },
+    { key: 'CONFIRMED',            label: 'Order Confirmed'      },
+    { key: 'SHIPPED',              label: 'Shipped'              },
+    { key: 'DELIVERED',            label: 'Delivered'            },
+    { key: 'COMPLETED',            label: 'Completed'            },
+  ];
+ 
+  private readonly stepOrder = [
+    'CREATED', 'DRAFF', 'PAYMENT_PENDING', 'PENDING_CONFIRMATION',
+    'PAID', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'COMPLETED',
+  ];
+ 
   private subs: Subscription[] = [];
-  
-  private route = inject(ActivatedRoute);
+  private orderId: string | null = null;
+ 
+  private route        = inject(ActivatedRoute);
   private orderService = inject(OrdersService);
-  private navCtrl = inject(NavController);
-
+  private navCtrl      = inject(NavController);
+ 
   constructor() {
-    addIcons({ 
-      arrowBackOutline, 
-      locationOutline, 
-      callOutline, 
-      personOutline, 
-      documentTextOutline, 
-      walletOutline,
-      cubeOutline,
-      timeOutline
+    addIcons({
+      arrowBackOutline, locationOutline, callOutline, personOutline,
+      documentTextOutline, walletOutline, cubeOutline, timeOutline,
+      storefrontOutline, checkmarkOutline, checkmarkCircleOutline,
+      ellipse, ellipseOutline, calendarOutline, cardOutline,
+      imageOutline, alertCircleOutline, refreshOutline, gitBranchOutline,
     });
   }
-
-  ngOnInit() {
-    // 1. Capture the order tracking ID from the route path parameter
-    const orderId = this.route.snapshot.paramMap.get('id');
-    if (orderId) {
-      this.getDetails(orderId);
+ 
+  ngOnInit(): void {
+    this.orderId = this.route.snapshot.paramMap.get('id');
+    if (this.orderId) {
+      this.getDetails(this.orderId);
     } else {
-      console.error('No order tracking ID supplied in the route context.');
+      console.error('No order ID in route.');
       this.goBack();
     }
   }
-
-  ngOnDestroy() {
-    // 2. Prevent memory leaks by safely closing the subscription stream
-    this.subs.forEach(sub => sub.unsubscribe());
+ 
+  ngOnDestroy(): void {
+    this.subs.forEach(s => s.unsubscribe());
   }
-
-  getDetails(id: string) {
+ 
+  getDetails(id: string): void {
     this.isLoading = true;
-    const detailSub = this.orderService.getCustomerOrderDetail(id).subscribe({
-      next: (response: CustomerOrderDetailResponse) => {
-        this.order = response;
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Error fetching deep order detail records:', err);
-        this.isLoading = false;
-      }
+    const sub = this.orderService.getCustomerOrderDetail(id).subscribe({
+      next:  (res) => { this.order = res; this.isLoading = false; },
+      error: (err) => { console.error(err); this.isLoading = false; },
     });
-
-    this.subs.push(detailSub);
+    this.subs.push(sub);
   }
-
+ 
+  retry(): void {
+    if (this.orderId) this.getDetails(this.orderId);
+  }
+ 
+  goBack(): void { this.navCtrl.back(); }
+ 
+  /* ── Progress stepper helpers ── */
+ 
+  private currentStepIndex(): number {
+    if (!this.order) return -1;
+    const s = String(this.order.status);
+    const idx = this.stepOrder.indexOf(s);
+    return idx >= 0 ? idx : parseInt(s, 10);
+  }
+ 
+  isStepDone(key: string): boolean {
+    const cur = this.currentStepIndex();
+    return cur > this.stepOrder.indexOf(key);
+  }
+ 
+  isStepActive(key: string): boolean {
+    const cur = this.currentStepIndex();
+    return cur === this.stepOrder.indexOf(key);
+  }
+ 
+  /* ── Status display helpers ── */
+ 
   getStatusLabel(status: string | number): string {
     const s = String(status);
-    const labels: { [key: string]: string } = {
-      'CREATED': 'Created', '0': 'Created',
-      'DRAFF': 'Draft', '1': 'Draft',
-      'PAYMENT_PENDING': 'Payment Pending', '2': 'Payment Pending',
-      'PENDING_CONFIRMATION': 'Pending Confirmation', '3': 'Pending Confirmation',
-      'PAID': 'Paid', '4': 'Paid',
-      'CONFIRMED': 'Confirmed', '5': 'Confirmed',
-      'SHIPPED': 'Shipped', '6': 'Shipped',
-      'DELIVERED': 'Delivered', '7': 'Delivered',
-      'COMPLETED': 'Completed', '8': 'Completed',
-      'CANCELED': 'Canceled', '9': 'Canceled',
-      'FAILED': 'Failed', '10': 'Failed'
+    const m: Record<string, string> = {
+      CREATED: 'Created', '0': 'Created',
+      DRAFF: 'Draft', '1': 'Draft',
+      PAYMENT_PENDING: 'Payment Pending', '2': 'Payment Pending',
+      PENDING_CONFIRMATION: 'Confirming', '3': 'Confirming',
+      PAID: 'Paid', '4': 'Paid',
+      CONFIRMED: 'Confirmed', '5': 'Confirmed',
+      SHIPPED: 'Shipped', '6': 'Shipped',
+      DELIVERED: 'Delivered', '7': 'Delivered',
+      COMPLETED: 'Completed', '8': 'Completed',
+      CANCELED: 'Cancelled', '9': 'Cancelled',
+      FAILED: 'Failed', '10': 'Failed',
     };
-    return labels[s] || 'Processing';
+    return m[s] ?? 'Processing';
   }
-
+ 
   getStatusClass(status: string | number): string {
     const s = String(status);
-    if (['PAID', 'CONFIRMED', 'DELIVERED', 'COMPLETED', '4', '5', '7', '8'].includes(s)) {
-      return 'bg-green-50 text-green-600 border-green-200';
-    }
-    if (['CANCELED', 'FAILED', '9', '10'].includes(s)) {
-      return 'bg-red-50 text-red-600 border-red-200';
-    }
-    if (['CREATED', 'DRAFF', '0', '1'].includes(s)) {
-      return 'bg-blue-50 text-blue-600 border-blue-200';
-    }
-    return 'bg-amber-50 text-amber-600 border-amber-200';
+    if (['PAID','CONFIRMED','DELIVERED','COMPLETED','4','5','7','8'].includes(s)) return 'pill-green';
+    if (['CANCELED','FAILED','9','10'].includes(s)) return 'pill-red';
+    if (['SHIPPED','6'].includes(s)) return 'pill-blue';
+    return 'pill-amber';
   }
-
-  goBack() {
-    this.navCtrl.back();
+ 
+  getStatusIcon(status: string | number): string {
+    const s = String(status);
+    if (['DELIVERED','COMPLETED','7','8'].includes(s)) return 'checkmark-circle-outline';
+    if (['CANCELED','FAILED','9','10'].includes(s))    return 'close-circle-outline';
+    if (['SHIPPED','6'].includes(s))                   return 'cube-outline';
+    if (['PAID','CONFIRMED','4','5'].includes(s))      return 'card-outline';
+    return 'time-outline';
+  }
+ 
+  /* ── Shop delivery status ── */
+ 
+  formatDeliveryStatus(status: ShopDeliveryStatus): string {
+    const m: Record<ShopDeliveryStatus, string> = {
+      [ShopDeliveryStatus.PENDING]:          'Pending',
+      [ShopDeliveryStatus.CONFIRMED]:        'Confirmed',
+      [ShopDeliveryStatus.PREPARING]:        'Preparing',
+      [ShopDeliveryStatus.READY_FOR_PICKUP]: 'Ready',
+      [ShopDeliveryStatus.OUT_FOR_DELIVERY]: 'On the way',
+      [ShopDeliveryStatus.DELIVERED]:        'Delivered',
+      [ShopDeliveryStatus.FAILED]:           'Failed',
+      [ShopDeliveryStatus.CANCELED]:         'Cancelled',
+    };
+    return m[status] ?? status;
+  }
+ 
+  getDeliveryClass(status: ShopDeliveryStatus): string {
+    const m: Record<ShopDeliveryStatus, string> = {
+      [ShopDeliveryStatus.PENDING]:          'dp-pending',
+      [ShopDeliveryStatus.CONFIRMED]:        'dp-confirmed',
+      [ShopDeliveryStatus.PREPARING]:        'dp-preparing',
+      [ShopDeliveryStatus.READY_FOR_PICKUP]: 'dp-ready',
+      [ShopDeliveryStatus.OUT_FOR_DELIVERY]: 'dp-out',
+      [ShopDeliveryStatus.DELIVERED]:        'dp-delivered',
+      [ShopDeliveryStatus.FAILED]:           'dp-failed',
+      [ShopDeliveryStatus.CANCELED]:         'dp-canceled',
+    };
+    return m[status] ?? 'dp-pending';
+  }
+ 
+  /* ── Payment ── */
+ 
+  formatPaymentMethod(method: PaymentMethod): string {
+    const m: Partial<Record<PaymentMethod, string>> = {
+      [PaymentMethod.MTN_MOBILE_MONEY]: 'MTN Mobile Money',
+      [PaymentMethod.ORANGE_MONEY]:     'Orange Money',
+      [PaymentMethod.CASH]:             'Cash on Delivery',
+      [PaymentMethod.PAYPAL]:           'PayPal',
+      [PaymentMethod.CREDIT_CARD]:      'Credit Card',
+      [PaymentMethod.STRIPE]:           'Stripe',
+    };
+    return m[method] ?? String(method).replace(/_/g, ' ');
   }
 }

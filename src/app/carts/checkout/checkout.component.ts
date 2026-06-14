@@ -18,7 +18,7 @@ import { CustomerResponse } from '../../model/response/customer-response';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LocationService } from '../../services/location.service';
 import { DeliveryType } from '../../model/enums/deliveryType';
-import { CustomCurrencyPipe } from '../../services/custom-currency-pipe';
+import { CustomCurrencyPipe } from '../../services/custom.currency.pipe';
 import {
   arrowBackOutline, bagOutline, cartOutline,
   locationOutline, cardOutline, alertCircleOutline,

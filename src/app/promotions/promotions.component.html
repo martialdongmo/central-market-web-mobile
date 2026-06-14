@@ -1,39 +1,5 @@
-<div class="promos-header">
-  <div class="flash-badge"><div class="flash-line"></div><span>Offres Flash</span></div>
-  <div class="promos-title">Promotions</div>
-  <p class="promos-sub">Pépites de <strong>Central Market</strong> à prix d'exception.</p>
+<!-- Not yet available -->
+<div class="promotions-container">
+  <h2>Promotions</h2>
+  <p>Check back soon for exciting promotions and special offers!</p>
 </div>
-<ion-content>
-  <div *ngIf="isLoading" class="promos-grid">
-    <div *ngFor="let i of [1,2,3,4]" class="promo-skeleton">
-      <div class="promo-skeleton-img"></div>
-      <div class="promo-skeleton-body">
-        <div class="skeleton-line" style="width:35%"></div>
-        <div class="skeleton-line" style="width:80%"></div>
-        <div class="skeleton-line" style="width:55%"></div>
-      </div>
-    </div>
-  </div>
-  <div *ngIf="!isLoading && promoProducts.length > 0" class="promos-grid">
-    <div *ngFor="let p of promoProducts" class="promo-card" (click)="goToDetails(p.productId)">
-      <div class="discount-ribbon">-{{ ((p.price - (p.promotionPrice || p.price)) / p.price * 100) | number:'1.0-0' }}%</div>
-      <div class="promo-card-img"><img [src]="p.imageUrl" [alt]="p.productName" loading="lazy"></div>
-      <div class="promo-card-body">
-        <div class="promo-shop-tag"><div class="promo-shop-dot"></div><span class="promo-shop-name">{{ p.shopName }}</span></div>
-        <h3 class="promo-name">{{ p.productName }}</h3>
-        <div class="promo-prices">
-          <div class="promo-price-group">
-            <div class="promo-old">{{ p.price | number:'1.0-0' }} FCFA</div>
-            <div class="promo-new">{{ p.promotionPrice | number:'1.0-0' }} <small>FCFA</small></div>
-          </div>
-          <button class="promo-go-btn"><ion-icon name="chevron-forward"></ion-icon></button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div *ngIf="!isLoading && promoProducts.length === 0" class="promos-empty">
-    <ion-icon name="gift-outline"></ion-icon>
-    <h3>Presque là...</h3>
-    <p>Nos équipes négocient les meilleures pépites pour vous.</p>
-  </div>
-</ion-content>

@@ -10,7 +10,7 @@ import { PaymentService } from 'src/app/services/payment.service';
 import { IonContent, IonSpinner, IonBadge, IonHeader, IonToolbar, IonTitle, IonButton, IonIcon, IonButtons, IonSkeletonText } from "@ionic/angular/standalone";
 import { AuthService } from 'src/app/auth/auth.service';
 import { UserResponse } from 'src/app/model/response/usersResponse';
-import { CustomCurrencyPipe } from "../../services/custom-currency-pipe";
+import { CustomCurrencyPipe } from "../../services/custom.currency.pipe";
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, checkmarkOutline, receiptOutline, bagCheckOutline, bicycleOutline, bagHandleOutline, walletOutline, locationOutline, personOutline, callOutline, homeOutline, businessOutline, shieldCheckmarkOutline, lockClosedOutline, phonePortraitOutline, cashOutline, storefrontOutline, alertCircleOutline, timeOutline } from 'ionicons/icons';
 import { LowerCasePipe, TitleCasePipe } from '@angular/common';
