@@ -7,6 +7,8 @@ import { VerifyOtpComponent } from './auth/verify-otp/verify-otp.component';
 import { CatalogComponent } from './catalog/catalog.component';
 import { PaymentService } from './services/payment.service';
 import { PaymentSuccessComponent } from './carts/payment-success/payment-success.component';
+import { OrdersComponent } from './orders/my-orders/orders.component';
+import { OrderTrackingComponent } from './orders/order-tracking/order-tracking.component';
 
 export const routes: Routes = [
 
@@ -64,18 +66,22 @@ export const routes: Routes = [
 
   
   {
-      canActivate: [authGuard],
+    canActivate: [authGuard],
     title: 'Checkout',
     path: 'checkout',
     loadComponent: () => import('./carts/checkout/checkout.component').then(m => m.CheckoutComponent)
   },
   {
+    title: 'My orders',
     path: 'orders',
-    loadComponent: () => import('./orders/my-orders/orders.component').then(m => m.OrdersComponent)
+   component: OrdersComponent,
+   canActivate: [authGuard]
   },
   {
     path: 'order-tracking/:id',
-    loadComponent: () => import('./orders/order-tracking/order-tracking.component').then(m => m.OrderTrackingComponent)
+    component: OrderTrackingComponent,
+    title: 'order-details',
+    canActivate: [authGuard]
   },
 
   {

@@ -226,7 +226,7 @@ export class ConfirmationOrderComponent implements OnInit {
     this.isPaying = true;
     this.errorMessage = '';
     this.phoneMessageCode = 'Please check your phone for the confirmation code.'
-    this.paymentService.initiateMtnPayment(request).subscribe({
+    this.paymentService.initiateOMPayment(request).subscribe({
       next: (response) => {
         console.log('Payment started:', response);
         this.isPaying = false;

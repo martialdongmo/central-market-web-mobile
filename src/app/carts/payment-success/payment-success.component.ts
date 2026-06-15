@@ -97,6 +97,6 @@ export class PaymentSuccessComponent implements OnInit {
   }
 
   continueShopping(): void {
-    this.router.navigate(['/home']);
+    this.router.navigate(['/catalog']);
   }
 }
