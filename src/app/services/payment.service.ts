@@ -5,7 +5,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PaymentResponse } from '../model/response/paymentResponse';
 import { tap } from 'rxjs/operators';
-import { pipe } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -30,7 +29,6 @@ export class PaymentService {
 
 
   initiateOMPayment( request: PaymentRequest): Observable<any> {
-
     return this.http.post<any>(
       `${this.API_URL}/om`,
       request

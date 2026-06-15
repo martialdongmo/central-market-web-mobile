@@ -211,8 +211,10 @@ export class ConfirmationOrderComponent implements OnInit {
   }
 
 
-
+// ORANGE MONEY 
   createORANGEMONEYPayment(request: PaymentRequest): void {
+    console.log("ORANGE MONEY SELECTED");
+    console.log(request)
     if (!this.order) {
       this.errorMessage = 'Order not loaded';
       return;
