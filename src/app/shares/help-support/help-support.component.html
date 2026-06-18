@@ -1,0 +1,81 @@
+<ion-content class="auth-page">
+  <div class="support-container">
+    
+    <div class="brand-identity-wrap">
+      <h1 class="auth-title">Help & Support</h1>
+      <p class="auth-sub">Find answers and video tutorials for GroupinG</p>
+    </div>
+
+    <div class="support-section">
+      <h2 class="section-title">
+        <ion-icon name="play-circle-outline"></ion-icon>
+        Video Demonstrations
+      </h2>
+      <div class="video-grid">
+        @for (tuto of tutorials; track tuto.title) {
+          <div class="video-card">
+            
+            <div class="thumbnail-wrapper">
+              @if (!tuto.isPlaying) {
+                <div class="thumbnail-placeholder" [ngClass]="tuto.gradientClass" (click)="playVideo(tuto)">
+                  <ion-icon name="logo-youtube" class="youtube-play-icon"></ion-icon>
+                </div>
+                <span class="video-duration">{{ tuto.duration }}</span>
+              } @else {
+                <iframe 
+                  [src]="tuto.safeUrl" 
+                  frameborder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                  allowfullscreen
+                  class="inline-iframe">
+                </iframe>
+              }
+            </div>
+
+            <div class="video-info">
+              <h3>{{ tuto.title }}</h3>
+              <p>{{ tuto.description }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="support-section">
+      <h2 class="section-title">
+        <ion-icon name="help-circle-outline"></ion-icon>
+        Frequently Asked Questions
+      </h2>
+      <div class="faq-accordion-group">
+        @for (category of getFaqCategories(); track category) {
+          <div class="faq-category-tag">{{ category }}</div>
+          
+          @for (faq of getFaqsByCategory(category); track faq.question) {
+            <details class="faq-item">
+              <summary>
+                <span>{{ faq.question }}</span>
+                <ion-icon name="chevron-down-outline" class="arrow"></ion-icon>
+              </summary>
+              <div class="faq-content">
+                <p>{{ faq.answer }}</p>
+              </div>
+            </details>
+          }
+        }
+      </div>
+    </div>
+
+    <div class="contact-footer-card">
+      <div class="footer-icon-wrap">
+        <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+      </div>
+      <h3>Still need help?</h3>
+      <p>If you couldn't find the answer you were looking for, our support team is available.</p>
+      <button class="contact-action-btn" (click)="contactSupport()">
+        <ion-icon name="mail-outline"></ion-icon>
+        <span>Contact Support via Email</span>
+      </button>
+    </div>
+
+  </div>
+</ion-content>

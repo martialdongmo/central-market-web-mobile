@@ -92,6 +92,7 @@ export class ProfilComponent implements OnInit, OnDestroy {
   }
 
   logout(): void {
+    console.log("logout")
     this.authService.logout();
   }
 }

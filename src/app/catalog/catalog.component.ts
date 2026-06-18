@@ -221,6 +221,8 @@ export class CatalogComponent implements OnInit, OnDestroy {
     this.loadProducts();
   }
 
+
+
   // ─── helpers ─────────────────────────────────────────────────────────────
 
   /** Reset to page 0 and re-enable infinite scroll */
@@ -246,4 +248,21 @@ onScroll(_e: CustomEvent) {}
   goToCart() { this.navCtrl.navigateForward('/cart'); }
 
   trackById(_: number, p: CatalogProductResponse) { return p.productId; }
+
+
+  onCreateShop() {
+  // L'URL de production cloud fournie pour la création de boutique
+  const cloudUrl = 'https://kapexpert.cloud:3001/create-shop';
+  
+  // Utilise le navigateur système par défaut sur Android / iOS
+  window.open(cloudUrl, '_system');
+}
+
+onBecomePartner() {
+  window.open('https://kapexpert.cloud:3001/become-partner', '_system');
+}
+
+onShopNearMe() {
+  console.log('Action pour géolocaliser les boutiques à proximité');
+}
 }

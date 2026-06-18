@@ -6,8 +6,11 @@
 
     <div class="hero-top-bar">
       <span class="app-logo">
-        <ion-icon name="storefront-outline" class="logo-icon"></ion-icon>
-        ShopBlue
+        <!-- <ion-icon name="storefront-outline" class="logo-icon"></ion-icon> -->
+         <!-- use logo -->
+         <img src="/assets/central-market-logo.png" class="logo-icon" alt="GroupinG"
+          style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 15px; width:32px;height:32px;"> 
+        GroupinG
       </span>
       <button class="icon-btn" (click)="logout()">
         <ion-icon name="log-out-outline"></ion-icon>
@@ -172,7 +175,7 @@
         <ion-icon name="chevron-forward-outline" class="menu-arrow"></ion-icon>
       </a>
 
-      <a class="menu-item" [routerLink]="'/help'">
+      <a class="menu-item" [routerLink]="'/help-support'">
         <div class="menu-icon-wrap">
           <ion-icon name="help-circle-outline"></ion-icon>
         </div>

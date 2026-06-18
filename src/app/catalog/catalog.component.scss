@@ -89,6 +89,60 @@ ion-content { flex: 1; }
   &.has-filter { background: var(--accent); }
 }
 
+/* ── ACTIONS NAVBAR (NEW ROW) ── */
+.actions-navbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 2px;
+  
+  &::-webkit-scrollbar { display: none; }
+  -ms-overflow-style: none;  
+  scrollbar-width: none;  
+
+  .action-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg3);
+    border: 1.5px solid var(--border-light);
+    border-radius: 30px;
+    padding: 5px 12px 5px 6px;
+    cursor: pointer;
+    transition: all .2s;
+    flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+
+    &:active {
+      transform: scale(.95);
+      background: var(--border-light);
+    }
+
+    span {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text2);
+    }
+
+    .action-icon-wrap {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+
+      &.blue { background: #eff6ff; color: #2563eb; }
+      &.orange { background: #fff7ed; color: #ea580c; }
+      &.green { background: #f0fdf4; color: #16a34a; }
+    }
+  }
+}
+
 /* ── CATEGORIES ── */
 .cats-row {
   display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px;
