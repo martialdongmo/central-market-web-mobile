@@ -31,11 +31,10 @@ export class LoginComponent {
   }
 
 
-
   goRegister() { this.router.navigate(['/register']); }
 
 
   onForgetPassword() {
-
+    this.router.navigate(['/change-password'])
   }
 }

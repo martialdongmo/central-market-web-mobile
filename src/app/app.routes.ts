@@ -9,6 +9,12 @@ import { PaymentService } from './services/payment.service';
 import { PaymentSuccessComponent } from './carts/payment-success/payment-success.component';
 import { OrdersComponent } from './orders/my-orders/orders.component';
 import { OrderTrackingComponent } from './orders/order-tracking/order-tracking.component';
+import { TermsServiceComponent } from './shares/terms-service/terms-service.component';
+import { Component } from '@angular/core';
+import { PravacyPolicyComponent } from './shares/pravacy-policy/pravacy-policy.component';
+import { HelpSupportComponent } from './shares/help-support/help-support.component';
+import { PaymentPolicyComponent } from './shares/payment-policy/payment-policy.component';
+import { ChangePasswordComponent } from './auth/change-password/change-password.component';
 
 export const routes: Routes = [
 
@@ -100,5 +106,33 @@ export const routes: Routes = [
 
   { path: 'callback', component: CallbackComponent },
 
+  {
+    path: 'TermandConditions',
+    component: TermsServiceComponent,
+    title: 'Term of Service'
+  },
+
+  {
+    component: PravacyPolicyComponent,
+    title: 'Privacy Policy',  
+    path: 'privacy-policy'
+  },
+  // help and suport
+  {
+    component: HelpSupportComponent,
+    title: 'Help & Support',
+    path: 'help-support'
+  },
+  {
+    component: PaymentPolicyComponent,
+    title: 'Payment Policy', 
+    path: 'payment-policy'
+  },
+
+  {
+    component: ChangePasswordComponent,
+    path: 'change-password',
+    title: 'Change Password'
+  },
   { path: '**', component: PageNotFoundComponent, title: 'Page Not Found' },
 ];

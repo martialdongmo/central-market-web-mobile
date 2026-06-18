@@ -1,25 +1,51 @@
 <ion-content class="callback-theme">
   <div class="auth-container">
-    
-    <div class="animation-wrapper">
+
+    <!-- Logo -->
+    <div class="brand-logo">
+      <img src="/assets/central-market-logo.png" alt="GroupinG" class="logo-image">
+      <span class="logo-name">Groupin<span class="logo-accent">G</span></span>
+    </div>
+
+    <!-- Spinner -->
+    <div class="spinner-wrapper" aria-hidden="true">
       <div class="pulse-ring"></div>
-      <div class="icon-box">
-        <i class="fa-solid fa-shield-halved"></i>
+      <div class="spin-ring"></div>
+      <div class="icon-circle">
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
       </div>
     </div>
 
+    <!-- Status text -->
     <div class="status-text">
-      <h1>Securing Session</h1>
-      <p>Finalizing your credentials and connecting to CENTRAL MARKET  services...</p>
+      <h1>Securing your session</h1>
+      <p>Connecting to Central Market services…</p>
     </div>
 
-    <div class="loader-wrapper">
-      <ion-progress-bar type="indeterminate" color="primary"></ion-progress-bar>
+    <!-- Steps -->
+    <div class="steps-list" role="status" aria-live="polite">
+
+      <div class="step done">
+        <ion-icon name="checkmark-circle-outline" class="step-check"></ion-icon>
+        <span>Identity verified</span>
+      </div>
+
+      <div class="step active">
+        <div class="step-dot active"></div>
+        <span>Securing credentials</span>
+      </div>
+
+      <div class="step idle">
+        <div class="step-dot idle"></div>
+        <span>Establishing connection</span>
+      </div>
+
     </div>
 
-    <div class="security-note">
-      <i class="fa-solid fa-lock"></i>
-      <span>Secure Handshake</span>
+    <!-- Security badge -->
+    <div class="security-badge">
+      <ion-icon name="lock-closed-outline"></ion-icon>
+      <span>Secure handshake · TLS 1.3</span>
     </div>
 
   </div>

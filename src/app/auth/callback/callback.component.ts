@@ -1,18 +1,34 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonContent, IonProgressBar } from "@ionic/angular/standalone";
+import { IonContent, IonProgressBar, IonIcon } from "@ionic/angular/standalone";
 import { AuthService } from '../auth.service';
+import { addIcons } from 'ionicons';
+import {
+  checkmarkCircleOutline,
+  lockClosedOutline,
+  shieldCheckmarkOutline
+} from 'ionicons/icons';
+
 @Component({
   selector: 'app-callback',
   templateUrl: './callback.component.html',
   styleUrls: ['./callback.component.scss'],
-  imports: [IonProgressBar, IonContent],
+  imports: [IonContent, IonIcon],
 })
 export class CallbackComponent implements OnInit {
 
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
   private router = inject(Router);
+
+  constructor(){
+    addIcons({
+      checkmarkCircleOutline,
+      lockClosedOutline,
+      shieldCheckmarkOutline
+    })
+  }
+
 
 
 

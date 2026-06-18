@@ -1,0 +1,290 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.auth-page {
+  --background: #f8fafc;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Roboto", sans-serif;
+}
+
+.support-container {
+  padding: 3.5rem 1.5rem 3rem;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ── BRAND HEADER ── */
+.brand-identity-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 2.5rem;
+
+  .auth-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #0a2540;
+    letter-spacing: -0.75px;
+    margin: 0 0 0.35rem 0;
+    line-height: 1;
+  }
+
+  .auth-sub {
+    font-size: 0.875rem;
+    color: #64748b;
+    font-weight: 500;
+    margin: 0;
+  }
+}
+
+/* ── LAYOUT STRUCTURE SECTIONS ── */
+.support-section {
+  margin-bottom: 2.5rem;
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 1.25rem 0;
+
+    ion-icon {
+      color: #2563eb;
+      font-size: 1.35rem;
+    }
+  }
+}
+
+/* ── VIDEO PLAYER GRID & IFRAME CARD ── */
+.video-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.video-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.thumbnail-wrapper {
+  position: relative;
+  width: 100%;
+  height: 220px; /* Ratio idéal pour le rendu 16:9 sur mobile */
+  background: #000000;
+
+  .thumbnail-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+
+    &.from-blue-600 { background: linear-gradient(135deg, #2563eb, #1e3a8a); }
+    &.from-slate-700 { background: linear-gradient(135deg, #334155, #0f172a); }
+
+    &:active .youtube-play-icon {
+      transform: scale(0.95);
+      color: #ef4444; /* Change de couleur au clic */
+    }
+
+    .youtube-play-icon {
+      font-size: 3.5rem;
+      color: #ffffff;
+      transition: transform 0.2s ease, color 0.2s ease;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    }
+  }
+
+  .inline-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+
+  .video-duration {
+    position: absolute;
+    bottom: 0.75rem;
+    right: 0.75rem;
+    background: rgba(15, 23, 42, 0.85);
+    color: #ffffff;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 4px;
+    pointer-events: none; /* Évite de gêner le clic sur l'écran */
+  }
+}
+
+.video-info {
+  padding: 1rem;
+
+  h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 0.35rem 0;
+  }
+
+  p {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.4;
+  }
+}
+
+/* ── ORGANIZED ACCORDION FAQ ── */
+.faq-category-tag {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #2563eb;
+  letter-spacing: 0.05em;
+  margin: 1.75rem 0 0.75rem 0;
+  
+  &:first-of-type {
+    margin-top: 0;
+  }
+}
+
+.faq-item {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+
+  &[open] {
+    border-color: #2563eb;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.04);
+
+    summary {
+      background: #fafafa;
+      .arrow {
+        transform: rotate(180deg);
+        color: #2563eb;
+      }
+    }
+  }
+
+  summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1e293b;
+    cursor: pointer;
+    outline: none;
+    user-select: none;
+    transition: background 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+
+    &::-webkit-details-marker { display: none; }
+
+    .arrow {
+      font-size: 1.1rem;
+      color: #94a3b8;
+      transition: transform 0.2s ease, color 0.2s ease;
+    }
+  }
+
+  .faq-content {
+    padding: 0 1rem 1rem 1rem;
+    border-top: 1px solid #f1f5f9;
+    background: #ffffff;
+    animation: slideDown 0.2s ease-out;
+
+    p {
+      font-size: 0.85rem;
+      color: #475569;
+      line-height: 1.5;
+      margin: 0;
+      padding-top: 0.75rem;
+    }
+  }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── MINIMAL SUPPORT CONTACT FOOTER ── */
+.contact-footer-card {
+  background: #ffffff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  margin-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .footer-icon-wrap {
+    width: 48px;
+    height: 48px;
+    background: #eff6ff;
+    color: #2563eb;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 0.25rem 0;
+  }
+
+  p {
+    font-size: 0.825rem;
+    color: #64748b;
+    margin: 0 0 1.25rem 0;
+    line-height: 1.4;
+    max-width: 280px;
+  }
+
+  .contact-action-btn {
+    background: #2563eb;
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+    -webkit-tap-highlight-color: transparent;
+
+    &:active {
+      transform: scale(0.98);
+      background: #1d4ed8;
+    }
+
+    ion-icon {
+      font-size: 1.1rem;
+    }
+  }
+}

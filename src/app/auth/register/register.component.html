@@ -1,21 +1,17 @@
 <ion-content class="auth-page">
 
-  <!-- HEADER -->
-  <div class="auth-header">
-    <button class="auth-back-btn" (click)="navCtrl.back()">
-      <ion-icon name="arrow-back-outline"></ion-icon>
-    </button>
-  </div>
-
   <div class="auth-body">
 
-    <h1 class="auth-title">Create account</h1>
-    <p class="auth-sub">Join Central Market today</p>
+    <div class="brand-identity-wrap">
+      <div class="logo-frame">
+        <img src="/assets/central-market-logo.png" alt="GroupinG Logo" class="logo-img" />
+      </div>
+      <h1 class="auth-title">Groupin<span>G</span></h1>
+      <p class="auth-sub">Create your account to start shopping</p>
+    </div>
 
-    <!-- FORM -->
     <form [formGroup]="registerForm" (ngSubmit)="register()">
 
-      <!-- FIRST NAME -->
       <div class="auth-field">
         <label>First name</label>
         <div class="input-box">
@@ -24,7 +20,6 @@
         </div>
       </div>
 
-      <!-- LAST NAME -->
       <div class="auth-field">
         <label>Last name</label>
         <div class="input-box">
@@ -33,7 +28,6 @@
         </div>
       </div>
 
-      <!-- USERNAME -->
       <div class="auth-field">
         <label>Username</label>
         <div class="input-box">
@@ -42,7 +36,6 @@
         </div>
       </div>
 
-      <!-- EMAIL -->
       <div class="auth-field">
         <label>Email</label>
         <div class="input-box">
@@ -51,7 +44,6 @@
         </div>
       </div>
 
-      <!-- PHONE -->
       <div class="auth-field">
         <label>Phone number</label>
         <div class="input-box">
@@ -60,48 +52,60 @@
         </div>
       </div>
 
-      <!-- PASSWORD -->
       <div class="auth-field">
         <label>Password</label>
         <div class="input-box">
           <ion-icon name="lock-closed-outline"></ion-icon>
-          <input type="password" formControlName="password" placeholder="Min 6 characters">
+
+          <input [type]="isPasswordHidden ? 'password' : 'text'" formControlName="password"
+            placeholder="Min 6 characters">
+
+          <button type="button" class="toggle-password-btn" (click)="togglePasswordVisibility()">
+            <ion-icon [name]="isPasswordHidden ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+          </button>
         </div>
       </div>
 
-      <!-- ERROR -->
+      <div class="auth-policy-wrap">
+        <label class="policy-checkbox-container">
+          <input type="checkbox" formControlName="agreeToTerms">
+          <span class="custom-checkbox"></span>
+          <span class="policy-text">
+            I agree to the
+            <a (click)="$event.stopPropagation(); openTerms()">Terms of Service</a>
+            and
+            <a (click)="$event.stopPropagation(); openPrivacy()">Privacy Policy</a>
+          </span>
+        </label>
+      </div>
+
       @if (errorMessage) {
-        <div class="error-box">
-          <ion-icon name="alert-circle-outline"></ion-icon>
-          {{ errorMessage }}
-        </div>
+      <div class="error-box">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        <span>{{ errorMessage }}</span>
+      </div>
       }
 
-      <!-- SUCCESS -->
       @if (successMessage) {
-        <div class="success-box">
-          <ion-icon name="checkmark-circle-outline"></ion-icon>
-          {{ successMessage }}
-        </div>
+      <div class="success-box">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <span>{{ successMessage }}</span>
+      </div>
       }
 
-      <!-- BUTTON -->
       <button type="submit" class="primary-btn" [disabled]="isLoading || registerForm.invalid">
-
         @if (!isLoading) {
-          <span>Create account</span>
+        <span>Create account</span>
         } @else {
-          <div class="spinner"></div>
+        <div class="spinner"></div>
         }
-
       </button>
 
     </form>
 
-    <!-- LOGIN SWITCH -->
     <div class="switch">
       <span>Already have an account?</span>
-      <button routerLink="/secure-app">Sign in</button>
+      <button type="button" routerLink="/secure-app">Sign in</button>
     </div>
 
   </div>
