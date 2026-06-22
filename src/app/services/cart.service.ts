@@ -141,7 +141,9 @@ export class CartService {
       promotionPrice: product.promotionPrice ?? null,
 
       shopId: product.shopId,
+      userUuid: product.userUuid,
       shopName: product.shopName,
+      shopEmail: product.shopEmail,
       shopLatitude: product.shopLatitude ?? 0,
       shopLongitude: product.shopLongitude ?? 0,
 

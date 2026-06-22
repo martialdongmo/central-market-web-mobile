@@ -1,6 +1,8 @@
 export interface OrderItemRequest {
   shopId: string;
+  userUuid: string;
   shopName: string;
+  shopEmail: string;
   shopLatitude: number;
   shopLongitude: number; 
 
@@ -10,11 +12,4 @@ export interface OrderItemRequest {
   quantity: number;
   unitPrice: number;
   imageUrl: string;
-
-
-
- 
- 
-
-
 }

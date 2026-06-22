@@ -21,7 +21,6 @@ export class ProductCardComponent {
 
 
   private cartService = inject(CartService);
-  // private cartService = inject(Cart);
 
   private navCtrl = inject(NavController);
   private toastCtrl = inject(ToastController);  
@@ -41,7 +40,7 @@ export class ProductCardComponent {
     this.cartService.addToCart(this.product);
 
 
-    const t = await this.toastCtrl.create({ message:`${this.product.productName} ajouté !`, duration:1800, position:'bottom', mode:'ios', color:'dark' });
+    const t = await this.toastCtrl.create({ message:`${this.product.productName} ajouté !`, duration:1800, position:'bottom', mode:'ios', color:'blue' });
     await t.present();
   }
 }

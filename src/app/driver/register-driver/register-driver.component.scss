@@ -1,0 +1,57 @@
+// Shadow DOM Hooks mixed with Tailwind styling
+ion-content {
+  --background: #f8fafc; // slate-50
+}
+
+ion-toolbar {
+  --background: #ffffff;
+}
+
+// Styling the structural frame of the inputs
+.custom-ionic-input {
+  --background: #ffffff;
+  --border-radius: 14px;
+  --inner-padding-end: 12px;
+  --padding-start: 12px;
+  border: 1.5px solid #e2e8f0; // slate-200
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.item-has-focus {
+    border-color: #2563eb; // blue-600
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.06);
+    transform: translateY(-1px);
+  }
+}
+
+// Customizing the Ionic Checkbox look
+.custom-privacy-checkbox ion-checkbox {
+  --size: 20px;
+  --border-radius: 6px;
+  --border-color: #e2e8f0;
+  --checkbox-background-checked: #2563eb;
+  --border-color-checked: #2563eb;
+}
+
+// High performance mobile action button
+.submit-btn {
+  --border-radius: 14px;
+  --background: #2563eb;
+  --background-activated: #1d4ed8;
+  --box-shadow: 0 10px 20px -6px rgba(37, 99, 235, 0.3);
+  height: 52px;
+  font-size: 0.95rem;
+  
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}

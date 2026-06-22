@@ -15,6 +15,7 @@ import { PravacyPolicyComponent } from './shares/pravacy-policy/pravacy-policy.c
 import { HelpSupportComponent } from './shares/help-support/help-support.component';
 import { PaymentPolicyComponent } from './shares/payment-policy/payment-policy.component';
 import { ChangePasswordComponent } from './auth/change-password/change-password.component';
+import { RegisterDriverComponent } from './driver/register-driver/register-driver.component';
 
 export const routes: Routes = [
 
@@ -127,6 +128,12 @@ export const routes: Routes = [
     component: PaymentPolicyComponent,
     title: 'Payment Policy', 
     path: 'payment-policy'
+  },
+
+  {
+    component: RegisterDriverComponent,
+    title: 'Become a delivery', 
+    path: 'become-delivery'
   },
 
   {

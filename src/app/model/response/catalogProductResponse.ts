@@ -31,6 +31,8 @@ export interface CatalogProductResponse {
      ========================================================= */
 
   shopId: string;
+  userUuid: string;
+  shopEmail: string;
   shopName: string;
   shopOpen: boolean;
 
