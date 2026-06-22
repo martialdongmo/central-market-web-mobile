@@ -10,7 +10,9 @@ export interface CartItem {
   promotionPrice?: number | null;
 
   shopId: string;
+  userUuid: string;
   shopName: string;
+  shopEmail:string;
 
   quantity: number;
 }

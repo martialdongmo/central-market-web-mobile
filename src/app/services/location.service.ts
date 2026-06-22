@@ -22,7 +22,8 @@ export class LocationService {
           this.latitude.set(pos.coords.latitude.toString());
           this.longitude.set(pos.coords.longitude.toString());
           this.isLoading.set(false);
-          console.log('Web Location Success:', pos.coords.latitude);
+          console.log('Web Location Success:');
+           console.log(pos.coords);
         },
         (err) => {
           console.error('Web Location Error:', err.message);
