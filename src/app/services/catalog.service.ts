@@ -41,4 +41,17 @@ search(p: CatalogQueryParams): Observable<PageResponse<CatalogProductResponse>> 
   }));
 }
 
+
+// =========================
+// GET PRODUCT BY ID (simple — no geo)
+// Maps to: GET /api/v1/bis/catalog/product-1/{productId}
+// =========================
+getProduct(productId: string): Observable<CatalogProductResponse> {
+  return this.http.get<CatalogProductResponse>(
+    `${this.CATALOG_API_URL}/product-1/${productId}`
+  ).pipe(
+    tap(product => console.log('Product response:', product))
+  );
+}
+
 }
