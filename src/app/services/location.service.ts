@@ -7,8 +7,8 @@ import { Capacitor } from '@capacitor/core';
 })
 export class LocationService {
 
-  latitude = signal<number | null>(null);
-  longitude = signal<number | null>(null);
+  latitude = signal<string | null>(null);
+  longitude = signal<string | null>(null);
   isLoading = signal<boolean>(false);
   error = signal<string | null>(null);
 
@@ -19,10 +19,9 @@ export class LocationService {
     const platform = Capacitor.getPlatform();
     console.log('Platform detected:', platform);
 
-    // ── WEB ──────────────────────────────────────────────────────
+    // ── WEB ───────────────────────────────────────────────
     if (platform === 'web') {
       return new Promise((resolve) => {
-
         if (!navigator.geolocation) {
           this.error.set('Geolocation non supportée par ce navigateur.');
           this.isLoading.set(false);
@@ -30,7 +29,6 @@ export class LocationService {
           return;
         }
 
-        // HTTPS obligatoire — sur HTTP le navigateur bloque silencieusement
         if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
           this.error.set('Geolocation requiert HTTPS.');
           this.isLoading.set(false);
@@ -40,41 +38,31 @@ export class LocationService {
 
         navigator.geolocation.getCurrentPosition(
           (pos) => {
-            console.log('Web coords:', pos.coords.latitude, pos.coords.longitude);
-            this.latitude.set(pos.coords.latitude);
-            this.longitude.set(pos.coords.longitude);
+            this.latitude.set(pos.coords.latitude.toString());
+            this.longitude.set(pos.coords.longitude.toString());
             this.isLoading.set(false);
             resolve();
           },
           (err) => {
-            // err.code : 1=PERMISSION_DENIED 2=UNAVAILABLE 3=TIMEOUT
             const messages: Record<number, string> = {
               1: 'Permission de localisation refusée.',
               2: 'Position indisponible.',
               3: 'Timeout — réessayez.',
             };
             const msg = messages[err.code] ?? err.message;
-            console.error('Web geolocation error:', err.code, msg);
             this.error.set(msg);
             this.isLoading.set(false);
             resolve();
           },
-          {
-            enableHighAccuracy: false,   // false = GPS off, réseau seulement → plus rapide
-            timeout: 15000,
-            maximumAge: 30000,
-          }
+          { enableHighAccuracy: false, timeout: 15000, maximumAge: 30000 }
         );
       });
     }
 
-    // ── ANDROID / IOS ─────────────────────────────────────────────
+    // ── ANDROID / IOS ─────────────────────────────────────
     try {
       let status = await Geolocation.checkPermissions();
-      console.log('Permission status:', status.location);
-
       if (status.location === 'denied') {
-        // L'utilisateur a explicitement refusé — on ne peut plus demander
         this.error.set('Permission refusée. Activez la localisation dans les paramètres.');
         return;
       }
@@ -92,24 +80,22 @@ export class LocationService {
         timeout: 15000,
       });
 
-      console.log('Native coords:', pos.coords.latitude, pos.coords.longitude);
-      this.latitude.set(pos.coords.latitude);
-      this.longitude.set(pos.coords.longitude);
+      this.latitude.set(pos.coords.latitude.toString());
+      this.longitude.set(pos.coords.longitude.toString());
 
     } catch (err: any) {
-      console.error('Native geolocation error:', err);
       this.error.set(err?.message ?? 'Erreur de localisation.');
     } finally {
       this.isLoading.set(false);
     }
   }
 
-  // ── HELPERS ───────────────────────────────────────────────────
+  // ── HELPERS ────────────────────────────────────────────
   hasLocation(): boolean {
     return this.latitude() !== null && this.longitude() !== null;
   }
 
-  asNumbers(): { lat: number; lng: number } | null {
+  asStrings(): { lat: string; lng: string } | null {
     const lat = this.latitude();
     const lng = this.longitude();
     if (lat === null || lng === null) return null;
