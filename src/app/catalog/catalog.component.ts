@@ -30,13 +30,14 @@ import { CatalogProductResponse } from '../model/response/catalogProductResponse
 import { CartService } from '../services/cart.service';
 import { LocationService } from '../services/location.service';
 import { AuthService } from '../auth/auth.service';
+import { FooterComponent } from "../shares/footer/footer.component";
 
 const DEFAULT_MAX_PRICE = 10000;
 
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [CommonModule, FormsModule, ProductCardComponent, IonContent, IonIcon, IonModal, IonToggle, IonRange, IonInfiniteScroll, IonInfiniteScrollContent],
+  imports: [CommonModule, FormsModule, ProductCardComponent, IonContent, IonIcon, IonModal, IonToggle, IonRange, IonInfiniteScroll, IonInfiniteScrollContent, FooterComponent],
   templateUrl: './catalog.component.html',
   styleUrls: ['./catalog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

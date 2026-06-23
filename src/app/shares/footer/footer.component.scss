@@ -1,0 +1,255 @@
+/* =============================================
+   FooterMenuComponent styles
+   Prefix: fm-  (avoids global collisions)
+   ============================================= */
+
+:host {
+  display: contents; /* component itself takes no space; children render normally */
+
+  --blue-primary: #1565C0;
+  --blue-mid:     #1E88E5;
+  --blue-light:   #BBDEFB;
+  --blue-pale:    #E3F2FD;
+  --white:        #FFFFFF;
+  --text-primary:   #0D1B2A;
+  --text-secondary: #546E7A;
+  --text-muted:     #90A4AE;
+  --border:         #E8EEF4;
+  --green:          #2E7D32;
+  --green-pale:     #E8F5E9;
+  --green-light:    #A5D6A7;
+}
+
+/* ─── Backdrop ─────────────────────────────── */
+.fm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 30, 80, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 900;
+  animation: fm-fade 0.2s ease;
+}
+
+@keyframes fm-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ─── Sheet ────────────────────────────────── */
+.fm-sheet {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 950;
+  background: var(--white);
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -8px 40px rgba(13, 71, 161, 0.18);
+  display: flex;
+  flex-direction: column;
+  max-height: 84vh;
+  overflow: hidden;
+  animation: fm-slide 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  /* clear the tab bar + device safe area */
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 70px);
+}
+
+@keyframes fm-slide {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0);    }
+}
+
+/* ─── Handle ───────────────────────────────── */
+.fm-handle {
+  width: 36px; height: 4px;
+  border-radius: 2px;
+  background: #DDE4EE;
+  margin: 10px auto 0;
+  flex-shrink: 0;
+}
+
+/* ─── Header ───────────────────────────────── */
+.fm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.fm-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  ion-icon { font-size: 22px; color: var(--blue-primary); }
+}
+
+.fm-brand-name {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.4px;
+}
+
+.fm-close-btn {
+  background: var(--blue-pale);
+  border: none; border-radius: 50%;
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--blue-primary); font-size: 20px; cursor: pointer;
+  &:active { background: var(--blue-light); }
+}
+
+/* ─── User row ─────────────────────────────── */
+.fm-user-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 20px;
+  background: var(--blue-pale);
+  border-bottom: 1px solid var(--blue-light);
+  flex-shrink: 0;
+}
+
+.fm-avatar {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: var(--blue-primary); color: var(--white);
+  font-size: 18px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.fm-user-name {
+  font-size: 14px; font-weight: 700;
+  color: var(--text-primary); display: block;
+}
+
+.fm-user-role {
+  font-size: 11px; font-weight: 600;
+  color: var(--blue-primary); display: block; margin-top: 2px;
+}
+
+/* ─── Guest row ────────────────────────────── */
+.fm-guest-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 20px;
+  background: var(--blue-pale);
+  border-bottom: 1px solid var(--blue-light);
+  flex-shrink: 0;
+}
+
+.fm-guest-icon { font-size: 34px; color: var(--blue-light); flex-shrink: 0; }
+
+.fm-guest-title {
+  font-size: 13px; font-weight: 700;
+  color: var(--text-primary); display: block;
+}
+
+.fm-guest-sub {
+  font-size: 11px; color: var(--text-secondary);
+  display: block; margin-top: 1px;
+}
+
+.fm-sign-in-btn {
+  margin-left: auto;
+  padding: 8px 16px; border-radius: 20px;
+  background: var(--blue-primary); border: none;
+  color: var(--white); font-size: 12px; font-weight: 700;
+  cursor: pointer; flex-shrink: 0;
+}
+
+/* ─── Nav ──────────────────────────────────── */
+.fm-nav {
+  flex: 1; overflow-y: auto; padding: 4px 0;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.fm-nav-label {
+  font-size: 9.5px; font-weight: 700;
+  letter-spacing: 1.3px; color: var(--text-muted);
+  padding: 12px 20px 5px; text-transform: uppercase;
+
+  &--delivery { color: var(--green); }
+}
+
+/* ─── Link row (shared by <a> and <button>) ─ */
+.fm-link {
+  display: flex; align-items: center; gap: 14px;
+  padding: 11px 20px;
+  text-decoration: none; color: inherit;
+  border: none; border-bottom: 1px solid #F5F8FC;
+  background: none; width: 100%; text-align: left;
+  cursor: pointer; transition: background 0.12s;
+
+  &:last-of-type { border-bottom: none; }
+  &:active { background: var(--blue-pale); }
+
+  /* Delivery highlight variant */
+  &--delivery {
+    background: var(--green-pale);
+    border-left: 3px solid var(--green);
+    &:active { background: #C8E6C9; }
+  }
+}
+
+.fm-link-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: var(--blue-pale); border: 1px solid var(--blue-light);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--blue-primary); font-size: 20px; flex-shrink: 0;
+
+  &--delivery {
+    background: var(--green-pale);
+    border-color: var(--green-light);
+    color: var(--green);
+  }
+}
+
+.fm-link-body {
+  flex: 1; display: flex; flex-direction: column;
+  gap: 2px; min-width: 0;
+}
+
+.fm-link-text {
+  font-size: 14px; font-weight: 600; color: var(--text-primary);
+}
+
+.fm-link-sub {
+  font-size: 11px; color: var(--text-secondary);
+}
+
+.fm-link-arrow {
+  color: var(--blue-light); font-size: 16px; flex-shrink: 0;
+}
+
+.fm-ext-badge {
+  width: 24px; height: 24px; border-radius: 6px;
+  background: var(--blue-pale); border: 1px solid var(--blue-light);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--blue-primary); font-size: 13px; flex-shrink: 0;
+}
+
+/* ─── Logout button ────────────────────────── */
+.fm-logout-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  margin: 8px 20px 10px; padding: 13px; border-radius: 12px;
+  background: var(--white); border: 1.5px solid #FFCDD2;
+  color: #C62828; font-size: 14px; font-weight: 700;
+  cursor: pointer; flex-shrink: 0;
+  ion-icon { font-size: 18px; }
+  &:active { background: #FFF5F5; }
+}
+
+/* ─── Tab bar ───────────────────────────────── */
+.fm-tab-bar {
+  --background:       var(--white);
+  --color:            var(--text-muted);
+  --color-selected:   var(--blue-primary);
+  box-shadow: 0 -2px 16px rgba(13, 71, 161, 0.08);
+  border-top: 1px solid var(--border);
+}
+
+ion-tab-button {
+  font-size: 10px;
+  --color:          var(--text-muted);
+  --color-selected: var(--blue-primary);
+}
