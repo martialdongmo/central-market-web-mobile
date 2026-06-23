@@ -29,8 +29,8 @@
         }
         <div class="card-price">
           <small>{{ (product.promotionActive ? product.promotionPrice : product.price) | customCurrency
-          }}</small>
-          </div>
+            }}</small>
+        </div>
       </div>
       <button class="add-btn" (click)="addToCart($event)" [disabled]="!product.inStock">
         <ion-icon name="cart-outline"></ion-icon>
