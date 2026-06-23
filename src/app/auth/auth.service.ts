@@ -1,7 +1,8 @@
+
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, from, Observable, of } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { catchError, switchMap, tap } from 'rxjs/operators';
 
 import { environment } from 'src/environments/environment.development';
 import { PkceService } from './pkce.service';
@@ -26,6 +27,21 @@ export class AuthService {
   private pkceService = inject(PkceService);
   private http = inject(HttpClient);
   private tokenService = inject(TokenService);
+
+  /**
+ * Holds the authenticated user in memory.
+ * Components (AppComponent, ProfilePage…) subscribe to this instead of
+ * calling me() directly — zero extra HTTP requests from the UI layer.
+ *
+ * Populated by:
+ *   • loadCurrentUser()  — on app boot
+ *   • me()               — every call automatically updates it via tap()
+ *   • logout()           — resets to null
+ */
+  private readonly _currentUser$ = new BehaviorSubject<UserResponse | null>(null);
+
+  /** Public read-only stream — subscribe from anywhere. */
+  readonly currentUser$ = this._currentUser$.asObservable();
 
 
   async login() {
@@ -55,44 +71,7 @@ export class AuthService {
   }
 
 
-  async exchangeCodeForToken2(code: string) {
 
-    const verifier = sessionStorage.getItem('pkce_verifier');
-
-    if (!verifier) {
-      throw new Error('PKCE verifier not found');
-    }
-
-    const body = new URLSearchParams({
-      grant_type: 'authorization_code',
-      code,
-      redirect_uri: this.redirectUri,
-      client_id: this.clientId,
-      code_verifier: verifier
-    });
-
-    const response = await fetch(this.tokenEndpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: body.toString()
-    });
-
-    if (!response.ok) {
-      throw new Error(`Token exchange failed: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-
-    // IMPORTANT
-    await this.tokenService.setTokens(
-      data.access_token,
-      data.refresh_token
-    );
-
-    console.log('Token saved successfully');
-  }
 
 
 
@@ -133,37 +112,87 @@ export class AuthService {
   }
 
 
+  
 
 
-  logout() {
-    this.tokenService.clearTokens();
-    // TODO: Call backend logout endpoint if needed
-    window.location.href = '/secure-app';
-  }
+
+
 
   async isAuthenticated(): Promise<boolean> {
     const token = await this.tokenService.getAccessToken();
     return !!token;
   }
 
-  me(): Observable<UserResponse> {
-    return this.http.get<UserResponse>(`${this.AUTH_URL}/me`).pipe(
-      tap(console.log)
-    );
-  }
 
-  public registerNewUser(request: RegisterRequest): Observable<UserResponse> {
+    public registerNewUser(request: RegisterRequest): Observable<UserResponse> {
     return this.http.post<UserResponse>(`${this.API_URL}/api/v1/bis/auth/register`, request)
       .pipe(tap(console.log)
       );
   }
+    me(): Observable<UserResponse> {
+    return this.http.get<UserResponse>(`${this.AUTH_URL}/me`).pipe(
+      // NEW: push every successful /me response into the stream
+      tap(user => this._currentUser$.next(user)),
+      tap(console.log),
+    );
+  }
+
+
+
+
+  /** Synchronous snapshot — useful in guards or one-off checks. */
+  get currentUser(): UserResponse | null {
+    return this._currentUser$.getValue();
+  }
+
+  /**
+   * Call once from AppComponent.ngOnInit().
+   *
+   * Reads the access token from Capacitor Preferences (async).
+   * • Token found  → calls me() which pushes the user into currentUser$.
+   * • Token missing / expired → pushes null (user stays logged out silently).
+   *
+   * Does NOT break or change existing login / token-exchange flows.
+   */
+  loadCurrentUser(): Observable<UserResponse | null> {
+    return from(this.tokenService.getAccessToken()).pipe(
+      switchMap(token => {
+        if (!token) return of(null);
+        // Reuse the existing me() — it already does tap(console.log) etc.
+        return this.me().pipe(
+          catchError(() => {
+            // Token invalid or expired — clear without crashing the app
+            this.tokenService.clearTokens();
+            this._currentUser$.next(null);
+            return of(null);
+          }),
+        );
+      }),
+    );
+  }
+
+
+
+
 
   verifyOtp(request: VerifyOtpRequest): Observable<string> {
     return this.http.post(
-      `${this.API_URL}/api/v1/bis/auth/verify-otp`,request,
+      `${this.API_URL}/api/v1/bis/auth/verify-otp`, request,
       { responseType: 'text' }
     );
   }
+
+
+
+
+    logout() {
+    this.tokenService.clearTokens();
+    // NEW: clear the in-memory user so the UI reacts immediately
+    this._currentUser$.next(null);
+    window.location.href = '/secure-app';
+  }
+
+
 
 
 }
