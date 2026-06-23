@@ -83,8 +83,8 @@ export class RegisterComponent {
       password: this.registerForm.value.password!,
       username: this.registerForm.value.username!,
       phoneNumber: this.registerForm.value.phoneNumber!,
-      latitude: this.locationService.latitude().toString(),
-      longitude: this.locationService.longitude().toString()
+      latitude: this.locationService.latitude(),
+      longitude: this.locationService.longitude()
     };
   }
 
