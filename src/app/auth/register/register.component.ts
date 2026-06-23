@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
@@ -28,7 +28,7 @@ import { LocationService } from '../../services/location.service';
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
   successMessage = '';
@@ -41,6 +41,7 @@ export class RegisterComponent {
   private locationService = inject(LocationService);
   private currentYear = new Date().getFullYear();
   public isPasswordHidden: boolean = true;
+
 
   // UX Enhancement: Integrated the dynamic legal checkbox validator
   registerForm = this.fb.group({
@@ -69,13 +70,25 @@ export class RegisterComponent {
     });
   }
 
+  ngOnInit(): void {
+
+  }
+
+
+
   async register() {
+
+
+
     if (this.registerForm.invalid) return; // Prevent submission block breaks
     const request = this.createRegisterRequest();
+
+    console.log(request);
     this.saveNewUser(request);
   }
 
   public createRegisterRequest(): RegisterRequest {
+    const location = this.locationService.asStrings();
     return {
       firstName: this.registerForm.value.firstName!,
       lastName: this.registerForm.value.lastName!,
@@ -83,8 +96,8 @@ export class RegisterComponent {
       password: this.registerForm.value.password!,
       username: this.registerForm.value.username!,
       phoneNumber: this.registerForm.value.phoneNumber!,
-      latitude: this.locationService.latitude(),
-      longitude: this.locationService.longitude()
+      latitude: location.lat,
+      longitude: location.lng
     };
   }
 
@@ -137,27 +150,6 @@ export class RegisterComponent {
       }
     });
   }
-  // saveNewUser(request: RegisterRequest) {
-  //   this.isLoading = true;
-  //   this.errorMessage = '';
-  //   this.successMessage = '';
-
-  //   this.authService.registerNewUser(request).subscribe({
-  //     next: (response) => {
-  //       this.isLoading = false;
-  //       this.successMessage = 'Account created. Please verify the OTP sent to your email.';
-
-  //       this.router.navigate(['/verify-otp'], {
-  //         queryParams: { email: request.email }
-  //       });
-  //     },
-  //     error: (err) => {
-  //       this.isLoading = false;
-  //       this.errorMessage = err?.error?.message || 'Registration failed. Try again.';
-  //       console.error(err);
-  //     }
-  //   });
-  // }
 
   togglePasswordVisibility() {
     this.isPasswordHidden = !this.isPasswordHidden;

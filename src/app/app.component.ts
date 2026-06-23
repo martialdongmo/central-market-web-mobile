@@ -1,42 +1,32 @@
-
-import { Component, OnInit, OnDestroy, HostListener, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
-import {
-  IonApp, IonRouterOutlet, IonTabBar, IonTabButton,
-  IonIcon, IonLabel, NavController,AlertController
-} from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-
-
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { Subscription } from 'rxjs';
-
-import { AuthService } from './auth/auth.service';
-import { UserResponse } from './model/response/usersResponse';
-
-
-const ROLE_DELIVERY = 'DELIVERY';
-const ROLE_ADMIN    = 'ADMIN';
-const ROLE_MANAGER  = 'MANAGER';
- 
-/** Roles that may validate / confirm delivery orders */
-const CAN_VALIDATE_ROLES: string[] = [ROLE_DELIVERY, ROLE_ADMIN, ROLE_MANAGER];
- 
-/** External shop-creation portal */
-const CREATE_SHOP_URL = 'https://kapexpert.cloud:3001/create-shop';
+import { AuthService } from 'src/app/auth/auth.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
   standalone: true,
-  imports: [
-    CommonModule,
-    IonApp,
-    IonRouterOutlet,
-  ],
+  imports: [IonApp, IonRouterOutlet],
 })
 
-export class AppComponent {
-
+export class AppComponent implements OnInit, OnDestroy {
+ 
+  private readonly authService = inject(AuthService);
+  private subs: Subscription[] = [];
+ 
+  ngOnInit(): void {
+    // Boot unique — peuple currentUser$ pour tout l'app
+    const sub = this.authService.loadCurrentUser().subscribe({
+      next:  user => console.log('[App] Auth:', user?.firstName ?? 'guest'),
+      error: err  => console.error('[App] Auth error:', err),
+    });
+    this.subs.push(sub);
+  }
+ 
+  ngOnDestroy(): void {
+    this.subs.forEach(s => s.unsubscribe());
+  }
 }
+ 

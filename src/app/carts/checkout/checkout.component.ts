@@ -3,11 +3,10 @@ import { CommonModule, UpperCasePipe } from '@angular/common';
 import { IonContent, IonIcon, NavController, IonHeader, IonButtons, IonToolbar, IonTitle, IonButton, IonSpinner, IonSkeletonText, IonFooter, IonToggle } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { AuthService } from '../../auth/auth.service';
-import { BehaviorSubject, Subscription, switchMap } from 'rxjs';
+import {  Subscription, switchMap } from 'rxjs';
 import { UserResponse } from '../../model/response/usersResponse';
 import { PaymentMethod } from '../../model/enums/payment-method';
 import { OrderRequest } from '../../model/requests/order-request';
-import { OrderItemRequest } from '../../model/requests/order-tem-request';
 import { OrdersService } from '../../services/orders.service';
 import { CartService } from '../../services/cart.service';
 import { CustomerService } from '../../services/customer.service';
@@ -15,7 +14,7 @@ import { CartItem } from '../../model/cartItem';
 import { Router } from '@angular/router';
 import { CustomerRequest } from '../../model/requests/customerRequest';
 import { CustomerResponse } from '../../model/response/customer-response';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LocationService } from '../../services/location.service';
 import { DeliveryType } from '../../model/enums/deliveryType';
 import { CustomCurrencyPipe } from '../../services/custom.currency.pipe';
@@ -214,8 +213,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         addressLine:    address  ?? '',
         city:           city     ?? '',
         region:         '',
-        latitude:       this.locationService.latitude(),
-        longitude:      this.locationService.longitude(),
+        latitude:       this.locationService.latitude()?.toString() ?? '',
+        longitude:      this.locationService.longitude()?.toString() ?? '',
         defaultAddress: defaultAddress ?? false,
         label:          'Home',
         fullName: this.user!.lastName + ' ' + this.user!.firstName,
