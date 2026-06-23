@@ -1,145 +1,163 @@
 import { Routes } from '@angular/router';
-import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
-import { CallbackComponent } from './auth/callback/callback.component';
 import { authGuard } from './auth/guards/auth-guard';
+
+// ─── Pages importées directement (peu fréquentes ou déjà chargées) ──────────
+import { PageNotFoundComponent }    from './page-not-found/page-not-found.component';
+import { CallbackComponent }        from './auth/callback/callback.component';
 import { ConfirmationOrderComponent } from './orders/confirmation-order/confirmation-order.component';
-import { VerifyOtpComponent } from './auth/verify-otp/verify-otp.component';
-import { CatalogComponent } from './catalog/catalog.component';
-import { PaymentService } from './services/payment.service';
-import { PaymentSuccessComponent } from './carts/payment-success/payment-success.component';
-import { OrdersComponent } from './orders/my-orders/orders.component';
-import { OrderTrackingComponent } from './orders/order-tracking/order-tracking.component';
-import { TermsServiceComponent } from './shares/terms-service/terms-service.component';
-import { Component } from '@angular/core';
-import { PravacyPolicyComponent } from './shares/pravacy-policy/pravacy-policy.component';
-import { HelpSupportComponent } from './shares/help-support/help-support.component';
-import { PaymentPolicyComponent } from './shares/payment-policy/payment-policy.component';
-import { ChangePasswordComponent } from './auth/change-password/change-password.component';
-import { RegisterDriverComponent } from './driver/register-driver/register-driver.component';
+import { VerifyOtpComponent }       from './auth/verify-otp/verify-otp.component';
+import { CatalogComponent }         from './catalog/catalog.component';
+import { PaymentSuccessComponent }  from './carts/payment-success/payment-success.component';
+import { OrdersComponent }          from './orders/my-orders/orders.component';
+import { OrderTrackingComponent }   from './orders/order-tracking/order-tracking.component';
+import { TermsServiceComponent }    from './shares/terms-service/terms-service.component';
+import { PravacyPolicyComponent }   from './shares/pravacy-policy/pravacy-policy.component';
+import { HelpSupportComponent }     from './shares/help-support/help-support.component';
+import { PaymentPolicyComponent }   from './shares/payment-policy/payment-policy.component';
+import { ChangePasswordComponent }  from './auth/change-password/change-password.component';
+import { RegisterDriverComponent }  from './driver/register-driver/register-driver.component';
 
 export const routes: Routes = [
 
- {
-    path: '',
-    redirectTo: 'catalog',
-    pathMatch: 'full'
-  },
+  { path: '', redirectTo: 'catalog', pathMatch: 'full' },
 
-  {
-    path: 'catalog',
-    component:CatalogComponent,
-    title: 'Catalog'
-  },
+  // ════════════════════════════════════════════════════════════
+  // PAGES SANS FOOTER
+  // login, register, callback, otp — pas de tab bar ici
+  // ════════════════════════════════════════════════════════════
 
   {
     path: 'secure-app',
-    loadComponent: () => import('./auth/login/login.component').then(m => m.LoginComponent)
+    loadComponent: () =>
+      import('./auth/login/login.component').then(m => m.LoginComponent),
   },
   {
     path: 'register',
-    loadComponent: () => import('./auth/register/register.component').then(m => m.RegisterComponent)
+    loadComponent: () =>
+      import('./auth/register/register.component').then(m => m.RegisterComponent),
   },
   {
+    path: 'verify-otp',
     component: VerifyOtpComponent,
     title: 'Verify OTP',
-    path: 'verify-otp'
-  }
-  ,
-  
+  },
   {
-    path: 'nearby',
-    loadComponent: () => import('./nearby/nearby.component').then(m => m.NearbyComponent)
+    path: 'callback',
+    component: CallbackComponent,
+  },
+  {
+    path: 'change-password',
+    component: ChangePasswordComponent,
+    title: 'Change Password',
   },
 
+  // ════════════════════════════════════════════════════════════
+  // PAGES AVEC FOOTER
+  // Chaque template se termine par <app-footer></app-footer>
+  // ════════════════════════════════════════════════════════════
+
+  {
+    path: 'catalog',
+    component: CatalogComponent,  // déjà <app-footer> dans son template ✓
+    title: 'Catalogue',
+  },
+  {
+    path: 'nearby',
+    loadComponent: () =>
+      import('./nearby/nearby.component').then(m => m.NearbyComponent),
+    // → ajouter <app-footer> dans nearby.component.html
+  },
   {
     path: 'promotions',
-    loadComponent: () => import('./promotions/promotions.component').then(m => m.PromotionsComponent)
+    loadComponent: () =>
+      import('./promotions/promotions.component').then(m => m.PromotionsComponent),
+    // → ajouter <app-footer> dans promotions.component.html
   },
   {
     path: 'details/:productId',
-    loadComponent: () => import('./details-page/details-page.component').then(m => m.DetailsPageComponent)
+    loadComponent: () =>
+      import('./details-page/details-page.component').then(m => m.DetailsPageComponent),
+    // → ajouter <app-footer> dans details-page.component.html
   },
-
   {
     path: 'cart',
-    loadComponent: () => import('./carts/cart/cart.component').then(m => m.CartComponent)
+    loadComponent: () =>
+      import('./carts/cart/cart.component').then(m => m.CartComponent),
+    // → ajouter <app-footer> dans cart.component.html
   },
-
   {
-    canActivate: [authGuard],
     path: 'profile',
-    loadComponent: () => import('./profil/profil.component').then(m => m.ProfilComponent)
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./profil/profil.component').then(m => m.ProfilComponent),
+    // → ajouter <app-footer> dans profil.component.html
   },
-
-  
   {
+    path: 'checkout',
     canActivate: [authGuard],
     title: 'Checkout',
-    path: 'checkout',
-    loadComponent: () => import('./carts/checkout/checkout.component').then(m => m.CheckoutComponent)
+    loadComponent: () =>
+      import('./carts/checkout/checkout.component').then(m => m.CheckoutComponent),
+    // → ajouter <app-footer> dans checkout.component.html (ou pas, selon votre choix)
   },
   {
-    title: 'My orders',
     path: 'orders',
-   component: OrdersComponent,
-   canActivate: [authGuard]
+    component: OrdersComponent,
+    title: 'My Orders',
+    canActivate: [authGuard],
+    // → ajouter <app-footer> dans orders.component.html
   },
   {
     path: 'order-tracking/:id',
     component: OrderTrackingComponent,
-    title: 'order-details',
-    canActivate: [authGuard]
+    title: 'Order Details',
+    canActivate: [authGuard],
+    // → ajouter <app-footer> dans order-tracking.component.html
   },
-
   {
+    path: 'order-confirmation/:orderId',
     canActivate: [authGuard],
     component: ConfirmationOrderComponent,
     title: 'Order Confirmation',
-    path: 'order-confirmation/:orderId'
   },
-
   {
-    component: PaymentSuccessComponent,
-    title: 'payment-success',
     path: 'payment-success/:orderId',
-    canActivate:[authGuard]
+    component: PaymentSuccessComponent,
+    title: 'Payment Success',
+    canActivate: [authGuard],
+  },
+  {
+    path: 'become-delivery',
+    component: RegisterDriverComponent,
+    title: 'Become a Delivery Driver',
+    // → ajouter <app-footer> dans register-driver.component.html
   },
 
-  { path: 'callback', component: CallbackComponent },
+  // ════════════════════════════════════════════════════════════
+  // PAGES SECONDAIRES — footer optionnel selon vos préférences
+  // ════════════════════════════════════════════════════════════
 
   {
     path: 'TermandConditions',
     component: TermsServiceComponent,
-    title: 'Term of Service'
+    title: 'Terms of Service',
   },
-
   {
+    path: 'privacy-policy',
     component: PravacyPolicyComponent,
-    title: 'Privacy Policy',  
-    path: 'privacy-policy'
+    title: 'Privacy Policy',
   },
-  // help and suport
   {
+    path: 'help-support',
     component: HelpSupportComponent,
     title: 'Help & Support',
-    path: 'help-support'
   },
   {
+    path: 'payment-policy',
     component: PaymentPolicyComponent,
-    title: 'Payment Policy', 
-    path: 'payment-policy'
+    title: 'Payment Policy',
   },
 
-  {
-    component: RegisterDriverComponent,
-    title: 'Become a delivery', 
-    path: 'become-delivery'
-  },
-
-  {
-    component: ChangePasswordComponent,
-    path: 'change-password',
-    title: 'Change Password'
-  },
+  // Fallback
   { path: '**', component: PageNotFoundComponent, title: 'Page Not Found' },
 ];

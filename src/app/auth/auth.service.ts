@@ -1,4 +1,3 @@
-
 import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, from, Observable, of } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
@@ -11,157 +10,101 @@ import { UserResponse } from '../model/response/usersResponse';
 import { RegisterRequest } from '../model/requests/registerRequest';
 import { VerifyOtpRequest } from '../model/requests/verifyOtpRequest';
 
-
 @Injectable({ providedIn: 'root' })
-
 export class AuthService {
-  private authEndpoint = environment.AUTH_API_URL + '/oauth2/authorize';
+
+  private authEndpoint  = environment.AUTH_API_URL + '/oauth2/authorize';
   private tokenEndpoint = environment.AUTH_API_URL + '/oauth2/token';
-  private AUTH_URL = environment.USER_API_URL;
-  private API_URL = environment.AUTH_API_URL;
+  private AUTH_URL      = environment.USER_API_URL;
+  private API_URL       = environment.AUTH_API_URL;
 
-  private clientId = 'mobile';
+  private clientId    = 'mobile';
   private redirectUri = environment.redirectUri;
-  private scopes = 'openid USER_UPDATE USER_READ SHOP_READ PRODUCT_READ PRODUCT_UPDATE ORDER_WRITE ORDER_CREATE ORDER_READ PAYMENT_CREATE';
+  private scopes      = 'openid USER_UPDATE USER_READ SHOP_READ PRODUCT_READ PRODUCT_UPDATE ORDER_WRITE ORDER_CREATE ORDER_READ PAYMENT_CREATE';
 
-  private pkceService = inject(PkceService);
-  private http = inject(HttpClient);
+  private pkceService  = inject(PkceService);
+  private http         = inject(HttpClient);
   private tokenService = inject(TokenService);
 
-  /**
- * Holds the authenticated user in memory.
- * Components (AppComponent, ProfilePage…) subscribe to this instead of
- * calling me() directly — zero extra HTTP requests from the UI layer.
- *
- * Populated by:
- *   • loadCurrentUser()  — on app boot
- *   • me()               — every call automatically updates it via tap()
- *   • logout()           — resets to null
- */
+  // ── Auth state stream ─────────────────────────────────────────────────────
   private readonly _currentUser$ = new BehaviorSubject<UserResponse | null>(null);
-
-  /** Public read-only stream — subscribe from anywhere. */
   readonly currentUser$ = this._currentUser$.asObservable();
 
-
-  async login() {
-    // 1️ Generate PKCE verifier
-    const verifier = this.pkceService.generateCodeVerifier();
-
-    // 2️ Generate challenge
-    const challenge = await this.pkceService.generateCodeChallenge(verifier);
-
-    // 3️ Store verifier for later
-    sessionStorage.setItem('pkce_verifier', verifier);
-
-    // 4️ Build authorize URL
-    const params = new URLSearchParams({
-      response_type: 'code',
-      client_id: this.clientId,
-      redirect_uri: this.redirectUri,
-      scope: this.scopes,
-      code_challenge: challenge,
-      code_challenge_method: 'S256'
-    });
-
-    const authUrl = `${this.authEndpoint}?${params.toString()}`;
-
-    // 5️ Redirect user
-    window.location.href = authUrl;
+  get currentUser(): UserResponse | null {
+    return this._currentUser$.getValue();
   }
 
+  // ── PKCE Login ────────────────────────────────────────────────────────────
+  async login() {
+    const verifier  = this.pkceService.generateCodeVerifier();
+    const challenge = await this.pkceService.generateCodeChallenge(verifier);
+    sessionStorage.setItem('pkce_verifier', verifier);
 
+    const params = new URLSearchParams({
+      response_type:         'code',
+      client_id:             this.clientId,
+      redirect_uri:          this.redirectUri,
+      scope:                 this.scopes,
+      code_challenge:        challenge,
+      code_challenge_method: 'S256',
+    });
+    window.location.href = `${this.authEndpoint}?${params.toString()}`;
+  }
 
-
-
-
-
+  // ── Token exchange ────────────────────────────────────────────────────────
+  /**
+   * FIX: après avoir sauvegardé les tokens, on appelle me() pour peupler
+   * le stream currentUser$ immédiatement. Sans ça, le footer reste en mode
+   * guest même après un login réussi.
+   */
   async exchangeCodeForToken(code: string): Promise<any> {
-
     const verifier = sessionStorage.getItem('pkce_verifier');
-
-    if (!verifier) {
-      throw new Error('PKCE verifier missing');
-    }
+    if (!verifier) throw new Error('PKCE verifier missing');
 
     const body = new HttpParams()
-      .set('grant_type', 'authorization_code')
-      .set('client_id', this.clientId)
-      .set('code', code)
-      .set('redirect_uri', this.redirectUri)
+      .set('grant_type',    'authorization_code')
+      .set('client_id',     this.clientId)
+      .set('code',          code)
+      .set('redirect_uri',  this.redirectUri)
       .set('code_verifier', verifier);
 
     const headers = new HttpHeaders({
-      'Content-Type': 'application/x-www-form-urlencoded'
+      'Content-Type': 'application/x-www-form-urlencoded',
     });
 
     const response = await this.http
-      .post<any>(`${this.tokenEndpoint}`, body.toString(), { headers })
+      .post<any>(this.tokenEndpoint, body.toString(), { headers })
       .toPromise();
 
     if (response) {
+      await this.tokenService.setTokens(
+        response.access_token,
+        response.refresh_token,
+      );
+      sessionStorage.removeItem('pkce_verifier');
 
-      // store tokens temporarily
-      this.tokenService.setTokens(response.access_token, response.refresh_token);
-
-      console.log('Token exchange successful');
-
+      // FIX ✅ — peupler le stream immédiatement après le login
+      this.me().subscribe();
     }
 
     return response;
   }
 
-
-  
-
-
-
-
-
-  async isAuthenticated(): Promise<boolean> {
-    const token = await this.tokenService.getAccessToken();
-    return !!token;
-  }
-
-
-    public registerNewUser(request: RegisterRequest): Observable<UserResponse> {
-    return this.http.post<UserResponse>(`${this.API_URL}/api/v1/bis/auth/register`, request)
-      .pipe(tap(console.log)
-      );
-  }
-    me(): Observable<UserResponse> {
-    return this.http.get<UserResponse>(`${this.AUTH_URL}/me`).pipe(
-      // NEW: push every successful /me response into the stream
-      tap(user => this._currentUser$.next(user)),
-      tap(console.log),
-    );
-  }
-
-
-
-
-  /** Synchronous snapshot — useful in guards or one-off checks. */
-  get currentUser(): UserResponse | null {
-    return this._currentUser$.getValue();
-  }
-
+  // ── Boot loader ───────────────────────────────────────────────────────────
   /**
-   * Call once from AppComponent.ngOnInit().
-   *
-   * Reads the access token from Capacitor Preferences (async).
-   * • Token found  → calls me() which pushes the user into currentUser$.
-   * • Token missing / expired → pushes null (user stays logged out silently).
-   *
-   * Does NOT break or change existing login / token-exchange flows.
+   * Appelé UNE SEULE FOIS depuis AppComponent.ngOnInit().
+   * Lit le token Capacitor → appelle /me si valide → pousse dans currentUser$.
+   * Tous les abonnés (Footer, Profile…) réagissent automatiquement.
    */
   loadCurrentUser(): Observable<UserResponse | null> {
     return from(this.tokenService.getAccessToken()).pipe(
       switchMap(token => {
-        if (!token) return of(null);
-        // Reuse the existing me() — it already does tap(console.log) etc.
+        if (!token) {
+          this._currentUser$.next(null);
+          return of(null);
+        }
         return this.me().pipe(
           catchError(() => {
-            // Token invalid or expired — clear without crashing the app
             this.tokenService.clearTokens();
             this._currentUser$.next(null);
             return of(null);
@@ -171,28 +114,39 @@ export class AuthService {
     );
   }
 
-
-
-
-
-  verifyOtp(request: VerifyOtpRequest): Observable<string> {
-    return this.http.post(
-      `${this.API_URL}/api/v1/bis/auth/verify-otp`, request,
-      { responseType: 'text' }
+  // ── User profile ──────────────────────────────────────────────────────────
+  me(): Observable<UserResponse> {
+    return this.http.get<UserResponse>(`${this.AUTH_URL}/me`).pipe(
+      tap(user => this._currentUser$.next(user)),
     );
   }
 
+  // ── Auth check ────────────────────────────────────────────────────────────
+  async isAuthenticated(): Promise<boolean> {
+    const token = await this.tokenService.getAccessToken();
+    return !!token;
+  }
 
-
-
-    logout() {
+  // ── Logout ────────────────────────────────────────────────────────────────
+  logout() {
     this.tokenService.clearTokens();
-    // NEW: clear the in-memory user so the UI reacts immediately
     this._currentUser$.next(null);
     window.location.href = '/secure-app';
   }
 
+  // ── Registration / OTP ────────────────────────────────────────────────────
+  public registerNewUser(request: RegisterRequest): Observable<UserResponse> {
+    return this.http.post<UserResponse>(
+      `${this.API_URL}/api/v1/bis/auth/register`,
+      request,
+    ).pipe(tap(console.log));
+  }
 
-
-
+  verifyOtp(request: VerifyOtpRequest): Observable<string> {
+    return this.http.post(
+      `${this.API_URL}/api/v1/bis/auth/verify-otp`,
+      request,
+      { responseType: 'text' },
+    );
+  }
 }
