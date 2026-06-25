@@ -16,6 +16,7 @@ import { HelpSupportComponent }     from './shares/help-support/help-support.com
 import { PaymentPolicyComponent }   from './shares/payment-policy/payment-policy.component';
 import { ChangePasswordComponent }  from './auth/change-password/change-password.component';
 import { RegisterDriverComponent }  from './driver/register-driver/register-driver.component';
+import { ScanOrderComponent } from './driver/scan-order/scan-order.component';
 
 export const routes: Routes = [
 
@@ -130,9 +131,16 @@ export const routes: Routes = [
     path: 'become-delivery',
     component: RegisterDriverComponent,
     title: 'Become a Delivery Driver',
+    canActivate: [authGuard],
     // → ajouter <app-footer> dans register-driver.component.html
   },
 
+  {
+    path: 'scanner-validate',
+    component: ScanOrderComponent,
+    title: 'Scanner order',
+    canActivate: [authGuard],
+  },
   // ════════════════════════════════════════════════════════════
   // PAGES SECONDAIRES — footer optionnel selon vos préférences
   // ════════════════════════════════════════════════════════════
