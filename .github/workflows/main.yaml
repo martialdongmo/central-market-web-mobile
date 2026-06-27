@@ -50,25 +50,3 @@ jobs:
   # ============================================================
   # Deploy to VPS
   # ============================================================
-  deploy-web-to-vps:
-    name: Deploy Web App to VPS
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    steps:
-      - name: SSH & Deploy to VPS
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          port: 22
-          script: |
-            cd ~/central-market-app
-
-            echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login \
-              -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
-
-            docker compose pull central-market-web
-            docker compose up -d --remove-orphans central-market-web
-
-            docker image prune -f

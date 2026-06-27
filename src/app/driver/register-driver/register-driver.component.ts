@@ -1,10 +1,21 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import {
+  IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle,
+  IonContent, IonItem, IonIcon, IonInput, IonSelect, IonSelectOption,
+  IonCheckbox, IonButton, IonSpinner,
+} from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import {
+  bicycleOutline, cardOutline, carSportOutline, checkmarkCircleOutline,
+  alertCircleOutline, cashOutline, timeOutline, shieldCheckmarkOutline,
+} from 'ionicons/icons';
 import { VehicleType } from 'src/app/model/enums/vehicle-type';
 import { DriverService } from 'src/app/services/driver.service';
 import { DriverRegistrationRequest } from 'src/app/model/requests/driver-registration-request';
+import { FooterComponent } from "src/app/shares/footer/footer.component";
 
 @Component({
   selector: 'app-register-driver',
@@ -12,50 +23,48 @@ import { DriverRegistrationRequest } from 'src/app/model/requests/driver-registr
   styleUrls: ['./register-driver.component.scss'],
   standalone: true,
   imports: [
-    IonicModule, 
-    CommonModule, 
-    ReactiveFormsModule
-  ]
+    CommonModule, RouterLink, ReactiveFormsModule,
+    IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle,
+    IonContent, IonItem, IonIcon, IonInput, IonSelect, IonSelectOption,
+    IonCheckbox, IonButton, IonSpinner,
+    FooterComponent
+],
 })
-export class RegisterDriverComponent  implements OnInit {
+export class RegisterDriverComponent implements OnInit {
 
   driverForm!: FormGroup;
   isLoading = false;
   successMessage: string | null = null;
   errorMessage: string | null = null;
 
-  // Extract enum values for the @for loop template loop
   readonly vehicleTypes = Object.values(VehicleType);
 
-  private driverService = inject(DriverService);
-  private fb = inject(FormBuilder);
+  private readonly driverService = inject(DriverService);
+  private readonly fb = inject(FormBuilder);
 
-
-  constructor() { }
-
-  ngOnInit() {
-    this.initForm();
-  }
-
-  /**
-   * Initializes the reactive form with explicit validation matchers
-   */
-  private initForm(): void {
-    this.driverForm = this.fb.group({
-      licencePlate: ['', [
-        Validators.required,
-        Validators.minLength(4),
-        Validators.maxLength(15),
-        Validators.pattern(/^[A-Z0-9- ]+$/i) // Alpha-numeric, spaces, and dashes
-      ]],
-      vehicleType: ['', [Validators.required]],
-      privacyAccepted: [false, [Validators.requiredTrue]] // Must be explicitly checked
+  constructor() {
+    addIcons({
+      bicycleOutline, cardOutline, carSportOutline, checkmarkCircleOutline,
+      alertCircleOutline, cashOutline, timeOutline, shieldCheckmarkOutline,
     });
   }
 
-  /**
-   * Handles form submission and triggers backend driver registration
-   */
+  ngOnInit(): void {
+    this.driverForm = this.fb.group({
+      licencePlate: ['', [Validators.required, Validators.minLength(4),
+      Validators.maxLength(15), Validators.pattern(/^[A-Z0-9\- ]+$/i)]],
+      vehicleType: ['', [Validators.required]],
+      privacyAccepted: [false, [Validators.requiredTrue]],
+    });
+  }
+
+  // ── Getters — used in template instead of driverForm.get('...') ─────────
+  // These return AbstractControl so .touched / .valid / .invalid all work
+  get licencePlate() { return this.driverForm.get('licencePlate')!; }
+  get vehicleType() { return this.driverForm.get('vehicleType')!; }
+  get privacyAccepted() { return this.driverForm.get('privacyAccepted')!; }
+
+  // ── Submit ─────────────────────────────────────────────────────────────
   onSubmit(): void {
     if (this.driverForm.invalid) {
       this.driverForm.markAllAsTouched();
@@ -66,28 +75,20 @@ export class RegisterDriverComponent  implements OnInit {
     this.successMessage = null;
     this.errorMessage = null;
 
-    // Destructure to separate the privacy boolean from data sent to the API
     const { licencePlate, vehicleType } = this.driverForm.value;
-
     const request: DriverRegistrationRequest = { licencePlate, vehicleType };
 
     this.driverService.registerDriver(request).subscribe({
-      next: (response) => {
+      next: (res) => {
         this.isLoading = false;
-        this.successMessage = `Félicitations ${response.fullName}, votre compte chauffeur (${response.vehicleType}) a été validé !`;
-        
-        // Reset form state cleanly
-        this.driverForm.reset({
-          licencePlate: '',
-          vehicleType: '',
-          privacyAccepted: false
-        });
+        this.successMessage =
+          `Félicitations ${res.fullName} ! Votre compte livreur (${res.vehicleType}) a été validé.`;
+        this.driverForm.reset({ licencePlate: '', vehicleType: '', privacyAccepted: false });
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err.error?.message || "Une erreur est survenue lors de l'enregistrement.";
-      }
+        this.errorMessage = err.error?.message ?? "Une erreur est survenue. Veuillez réessayer.";
+      },
     });
   }
-
 }

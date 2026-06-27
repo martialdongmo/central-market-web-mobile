@@ -8,6 +8,7 @@ import { CustomerOrderDetailResponse } from '../model/response/orders/customer.o
 import { PageResponse } from '../model/response/orders/page.response';
 import { OrderSummaryResponse } from '../model/response/orders/orderSummaryResponse';
 import { OrderStatus } from '../model/response/orders/orderStatus';
+import { ValidateOrderRequest } from '../model/requests/validate-order-request';
 
 @Injectable({
   providedIn: 'root',
@@ -92,8 +93,8 @@ export class OrdersService {
   }
 
 
-
-
-
+   validateOrder(request: ValidateOrderRequest): Observable<void> {
+    return this.http.post<void>(`${this.API_URL}/validate`, request);
+  }
 
 }

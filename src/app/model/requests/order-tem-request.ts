@@ -5,8 +5,6 @@ export interface OrderItemRequest {
   shopEmail: string;
   shopLatitude: number;
   shopLongitude: number; 
-
-
   productId: string;
   productName: string;
   quantity: number;

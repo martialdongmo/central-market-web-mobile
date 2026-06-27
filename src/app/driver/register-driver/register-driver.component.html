@@ -1,108 +1,165 @@
 <ion-header class="ion-no-border">
-  <ion-toolbar class="--background-white px-2">
+  <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/" color="primary"></ion-back-button>
+      <ion-back-button defaultHref="/catalog" color="primary"></ion-back-button>
     </ion-buttons>
-    <ion-title class="font-sans font-bold text-blue-600 text-lg">GroupinG Driver</ion-title>
+    <ion-title class="font-bold text-blue-600 tracking-tight">GroupinG Driver</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="--background-slate-50">
-  <div class="max-w-md mx-auto px-5 py-6 font-sans">
-    
+<ion-content class="bg-slate-50">
+  <div class="max-w-md mx-auto px-5 py-8 font-sans">
+
+    <!-- Hero -->
     <div class="flex flex-col items-center text-center mb-8">
-      <div class="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-        <ion-icon name="bicycle-outline" class="text-3xl text-white"></ion-icon>
+      <div class="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center mb-4">
+        <ion-icon name="bicycle-outline" class="text-4xl text-white"></ion-icon>
       </div>
-      <h2 class="text-2xl font-extrabold text-slate-900 mt-4 tracking-tight">Devenir Chauffeur</h2>
-      <p class="text-slate-500 text-sm mt-1">Rejoignez l'équipe et commencez vos livraisons</p>
+      <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Devenir Livreur</h1>
+      <p class="text-slate-500 text-sm mt-1 max-w-xs leading-relaxed">
+        Rejoignez l'équipe GroupinG et commencez à livrer près de chez vous.
+      </p>
     </div>
 
+    <!-- Success banner -->
     @if (successMessage) {
-      <div class="flex items-center gap-3 p-4 mb-6 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm font-semibold animate-fade-in">
-        <ion-icon name="checkmark-circle" class="text-xl text-emerald-600"></ion-icon>
-        <span>{{ successMessage }}</span>
+      <div class="flex items-start gap-3 p-4 mb-6 bg-emerald-50 border border-emerald-200 rounded-2xl">
+        <ion-icon name="checkmark-circle-outline" class="text-emerald-600 text-xl flex-shrink-0 mt-0.5"></ion-icon>
+        <p class="text-emerald-800 text-sm font-semibold leading-snug m-0">{{ successMessage }}</p>
       </div>
     }
 
+    <!-- Error banner -->
     @if (errorMessage) {
-      <div class="flex items-center gap-3 p-4 mb-6 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 text-sm font-semibold animate-fade-in">
-        <ion-icon name="alert-circle" class="text-xl text-rose-600"></ion-icon>
-        <span>{{ errorMessage }}</span>
+      <div class="flex items-start gap-3 p-4 mb-6 bg-rose-50 border border-rose-200 rounded-2xl">
+        <ion-icon name="alert-circle-outline" class="text-rose-600 text-xl flex-shrink-0 mt-0.5"></ion-icon>
+        <p class="text-rose-800 text-sm font-semibold leading-snug m-0">{{ errorMessage }}</p>
       </div>
     }
 
-    <form [formGroup]="driverForm" (ngSubmit)="onSubmit()" class="space-y-6">
-      
-      <div>
-        <label class="block text-xs font-bold text-slate-900 uppercase tracking-wider mb-2 pl-1">
-          Plaque d'immatriculation
-        </label>
-        <ion-item lines="none" class="custom-ionic-input group">
-          <ion-icon name="card-outline" slot="start" class="text-slate-400 group-focus-within:text-blue-600 transition-colors mr-2"></ion-icon>
-          <ion-input 
-            type="text" 
-            formControlName="licencePlate" 
-            placeholder="Ex: LT-1234-A"
-            autocapitalize="characters"
-            class="text-slate-900 font-medium text-sm">
-          </ion-input>
-        </ion-item>
-        
-        @if (driverForm.get('licencePlate')?.touched && driverForm.get('licencePlate')?.invalid) {
-          <div class="text-xs font-semibold text-rose-600 mt-1.5 pl-1 animate-fade-in">
-            Plaque requise (4 à 15 caractères valides).
+    <!-- Form card -->
+    <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 space-y-6">
+      <form [formGroup]="driverForm" (ngSubmit)="onSubmit()">
+
+        <!-- ── Licence plate ── -->
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest pl-1">
+            Plaque d'immatriculation
+          </label>
+          <div class="flex items-center gap-3 bg-slate-50 rounded-xl px-4 h-13 border transition-colors"
+               [class.border-rose-400]="licencePlate.touched && licencePlate.invalid"
+               [class.border-blue-400]="licencePlate.touched && licencePlate.valid"
+               [class.border-slate-200]="!licencePlate.touched">
+            <ion-icon name="card-outline" class="text-slate-400 text-lg flex-shrink-0"></ion-icon>
+            <ion-input
+              formControlName="licencePlate"
+              type="text"
+              placeholder="Ex : LT-1234-A"
+              autocapitalize="characters"
+              class="flex-1 text-slate-900 font-medium text-sm">
+            </ion-input>
           </div>
-        }
-      </div>
-
-      <div>
-        <label class="block text-xs font-bold text-slate-900 uppercase tracking-wider mb-2 pl-1">
-          Type de véhicule
-        </label>
-        <ion-item lines="none" class="custom-ionic-input group">
-          <ion-icon name="car-sport-outline" slot="start" class="text-slate-400 group-focus-within:text-blue-600 transition-colors mr-2"></ion-icon>
-          <ion-select 
-            formControlName="vehicleType" 
-            placeholder="Sélectionnez..." 
-            interface="action-sheet"
-            class="text-slate-900 font-medium text-sm w-full">
-            <ion-select-option value="" disabled>Sélectionnez...</ion-select-option>
-            @for (type of vehicleTypes; track type) {
-              <ion-select-option [value]="type">{{ type }}</ion-select-option>
-            }
-          </ion-select>
-        </ion-item>
-      </div>
-
-      <div class="pt-1">
-        <ion-item lines="none" class="--background-transparent p-0 m-0 custom-privacy-checkbox">
-          <ion-checkbox 
-            formControlName="privacyAccepted" 
-            justify="start" 
-            labelPlacement="end"
-            class="text-sm text-slate-500 leading-normal font-normal">
-            <span class="block pl-2 text-xs text-slate-500">
-              J'accepte la <a href="/privacy-policy" class="text-blue-600 font-bold no-underline hover:underline">politique de confidentialité</a> de GroupinG ainsi que le traitement de mes données de localisation.
-            </span>
-          </ion-checkbox>
-        </ion-item>
-      </div>
-
-      <div class="pt-2">
-        <ion-button 
-          type="submit" 
-          expand="block" 
-          class="submit-btn font-bold tracking-tight"
-          [disabled]="driverForm.invalid || isLoading"
-          [style.pointerEvents]="isLoading ? 'none' : 'auto'">
-          @if (isLoading) {
-            <ion-spinner name="crescent" class="mr-2 text-white"></ion-spinner>
+          @if (licencePlate.touched && licencePlate.invalid) {
+            <p class="text-xs font-semibold text-rose-500 pl-1 flex items-center gap-1">
+              <ion-icon name="alert-circle-outline" class="text-sm"></ion-icon>
+              Plaque requise — entre 4 et 15 caractères alphanumériques.
+            </p>
           }
-          {{ isLoading ? 'Enregistrement...' : 'Valider mon inscription' }}
-        </ion-button>
-      </div>
+        </div>
 
-    </form>
+        <!-- ── Vehicle type ── -->
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest pl-1">
+            Type de véhicule
+          </label>
+          <div class="flex items-center gap-3 bg-slate-50 rounded-xl px-4 h-13 border transition-colors"
+               [class.border-rose-400]="vehicleType.touched && vehicleType.invalid"
+               [class.border-blue-400]="vehicleType.touched && vehicleType.valid"
+               [class.border-slate-200]="!vehicleType.touched">
+            <ion-icon name="car-sport-outline" class="text-slate-400 text-lg flex-shrink-0"></ion-icon>
+            <ion-select
+              formControlName="vehicleType"
+              placeholder="Sélectionnez votre véhicule..."
+              interface="action-sheet"
+              class="flex-1 text-slate-900 font-medium text-sm">
+              @for (type of vehicleTypes; track type) {
+                <ion-select-option [value]="type">{{ type }}</ion-select-option>
+              }
+            </ion-select>
+          </div>
+          @if (vehicleType.touched && vehicleType.invalid) {
+            <p class="text-xs font-semibold text-rose-500 pl-1 flex items-center gap-1">
+              <ion-icon name="alert-circle-outline" class="text-sm"></ion-icon>
+              Veuillez sélectionner un type de véhicule.
+            </p>
+          }
+        </div>
+
+        <!-- ── Privacy checkbox ── -->
+        <div class="bg-blue-50 border border-blue-100 rounded-2xl p-4">
+          <ion-item lines="none" class="bg-transparent p-0 m-0">
+            <ion-checkbox
+              formControlName="privacyAccepted"
+              justify="start"
+              labelPlacement="end"
+              color="primary">
+              <span class="block pl-3 text-xs text-slate-600 leading-relaxed">
+                J'accepte la
+                <a routerLink="/privacy-policy" class="text-blue-600 font-bold underline decoration-blue-300">
+                  politique de confidentialité
+                </a>
+                de GroupinG, ainsi que le traitement de mes données de localisation.
+              </span>
+            </ion-checkbox>
+          </ion-item>
+        </div>
+
+        <!-- ── Benefits strip ── -->
+        <div class="grid grid-cols-3 gap-2">
+          <div class="flex flex-col items-center gap-1 p-3 bg-slate-50 rounded-xl border border-slate-100">
+            <ion-icon name="cash-outline" class="text-blue-500 text-xl"></ion-icon>
+            <span class="text-xs text-slate-600 text-center font-medium leading-tight">Revenus flexibles</span>
+          </div>
+          <div class="flex flex-col items-center gap-1 p-3 bg-slate-50 rounded-xl border border-slate-100">
+            <ion-icon name="time-outline" class="text-blue-500 text-xl"></ion-icon>
+            <span class="text-xs text-slate-600 text-center font-medium leading-tight">Horaires libres</span>
+          </div>
+          <div class="flex flex-col items-center gap-1 p-3 bg-slate-50 rounded-xl border border-slate-100">
+            <ion-icon name="shield-checkmark-outline" class="text-blue-500 text-xl"></ion-icon>
+            <span class="text-xs text-slate-600 text-center font-medium leading-tight">Assurance incluse</span>
+          </div>
+        </div>
+
+        <!-- ── Submit ── -->
+        <ion-button
+          type="submit"
+          expand="block"
+          color="primary"
+          shape="round"
+          class="font-bold tracking-tight h-14 text-base"
+          [disabled]="driverForm.invalid || isLoading">
+          @if (isLoading) {
+            <ion-spinner name="crescent" class="mr-2"></ion-spinner>
+            Enregistrement...
+          } @else {
+            <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+            Valider mon inscription
+          }
+        </ion-button>
+
+      </form>
+    </div>
+
+    <!-- Footer note -->
+    <p class="text-center text-xs text-slate-400 mt-6 leading-relaxed">
+      En vous inscrivant, vous confirmez être titulaire d'un permis valide.
+      <br>
+      <a routerLink="/TermandConditions" class="text-blue-500 font-medium">Conditions générales</a>
+      &nbsp;·&nbsp;
+      <a routerLink="/payment-policy" class="text-blue-500 font-medium">Politique de paiement</a>
+    </p>
+
   </div>
 </ion-content>
+
+<app-footer></app-footer>
