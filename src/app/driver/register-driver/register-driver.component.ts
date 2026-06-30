@@ -16,6 +16,7 @@ import { VehicleType } from 'src/app/model/enums/vehicle-type';
 import { DriverService } from 'src/app/services/driver.service';
 import { DriverRegistrationRequest } from 'src/app/model/requests/driver-registration-request';
 import { FooterComponent } from "src/app/shares/footer/footer.component";
+import { LocationService } from 'src/app/services/location.service';
 
 @Component({
   selector: 'app-register-driver',
@@ -40,6 +41,8 @@ export class RegisterDriverComponent implements OnInit {
   readonly vehicleTypes = Object.values(VehicleType);
 
   private readonly driverService = inject(DriverService);
+  private locationService = inject(LocationService);
+
   private readonly fb = inject(FormBuilder);
 
   constructor() {
@@ -47,6 +50,7 @@ export class RegisterDriverComponent implements OnInit {
       bicycleOutline, cardOutline, carSportOutline, checkmarkCircleOutline,
       alertCircleOutline, cashOutline, timeOutline, shieldCheckmarkOutline,
     });
+    this.locationService.getCurrentLocation();
   }
 
   ngOnInit(): void {
