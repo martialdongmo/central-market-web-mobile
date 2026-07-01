@@ -15,8 +15,7 @@ export class DriverService {
 
    public registerDriver(request: DriverRegistrationRequest): Observable<DriverResponse> {
       return this.http.post<DriverResponse>(
-        `${this.API_URL}/register`,
-        request
+        `${this.API_URL}/register`,request
       )
         .pipe(
           tap((response) => console.log('driver created:', response)),
