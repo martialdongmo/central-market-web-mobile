@@ -139,7 +139,7 @@ export const routes: Routes = [
     path: 'scanner-validate',
     component: ScanOrderComponent,
     title: 'Scanner order',
-    canActivate: [authGuard],
+    // canActivate: [authGuard],
   },
   // ════════════════════════════════════════════════════════════
   // PAGES SECONDAIRES — footer optionnel selon vos préférences
