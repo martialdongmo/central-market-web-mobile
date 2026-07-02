@@ -30,6 +30,7 @@ import { CustomerOrderDetailResponse } from 'src/app/model/response/orders/custo
 import { CustomCurrencyPipe } from "../../services/custom.currency.pipe";
 import { PaymentMethod } from 'src/app/model/enums/payment-method';
 import { ShopDeliveryStatus } from 'src/app/model/enums/shopDeliveryStatus';
+import { FooterComponent } from "src/app/shares/footer/footer.component";
 
 
 interface ProgressStep { key: string; label: string; }
@@ -38,7 +39,7 @@ interface ProgressStep { key: string; label: string; }
 @Component({
   selector: 'app-order-tracking',
   standalone: true,
-  imports: [CommonModule, IonContent, IonIcon, IonSpinner, DatePipe, CurrencyPipe, CustomCurrencyPipe],
+  imports: [CommonModule, IonContent, IonIcon, IonSpinner, DatePipe, CurrencyPipe, CustomCurrencyPipe, FooterComponent],
   templateUrl: './order-tracking.component.html',
   styleUrls: ['./order-tracking.component.scss'],
 })
