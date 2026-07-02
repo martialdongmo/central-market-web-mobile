@@ -1,0 +1,23 @@
+// Style sur-mesure pour forcer la dominance bleue et blanche
+.custom-blue-button {
+  --background: #2563eb !important; // Bleu Tailwind (blue-600)
+  --background-activated: #1d4ed8 !important;
+  --background-hover: #1d4ed8 !important;
+  --border-radius: 12px !important;
+  --box-shadow: none !important;
+  margin: 0;
+}
+
+.custom-spinner {
+  --color: #ffffff !important; // Spinner blanc sur fond bleu
+}
+
+.custom-progress-bar {
+  --progress-background: #2563eb !important;
+  --buffer-background: #dbeafe !important;
+}
+
+ion-input {
+  --padding-start: 0px !important;
+  --padding-end: 0px !important;
+}

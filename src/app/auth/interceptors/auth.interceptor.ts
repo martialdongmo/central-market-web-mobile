@@ -2,13 +2,13 @@ import { HttpInterceptorFn, HttpEvent } from '@angular/common/http';
 import { from, Observable, throwError } from 'rxjs';
 import { switchMap, catchError } from 'rxjs/operators';
 import { inject } from '@angular/core';
-import { TokenService } from './token.service';
+import { TokenService } from '../token.service';
 
-export const authInterceptor: HttpInterceptorFn = (req, next): Observable<HttpEvent<any>> => {
+export const AuthInterceptor: HttpInterceptorFn = (req, next): Observable<HttpEvent<any>> => {
 
   const tokenService = inject(TokenService);
 
-  if (req.url.includes('/oauth2')) return next(req);
+  if (req.url.includes('/oauth2/token')) return next(req);
   if (req.url.includes('/auth')) return next(req);
   if (req.url.includes('/catalog')) return next(req);
 

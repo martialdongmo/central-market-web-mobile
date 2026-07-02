@@ -13,17 +13,17 @@ import { VerifyOtpRequest } from '../model/requests/verifyOtpRequest';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-  private authEndpoint  = environment.AUTH_API_URL + '/oauth2/authorize';
+  private authEndpoint = environment.AUTH_API_URL + '/oauth2/authorize';
   private tokenEndpoint = environment.AUTH_API_URL + '/oauth2/token';
-  private AUTH_URL      = environment.USER_API_URL;
-  private API_URL       = environment.AUTH_API_URL;
+  private AUTH_URL = environment.USER_API_URL;
+  private API_URL = environment.AUTH_API_URL;
 
-  private clientId    = 'mobile';
+  private clientId = 'mobile';
   private redirectUri = environment.redirectUri;
-  private scopes      = 'openid USER_UPDATE USER_READ SHOP_READ PRODUCT_READ PRODUCT_UPDATE ORDER_WRITE ORDER_CREATE ORDER_READ PAYMENT_CREATE';
+  private scopes = 'openid USER_UPDATE USER_READ SHOP_READ PRODUCT_READ PRODUCT_UPDATE ORDER_WRITE ORDER_CREATE ORDER_READ PAYMENT_CREATE';
 
-  private pkceService  = inject(PkceService);
-  private http         = inject(HttpClient);
+  private pkceService = inject(PkceService);
+  private http = inject(HttpClient);
   private tokenService = inject(TokenService);
 
   // ── Auth state stream ─────────────────────────────────────────────────────
@@ -36,16 +36,16 @@ export class AuthService {
 
   // ── PKCE Login ────────────────────────────────────────────────────────────
   async login() {
-    const verifier  = this.pkceService.generateCodeVerifier();
+    const verifier = this.pkceService.generateCodeVerifier();
     const challenge = await this.pkceService.generateCodeChallenge(verifier);
     sessionStorage.setItem('pkce_verifier', verifier);
 
     const params = new URLSearchParams({
-      response_type:         'code',
-      client_id:             this.clientId,
-      redirect_uri:          this.redirectUri,
-      scope:                 this.scopes,
-      code_challenge:        challenge,
+      response_type: 'code',
+      client_id: this.clientId,
+      redirect_uri: this.redirectUri,
+      scope: this.scopes,
+      code_challenge: challenge,
       code_challenge_method: 'S256',
     });
     window.location.href = `${this.authEndpoint}?${params.toString()}`;
@@ -62,10 +62,10 @@ export class AuthService {
     if (!verifier) throw new Error('PKCE verifier missing');
 
     const body = new HttpParams()
-      .set('grant_type',    'authorization_code')
-      .set('client_id',     this.clientId)
-      .set('code',          code)
-      .set('redirect_uri',  this.redirectUri)
+      .set('grant_type', 'authorization_code')
+      .set('client_id', this.clientId)
+      .set('code', code)
+      .set('redirect_uri', this.redirectUri)
       .set('code_verifier', verifier);
 
     const headers = new HttpHeaders({
@@ -128,10 +128,49 @@ export class AuthService {
   }
 
   // ── Logout ────────────────────────────────────────────────────────────────
-  logout() {
-    this.tokenService.clearTokens();
-    this._currentUser$.next(null);
-    window.location.href = '/secure-app';
+  logout(): void {
+
+    from(this.tokenService.getAccessToken()).pipe(
+
+      switchMap(token => {
+
+        if (!token) {
+          return of(null);
+        }
+
+        return this.http.post(
+          `${this.API_URL}/oauth2/logout`,
+          {},
+          {
+            headers: new HttpHeaders({
+              Authorization: `Bearer ${token}`
+            }),
+            responseType: 'text'
+          }
+        ).pipe(
+
+          catchError(error => {
+            console.warn('Logout request failed', error);
+            return of(null);
+          })
+
+        );
+
+      })
+
+    ).subscribe({
+
+      next: async () => {
+
+        await this.tokenService.clearTokens();
+
+        this._currentUser$.next(null);
+
+        window.location.href = '/secure-app';
+      }
+
+    });
+
   }
 
   // ── Registration / OTP ────────────────────────────────────────────────────

@@ -1,3 +1,4 @@
+<!-- Barre de progression supérieure lors de l'envoi de la requête -->
 @if (isLoading) {
   <ion-progress-bar type="indeterminate" class="absolute top-0 left-0 z-50 custom-progress-bar"></ion-progress-bar>
 }
@@ -6,16 +7,37 @@
   <div class="min-h-[85vh] flex flex-col items-center justify-center p-4 font-sans">
     
     <ion-card class="w-full max-w-md bg-white rounded-2xl border border-slate-200/60 shadow-xl m-0 overflow-hidden">
+      
+      <!-- Bandeau En-tête avec votre LOGO Image (GroupinG) -->
+      <div class="bg-blue-600 px-6 py-4 flex items-center justify-between border-b border-blue-700/20">
+        <div class="flex items-center gap-3">
+          <!-- Balise Logo Image -->
+          <img 
+            src="/assets/central-market-logo.png" 
+            alt="Logo GroupinG" 
+            class="h-8 w-auto object-contain bg-white/10 p-1 rounded-lg" 
+            (error)="$any($event).target.style.display = 'none'" />
+
+          <span class="text-white font-black tracking-wider text-xl">GroupinG<span class="text-blue-200">.</span></span>
+        </div>
+        
+        <span class="text-[10px] font-bold uppercase tracking-widest bg-blue-700/50 text-blue-100 px-2.5 py-1 rounded-md">
+          Logistics
+        </span>
+      </div>
+
       <ion-card-content class="p-6">
         
+        <!-- Section Illustration & Titres -->
         <div class="text-center mb-6">
           <div class="inline-flex p-3 bg-blue-50 text-blue-600 rounded-2xl mb-3 border border-blue-100">
             <ion-icon name="qr-code-outline" class="text-3xl"></ion-icon>
           </div>
-          <h2 class="text-xl font-bold text-slate-900 tracking-tight">Validation de Commande</h2>
+          <h2 class="text-lg font-bold text-slate-900 tracking-tight">Validation de Commande</h2>
           <p class="text-xs font-medium text-slate-500 mt-1">Vérifiez ou complétez le jeton de validation ci-dessous.</p>
         </div>
 
+        <!-- Section Formulaire -->
         <div class="space-y-5">
           <div class="border border-slate-200 rounded-xl overflow-hidden bg-white px-3 py-1.5 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-600 transition-all">
             <label class="text-[10px] font-bold text-blue-600 uppercase tracking-wider block mb-0.5">Code de Validation</label>
@@ -28,6 +50,7 @@
             </ion-input>
           </div>
 
+          <!-- Bouton Bleu avec Spinner Intégré -->
           <ion-button 
             expand="block" 
             [disabled]="isLoading || !orderCode.trim()"
@@ -46,8 +69,9 @@
           </ion-button>
         </div>
 
+        <!-- Alertes et Notifications Dynamiques -->
         @if (message) {
-          <div class="mt-5 p-4 rounded-xl text-xs font-semibold border flex items-start gap-2.5 animate-fadeIn"
+          <div class="mt-5 p-4 rounded-xl text-xs font-semibold border flex items-start gap-2.5"
                [ngClass]="isError ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-blue-50 text-blue-700 border-blue-200'">
             <ion-icon [name]="isError ? 'alert-circle-outline' : 'checkmark-circle-outline'" class="text-lg mt-0.5 flex-shrink-0"></ion-icon>
             <div class="leading-relaxed">{{ message }}</div>

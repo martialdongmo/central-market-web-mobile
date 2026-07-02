@@ -7,6 +7,7 @@ import { CatalogProductResponse } from '../model/response/catalogProductResponse
 import { CatalogService } from '../services/catalog.service';
 import { CartService } from '../services/cart.service';
 import { addIcons } from 'ionicons';
+import { FooterComponent } from "../shares/footer/footer.component";
 
 @Component({ selector: 'app-details-page',
    standalone: true, 
@@ -15,7 +16,8 @@ import { addIcons } from 'ionicons';
     RouterModule,
     IonHeader, IonToolbar, IonButtons, IonButton, IonIcon,
     IonTitle, IonContent, IonFooter, IonSkeletonText,
-  ],
+    FooterComponent
+],
    templateUrl: './details-page.component.html', 
    styleUrls: ['./details-page.component.scss'] 
   })
