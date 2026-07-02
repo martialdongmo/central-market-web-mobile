@@ -26,11 +26,12 @@ import {
 import { Subscription } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { UserResponse } from '../model/response/usersResponse';
+import { FooterComponent } from "../shares/footer/footer.component";
 
 @Component({
   selector: 'app-profil',
   standalone: true,
-  imports: [CommonModule, RouterLink, DatePipe, IonContent, IonIcon],
+  imports: [CommonModule, RouterLink, DatePipe, IonContent, IonIcon, FooterComponent],
   templateUrl: './profil.component.html',
   styleUrls: ['./profil.component.scss'],
 })
