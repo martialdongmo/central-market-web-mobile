@@ -4,37 +4,56 @@
 }
 
 <ion-content class="ion-padding bg-slate-50">
-  <div class="min-h-[85vh] flex flex-col items-center justify-center p-4 font-sans">
-    
-    <ion-card class="w-full max-w-md bg-white rounded-2xl border border-slate-200/60 shadow-xl m-0 overflow-hidden">
-      
-      <!-- Bandeau En-tête avec votre LOGO Image (GroupinG) -->
-      <div class="bg-blue-600 px-6 py-4 flex items-center justify-between border-b border-blue-700/20">
-        <div class="flex items-center gap-3">
-          <!-- Balise Logo Image -->
-          <img 
-            src="/assets/central-market-logo.png" 
-            alt="Logo GroupinG" 
-            class="h-8 w-auto object-contain bg-white/10 p-1 rounded-lg" 
-            (error)="$any($event).target.style.display = 'none'" />
+  <!-- Bouton Retour Professionnel hors de la carte (Haut Gauche) -->
+  <div class="max-w-md mx-auto w-full pt-2 pl-1">
+    <ion-button 
+      fill="clear" 
+      routerLink="/catalog" 
+      [disabled]="isLoading" 
+      class="text-slate-500 hover:text-slate-800 text-xs font-semibold normal-case tracking-tight m-0 p-0 --padding-start-0">
+      <ion-icon name="arrow-back-outline" slot="start" class="text-sm mr-1"></ion-icon>
+      Retour au tableau de bord
+    </ion-button>
+  </div>
 
-          <span class="text-white font-black tracking-wider text-xl">GroupinG<span class="text-blue-200">.</span></span>
-        </div>
-        
-        <span class="text-[10px] font-bold uppercase tracking-widest bg-blue-700/50 text-blue-100 px-2.5 py-1 rounded-md">
+  <div class="min-h-[80vh] flex flex-col items-center justify-center p-4 font-sans">
+    
+    <!-- Image/Logo déplacée au-dessus de la carte avec une taille et un style professionnels -->
+    <div class="flex flex-col items-center justify-center mb-6 pointer-events-none select-none">
+      <div class="p-3.5 bg-white border border-slate-200/80 shadow-sm rounded-2xl flex items-center justify-center h-16 w-16 mb-2">
+        <img 
+          src="/assets/central-market-logo.png" 
+          alt="Logo GroupinG" 
+          class="h-10 w-10 object-contain" 
+          (error)="$any($event).target.style.display = 'none'" />
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="text-slate-900 font-black tracking-wider text-xl">GroupinG<span class="text-blue-600">.</span></span>
+        <span class="text-[9px] font-bold uppercase tracking-widest bg-blue-50 text-blue-600 border border-blue-100 px-2 py-0.5 rounded-md">
           Logistics
         </span>
       </div>
+    </div>
+    
+    <!-- Carte principale au style "Protected & Secure" -->
+    <ion-card class="w-full max-w-md bg-white rounded-2xl border border-slate-200/80 shadow-xl m-0 overflow-hidden relative">
+      
+      <!-- Ligne subtile de sécurité supérieure -->
+      <div class="h-1.5 w-full bg-blue-600"></div>
 
       <ion-card-content class="p-6">
         
-        <!-- Section Illustration & Titres -->
+        <!-- Section Illustration & Titres (Aspect Certifié / Protégé) -->
         <div class="text-center mb-6">
-          <div class="inline-flex p-3 bg-blue-50 text-blue-600 rounded-2xl mb-3 border border-blue-100">
-            <ion-icon name="qr-code-outline" class="text-3xl"></ion-icon>
+          <div class="inline-flex p-3 bg-slate-50 text-slate-700 rounded-2xl mb-3 border border-slate-200 relative">
+            <ion-icon name="shield-checkmark-outline" class="text-2xl text-blue-600"></ion-icon>
+            <!-- Badge QR miniature pour l'indicateur visuel de scan -->
+            <div class="absolute -bottom-1 -right-1 bg-white border border-slate-200 rounded-md p-0.5 shadow-sm flex items-center justify-center">
+              <ion-icon name="qr-code-outline" class="text-xs text-slate-500"></ion-icon>
+            </div>
           </div>
           <h2 class="text-lg font-bold text-slate-900 tracking-tight">Validation de Commande</h2>
-          <p class="text-xs font-medium text-slate-500 mt-1">Vérifiez ou complétez le jeton de validation ci-dessous.</p>
+          <p class="text-xs font-medium text-slate-500 mt-1">Espace sécurisé de vérification des jetons de livraison.</p>
         </div>
 
         <!-- Section Formulaire -->
@@ -77,6 +96,12 @@
             <div class="leading-relaxed">{{ message }}</div>
           </div>
         }
+
+        <!-- Mention de sécurité en bas de formulaire -->
+        <div class="mt-6 flex items-center justify-center gap-1.5 text-[10px] font-medium text-slate-400">
+          <ion-icon name="lock-closed-outline" class="text-xs"></ion-icon>
+          <span>Session d'administration chiffrée</span>
+        </div>
 
       </ion-card-content>
     </ion-card>
