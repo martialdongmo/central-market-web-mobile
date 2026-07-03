@@ -28,6 +28,7 @@ import { OrderSummaryResponse } from 'src/app/model/response/orders/orderSummary
 import { OrderStatus } from 'src/app/model/response/orders/orderStatus';
 import { DeliveryType } from 'src/app/model/enums/deliveryType';
 import { PaymentMethod } from 'src/app/model/enums/payment-method';
+import { FooterComponent } from "src/app/shares/footer/footer.component";
 
 interface StatusTab  { label: string; value: OrderStatus | null; icon: string; }
 interface DateRange  { label: string; key: string; from?: string; to?: string; }
@@ -35,7 +36,7 @@ interface DateRange  { label: string; key: string; from?: string; to?: string; }
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonContent, IonIcon, IonSpinner, DatePipe, DecimalPipe],
+  imports: [CommonModule, FormsModule, IonContent, IonIcon, IonSpinner, DatePipe, DecimalPipe, FooterComponent],
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.scss'],
 })
