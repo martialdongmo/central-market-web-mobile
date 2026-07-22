@@ -1,0 +1,109 @@
+<ion-content class="success-content" [fullscreen]="true">
+  <div class="success-body">
+
+    <!-- ══════════════════════════════
+         ANIMATED SUCCESS ILLUSTRATION
+    ══════════════════════════════ -->
+    <div class="anim-wrap">
+      <div class="pulse-ring ring-1"></div>
+      <div class="pulse-ring ring-2"></div>
+      <div class="pulse-ring ring-3"></div>
+      <div class="check-circle">
+        <ion-icon name="checkmark-outline"></ion-icon>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         HEADLINE
+    ══════════════════════════════ -->
+    <div class="headline">
+      <h1 class="success-title">Payment Successful!</h1>
+      <p class="success-sub">
+        Your payment has been confirmed and your order is now being prepared.
+      </p>
+    </div>
+
+    <!-- ══════════════════════════════
+         RECEIPT CARD
+    ══════════════════════════════ -->
+    @if (loading) {
+      <div class="receipt-skel">
+        <ion-skeleton-text animated style="width:100%;height:16px;border-radius:6px;"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width:75%;height:14px;border-radius:6px;margin-top:10px;"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width:60%;height:14px;border-radius:6px;margin-top:10px;"></ion-skeleton-text>
+      </div>
+    }
+
+    @if (order && !loading) {
+      <div class="receipt-card">
+        <div class="receipt-tear top"></div>
+
+        <div class="receipt-rows">
+
+          <div class="receipt-row">
+            <span class="r-label">Order Ref</span>
+            <span class="r-val ref">{{ order.reference }}</span>
+          </div>
+
+          <div class="receipt-row">
+            <span class="r-label">Amount Paid</span>
+            <span class="r-val amount">
+              {{ order.totalAmount | customCurrency }}
+            </span>
+          </div>
+
+          <div class="receipt-row">
+            <span class="r-label">Payment</span>
+            <span class="r-val">{{ paymentLabel(order.paymentMethod) }}</span>
+          </div>
+
+          <div class="receipt-row">
+            <span class="r-label">Date</span>
+            <span class="r-val">{{ order.createdAt | date:'dd MMM yyyy · HH:mm' }}</span>
+          </div>
+
+          <div class="receipt-row">
+            <span class="r-label">Status</span>
+            <span class="status-chip">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+              Paid
+            </span>
+          </div>
+
+        </div>
+
+        <div class="receipt-tear bottom"></div>
+      </div>
+    }
+
+    <!-- ══════════════════════════════
+         ACTION BUTTONS
+    ══════════════════════════════ -->
+    <div class="actions">
+
+      <!-- Download Invoice -->
+      <button class="action-btn invoice"
+              (click)="downloadInvoice()"
+              [disabled]="!order">
+        <ion-icon name="document-text-outline"></ion-icon>
+        <span>Download Invoice</span>
+        <ion-icon name="download-outline" class="trail-icon"></ion-icon>
+      </button>
+
+      <!-- Track order -->
+      <button class="action-btn primary" (click)="trackOrder()">
+        <ion-icon name="navigate-circle-outline"></ion-icon>
+        <span>Track My Order</span>
+        <ion-icon name="arrow-forward-outline" class="trail-icon"></ion-icon>
+      </button>
+
+      <!-- Continue shopping -->
+      <button class="action-btn primary" (click)="continueShopping()">
+        <ion-icon name="storefront-outline"></ion-icon>
+        <span>Continue Shopping</span>
+      </button>
+
+    </div>
+
+  </div>
+</ion-content>

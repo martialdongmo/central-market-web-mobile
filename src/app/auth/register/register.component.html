@@ -1,0 +1,113 @@
+<ion-content class="auth-page">
+
+  <div class="auth-body">
+
+    <div class="brand-identity-wrap">
+      <div class="logo-frame">
+        <img src="/assets/central-market-logo.png" alt="GroupinG Logo" class="logo-img" />
+      </div>
+      <h1 class="auth-title">Groupin<span>G</span></h1>
+      <p class="auth-sub">Create your account to start shopping</p>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="register()">
+
+      <div class="auth-field">
+        <label>First name</label>
+        <div class="input-box">
+          <ion-icon name="person-outline"></ion-icon>
+          <input type="text" formControlName="firstName" placeholder="John">
+        </div>
+      </div>
+
+      <div class="auth-field">
+        <label>Last name</label>
+        <div class="input-box">
+          <ion-icon name="person-outline"></ion-icon>
+          <input type="text" formControlName="lastName" placeholder="Doe">
+        </div>
+      </div>
+
+      <div class="auth-field">
+        <label>Username</label>
+        <div class="input-box">
+          <ion-icon name="at-outline"></ion-icon>
+          <input type="text" formControlName="username" placeholder="johndoe">
+        </div>
+      </div>
+
+      <div class="auth-field">
+        <label>Email</label>
+        <div class="input-box">
+          <ion-icon name="mail-outline"></ion-icon>
+          <input type="email" formControlName="email" placeholder="you@email.com">
+        </div>
+      </div>
+
+      <div class="auth-field">
+        <label>Phone number</label>
+        <div class="input-box">
+          <ion-icon name="call-outline"></ion-icon>
+          <input type="text" formControlName="phoneNumber" placeholder="+237...">
+        </div>
+      </div>
+
+      <div class="auth-field">
+        <label>Password</label>
+        <div class="input-box">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+
+          <input [type]="isPasswordHidden ? 'password' : 'text'" formControlName="password"
+            placeholder="Min 6 characters">
+
+          <button type="button" class="toggle-password-btn" (click)="togglePasswordVisibility()">
+            <ion-icon [name]="isPasswordHidden ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="auth-policy-wrap">
+        <label class="policy-checkbox-container">
+          <input type="checkbox" formControlName="agreeToTerms">
+          <span class="custom-checkbox"></span>
+          <span class="policy-text">
+            I agree to the
+            <a (click)="$event.stopPropagation(); openTerms()">Terms of Service</a>
+            and
+            <a (click)="$event.stopPropagation(); openPrivacy()">Privacy Policy</a>
+          </span>
+        </label>
+      </div>
+
+      @if (errorMessage) {
+      <div class="error-box">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        <span>{{ errorMessage }}</span>
+      </div>
+      }
+
+      @if (successMessage) {
+      <div class="success-box">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <span>{{ successMessage }}</span>
+      </div>
+      }
+
+      <button type="submit" class="primary-btn" [disabled]="isLoading || registerForm.invalid">
+        @if (!isLoading) {
+        <span>Create account</span>
+        } @else {
+        <div class="spinner"></div>
+        }
+      </button>
+
+    </form>
+
+    <div class="switch">
+      <span>Already have an account?</span>
+      <button type="button" routerLink="/secure-app">Sign in</button>
+    </div>
+
+  </div>
+
+</ion-content>

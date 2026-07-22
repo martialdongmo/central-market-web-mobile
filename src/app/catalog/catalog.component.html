@@ -1,0 +1,205 @@
+<!-- catalog.component.html -->
+
+<!-- ══ HEADER — fixed outside, never scrolls ══ -->
+<div class="catalog-header">
+  <div class="header-topbar">
+    <div class="brand-logo">Groupin<span>G</span></div>
+    <div class="header-actions">
+      <button class="icon-btn" (click)="searchOverlayOpen = true">
+        <ion-icon name="search-outline"></ion-icon>
+      </button>
+      <button class="icon-btn primary" (click)="goToCart()">
+        <ion-icon name="bag-outline"></ion-icon>
+        @if (cartCount > 0) {
+          <span class="tab-badge">{{ cartCount > 99 ? '99+' : cartCount }}</span>
+        }
+      </button>
+    </div>
+  </div>
+
+  <div class="hero-band">
+    <div>
+      <div class="hero-badge">
+        <ion-icon name="flash"></ion-icon>
+        <span>Flash Sales</span>
+      </div>
+      <div class="hero-title">Discover our<br><em>Deals of the Day</em></div>
+      <div class="hero-sub">
+        <ion-icon name="shield-checkmark-outline"></ion-icon> Premium quality
+        &nbsp;·&nbsp;
+        <ion-icon name="rocket-outline"></ion-icon> Fast delivery
+      </div>
+    </div>
+    <div class="hero-icon-wrap"><ion-icon name="storefront-outline"></ion-icon></div>
+  </div>
+
+  <div class="search-row">
+    <div class="search-box">
+      <ion-icon name="search-outline"></ion-icon>
+      <input #searchInput type="search" placeholder="Search products..."
+        [value]="queryParams.keyword" (input)="onSearch($event)" />
+      @if (queryParams.keyword) {
+        <button class="clear-btn" (click)="clearSearch()">
+          <ion-icon name="close-circle"></ion-icon>
+        </button>
+      }
+    </div>
+    <button class="filter-btn" [class.has-filter]="hasActiveFilters" (click)="openFilters()">
+      <ion-icon name="options-outline"></ion-icon>
+    </button>
+  </div>
+
+  <div class="cats-row">
+    @for (cat of categories; track cat.id) {
+      <div class="cat-chip"
+        [class.active]="activeCategory === cat.id"
+        (click)="selectCategory(cat.id)">
+        <span>{{ cat.name }}</span>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- ══ CONTENT — the ONE scrollable zone ══ -->
+<ion-content>
+
+  @if (!isLoading) {
+    <div class="section-hd">
+      <h3><ion-icon name="grid-outline"></ion-icon> Catalogue</h3>
+      <small>{{ products.length }} items</small>
+    </div>
+  }
+
+  @if (isLoading) {
+    <div class="product-grid">
+      @for (i of [1,2,3,4,5,6]; track i) {
+        <div class="skeleton-card">
+          <div class="skeleton-img"></div>
+          <div class="skeleton-body">
+            <div class="skeleton-line" style="width:80%"></div>
+            <div class="skeleton-line" style="width:50%"></div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else if (products.length > 0) {
+    <div class="product-grid">
+      @for (p of products; track p.productId) {
+        <app-product-card [product]="p"></app-product-card>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <ion-icon name="search-circle-outline" class="empty-icon"></ion-icon>
+      <h3>No results found</h3>
+      <p>Try different keywords or adjust your filters</p>
+      <button class="btn-reset" (click)="resetFilters()">
+        <ion-icon name="refresh-outline"></ion-icon> Reset filters
+      </button>
+    </div>
+  }
+
+  <!-- bottom breathing room so last card clears the infinite spinner -->
+  <div style="height: 16px"></div>
+
+  <!-- ══ INFINITE SCROLL — must be the last child of ion-content ══ -->
+  <ion-infinite-scroll (ionInfinite)="loadMore($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="crescent"
+      loadingText="Loading more…"/>
+  </ion-infinite-scroll>
+
+</ion-content>
+
+<!-- ══ SEARCH OVERLAY — full screen, own scroll ══ -->
+<div class="search-overlay" [class.open]="searchOverlayOpen">
+  <div class="search-overlay-hd">
+    <button class="search-overlay-back" (click)="searchOverlayOpen = false">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </button>
+    <input #overlayInput class="search-overlay-input" type="text"
+      placeholder="Search products..." (input)="onSearch($event)" />
+  </div>
+  <!-- overlay-scroll uses -webkit-overflow-scrolling:touch in your CSS -->
+  <div class="overlay-scroll">
+    <div class="section-hd">
+      <h3><ion-icon name="list-outline"></ion-icon> Results</h3>
+      <small>{{ products.length }} items</small>
+    </div>
+    <div class="product-grid">
+      @for (p of products; track p.productId) {
+        <app-product-card [product]="p"></app-product-card>
+      }
+    </div>
+    <div style="height: 16px"></div>
+  </div>
+</div>
+
+<!-- ══ FILTER MODAL ══ -->
+<ion-modal [isOpen]="isFilterModalOpen" (didDismiss)="closeFilters()"
+  [initialBreakpoint]="0.75" [breakpoints]="[0, 0.75, 1]" [handle]="true">
+  <ng-template>
+    <div class="modal-container">
+      <div class="modal-handle"></div>
+      <div class="modal-hd">
+        <h2><ion-icon name="funnel-outline"></ion-icon> Filter Results</h2>
+        <button class="modal-close-btn" (click)="closeFilters()">
+          <ion-icon name="close"></ion-icon>
+        </button>
+      </div>
+      <ion-content [scrollY]="true" style="--background:#fff">
+        <div class="filter-group">
+
+          <div class="filter-item">
+            <div class="filter-item-left">
+              <div class="filter-icon-box"><ion-icon name="pricetag-outline"></ion-icon></div>
+              <div class="filter-item-info">
+                <p>Promotions</p>
+                <small>Show discounted items only</small>
+              </div>
+            </div>
+            <ion-toggle [(ngModel)]="queryParams.promotionOnly" mode="ios"></ion-toggle>
+          </div>
+
+          <div class="filter-item">
+            <div class="filter-item-left">
+              <div class="filter-icon-box"><ion-icon name="cube-outline"></ion-icon></div>
+              <div class="filter-item-info">
+                <p>In Stock Only</p>
+                <small>Hide unavailable products</small>
+              </div>
+            </div>
+            <ion-toggle [(ngModel)]="queryParams.inStockOnly" mode="ios"></ion-toggle>
+          </div>
+
+          <div class="filter-item column">
+            <div class="filter-item-left">
+              <div class="filter-icon-box"><ion-icon name="wallet-outline"></ion-icon></div>
+              <div class="filter-item-info">
+                <p>Maximum Budget</p>
+                <div class="range-val">
+                  {{ queryParams.maxPrice | number:'1.0-0' }} <small>FCFA</small>
+                </div>
+              </div>
+            </div>
+            <ion-range [min]="0" [max]="10000" [step]="500"
+              [(ngModel)]="queryParams.maxPrice" style="width:100%;padding:0">
+              <ion-icon slot="start" name="remove-circle-outline"></ion-icon>
+              <ion-icon slot="end"   name="add-circle-outline"></ion-icon>
+            </ion-range>
+          </div>
+
+        </div>
+      </ion-content>
+      <div class="modal-footer">
+        <button class="modal-reset-btn" (click)="resetFilters()">
+          <ion-icon name="refresh-outline"></ion-icon> Reset
+        </button>
+        <button class="modal-apply-btn" (click)="applyFilters()">
+          <ion-icon name="checkmark-circle-outline"></ion-icon> Apply Filters
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>
+<app-footer></app-footer>

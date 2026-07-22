@@ -1,0 +1,203 @@
+// oauth-callback.page.scss
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.12; transform: scale(1); }
+  50%       { opacity: 0.28; transform: scale(1.14); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// Palette
+$blue-50:  #E6F1FB;
+$blue-100: #B5D4F4;
+$blue-400: #378ADD;
+$blue-600: #185FA5;
+$blue-800: #0C447C;
+
+ion-content.callback-theme {
+  --background: #{$blue-50};
+}
+
+.auth-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  animation: fadeUp 0.45s ease both;
+}
+
+// ─── Card wrapper (optional — remove if you prefer full bleed) ───
+.auth-container {
+  background: #ffffff;
+  border-radius: 20px;
+  max-width: 380px;
+  margin: auto;
+  padding: 2.5rem 2rem 2.25rem;
+}
+
+// ─── Logo ───────────────────────────────────────────────────────
+.brand-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 0.5px solid #{$blue-100};
+}
+
+.logo-image {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.logo-name {
+  font-size: 20px;
+  font-weight: 500;
+  color: #{$blue-800};
+  letter-spacing: -0.4px;
+}
+
+.logo-accent {
+  color: #{$blue-400};
+}
+
+// ─── Spinner ─────────────────────────────────────────────────────
+.spinner-wrapper {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 1.75rem;
+}
+
+.pulse-ring {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  background: #{$blue-400};
+  animation: pulse 2.4s ease-in-out infinite;
+}
+
+.spin-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2.5px solid #{$blue-100};
+  border-top-color: #{$blue-600};
+  border-right-color: #{$blue-400};
+  animation: spin 1s linear infinite;
+}
+
+.icon-circle {
+  position: absolute;
+  inset: 10px;
+  border-radius: 50%;
+  background: #{$blue-50};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  ion-icon {
+    font-size: 22px;
+    color: #{$blue-600};
+  }
+}
+
+// ─── Status text ─────────────────────────────────────────────────
+.status-text {
+  margin-bottom: 1.75rem;
+
+  h1 {
+    font-size: 18px;
+    font-weight: 500;
+    color: #{$blue-800};
+    margin: 0 0 0.4rem;
+  }
+
+  p {
+    font-size: 13px;
+    color: #{$blue-400};
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+// ─── Steps ───────────────────────────────────────────────────────
+.steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 1.75rem;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  text-align: left;
+  animation: fadeUp 0.5s ease both;
+
+  &.done {
+    background: #{$blue-50};
+    color: #{$blue-800};
+  }
+
+  &.active {
+    background: #{$blue-50};
+    color: #{$blue-600};
+  }
+
+  &.idle {
+    background: #f4f8fd;
+    color: #{$blue-100};
+  }
+}
+
+.step-check {
+  font-size: 15px;
+  color: #{$blue-600};
+  flex-shrink: 0;
+}
+
+.step-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  &.active { background: #{$blue-400}; }
+  &.idle   { background: #{$blue-100}; }
+}
+
+// ─── Security badge ──────────────────────────────────────────────
+.security-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #{$blue-600};
+  background: #{$blue-50};
+  border-radius: 100px;
+  padding: 5px 14px;
+
+  ion-icon {
+    font-size: 13px;
+    color: #{$blue-400};
+  }
+}

@@ -1,0 +1,184 @@
+<!-- ══════════════════════════════════════════════════
+     Shared Footer Menu Component — app-footer-menu
+══════════════════════════════════════════════════ -->
+
+@if (menuOpen) {
+  <div class="fm-backdrop" (click)="closeMenu()"></div>
+
+  <div class="fm-sheet">
+    <div class="fm-handle"></div>
+
+    <!-- Header -->
+    <div class="fm-header">
+      <div class="fm-brand">
+        <ion-icon name="storefront-outline"></ion-icon>
+        <span class="fm-brand-name">GroupinG</span>
+      </div>
+      <button class="fm-close-btn" (click)="closeMenu()">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+
+    <!-- User / Guest row -->
+    @if (isLoggedIn && userName) {
+      <div class="fm-user-row">
+        <div class="fm-avatar">{{ userName[0].toUpperCase() }}</div>
+        <div class="fm-user-info">
+          <span class="fm-user-name">{{ userName }}</span>
+          <span class="fm-user-role">{{ currentRole }}</span>
+        </div>
+        <a class="fm-profile-btn" routerLink="/profile" (click)="closeMenu()">
+          <ion-icon name="person-outline"></ion-icon>
+          <span>Profil</span>
+        </a>
+      </div>
+    } @else {
+      <div class="fm-guest-row">
+        <ion-icon name="person-circle-outline" class="fm-guest-icon"></ion-icon>
+        <div class="fm-guest-text">
+          <span class="fm-guest-title">Bienvenue</span>
+          <span class="fm-guest-sub">Connectez-vous à votre compte</span>
+        </div>
+        <button class="fm-sign-in-btn" (click)="goToLogin()">Connexion</button>
+      </div>
+    }
+
+    <!-- ── GRILLE ACCÈS RAPIDE ── -->
+    <div class="fm-quick-section">
+      <span class="fm-section-label">ACCÈS RAPIDE</span>
+      <div class="fm-grid">
+
+        <a class="fm-grid-item" routerLink="/orders" (click)="closeMenu()">
+          <div class="fm-grid-icon fm-icon--blue">
+            <ion-icon name="bag-handle-outline"></ion-icon>
+          </div>
+          <span class="fm-grid-label">Commandes</span>
+        </a>
+
+        <a class="fm-grid-item" routerLink="/promotions" (click)="closeMenu()">
+          <div class="fm-grid-icon fm-icon--orange">
+            <ion-icon name="flame-outline"></ion-icon>
+          </div>
+          <span class="fm-grid-label">Promotions</span>
+        </a>
+
+        <a class="fm-grid-item" routerLink="/nearby" (click)="closeMenu()">
+          <div class="fm-grid-icon fm-icon--blue">
+            <ion-icon name="location-outline"></ion-icon>
+          </div>
+          <span class="fm-grid-label">Proximité</span>
+        </a>
+
+        <a class="fm-grid-item" routerLink="/cart" (click)="closeMenu()">
+          <div class="fm-grid-icon fm-icon--blue">
+            <ion-icon name="cart-outline"></ion-icon>
+          </div>
+          <span class="fm-grid-label">Panier</span>
+        </a>
+
+        @if (canValidateOrders) {
+          <a class="fm-grid-item" routerLink="/scanner-validate" (click)="closeMenu()">
+            <div class="fm-grid-icon fm-icon--green">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+            </div>
+            <span class="fm-grid-label">Valider livraison</span>
+          </a>
+        }
+
+      </div>
+    </div>
+
+    <!-- ── LISTE LIENS SECONDAIRES ── -->
+    <nav class="fm-nav">
+
+      <span class="fm-section-label fm-section-label--nav">BOUTIQUE</span>
+
+      <button class="fm-link" (click)="openCreateShop()">
+        <div class="fm-link-icon">
+          <ion-icon name="storefront-outline"></ion-icon>
+        </div>
+        <div class="fm-link-body">
+          <span class="fm-link-text">Créer une boutique</span>
+          <span class="fm-link-sub">Lancez votre activité</span>
+        </div>
+        <div class="fm-ext-badge">
+          <ion-icon name="open-outline"></ion-icon>
+        </div>
+      </button>
+
+      <a class="fm-link" routerLink="/become-delivery" (click)="closeMenu()">
+        <div class="fm-link-icon">
+          <ion-icon name="bicycle-outline"></ion-icon>
+        </div>
+        <div class="fm-link-body">
+          <span class="fm-link-text">Devenir livreur</span>
+          <span class="fm-link-sub">Gagnez en livrant</span>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="fm-link-arrow"></ion-icon>
+      </a>
+
+      <span class="fm-section-label fm-section-label--nav">AIDE</span>
+
+      <a class="fm-link" routerLink="/help-support" (click)="closeMenu()">
+        <div class="fm-link-icon">
+          <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+        </div>
+        <div class="fm-link-body">
+          <span class="fm-link-text">Support</span>
+          <span class="fm-link-sub">Discutez avec notre équipe</span>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="fm-link-arrow"></ion-icon>
+      </a>
+
+      <a class="fm-link" routerLink="/help-support" (click)="closeMenu()">
+        <div class="fm-link-icon">
+          <ion-icon name="help-circle-outline"></ion-icon>
+        </div>
+        <div class="fm-link-body">
+          <span class="fm-link-text">Aide &amp; FAQ</span>
+          <span class="fm-link-sub">Trouvez des réponses</span>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="fm-link-arrow"></ion-icon>
+      </a>
+
+    </nav>
+
+    @if (isLoggedIn) {
+      <button class="fm-logout-btn" (click)="logout()">
+        <ion-icon name="log-out-outline"></ion-icon>
+        Déconnexion
+      </button>
+    }
+
+  </div>
+}
+
+<!-- ── Tab Bar (Promotions remplacé par Commandes) ── -->
+<ion-tab-bar slot="bottom" class="fm-tab-bar">
+
+  <ion-tab-button routerLink="/catalog" routerLinkActive="tab-selected">
+    <ion-icon name="storefront-outline"></ion-icon>
+    <ion-label>Catalogue</ion-label>
+  </ion-tab-button>
+
+  <ion-tab-button routerLink="/orders" routerLinkActive="tab-selected">
+    <ion-icon name="bag-handle-outline"></ion-icon>
+    <ion-label>Commandes</ion-label>
+  </ion-tab-button>
+
+  <ion-tab-button routerLink="/nearby" routerLinkActive="tab-selected">
+    <ion-icon name="location-outline"></ion-icon>
+    <ion-label>Proximité</ion-label>
+  </ion-tab-button>
+
+  <ion-tab-button routerLink="/cart" routerLinkActive="tab-selected">
+    <ion-icon name="cart-outline"></ion-icon>
+    <ion-label>Panier</ion-label>
+  </ion-tab-button>
+
+  <ion-tab-button (click)="toggleMenu()" [class.tab-selected]="menuOpen">
+    <ion-icon [name]="menuOpen ? 'close-outline' : 'menu-outline'"></ion-icon>
+    <ion-label>Menu</ion-label>
+  </ion-tab-button>
+
+</ion-tab-bar>

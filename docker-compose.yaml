@@ -1,0 +1,26 @@
+services:
+  central-market-web-mobile:
+    container_name: central-market-web-mobile
+    image: dongmomartial/central-market-web:latest
+    restart: unless-stopped
+
+    ports:
+      - "3000:80"
+      - "3100:443"
+
+    volumes:
+      # Custom nginx config
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+
+      # Full letsencrypt directory (best practice)
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+
+    networks:
+      - central-market-net
+
+networks:
+  central-market-net:
+    driver: bridge
+
+
+#  "with": "src/environments/environment.ci.ts"

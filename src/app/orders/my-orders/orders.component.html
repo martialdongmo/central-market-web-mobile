@@ -1,0 +1,197 @@
+  <!-- ══════════════════════════════════════
+      My Orders Page
+      Blue & White · Ionic Icons · @if/@for
+  ══════════════════════════════════════ -->
+
+  <ion-content [fullscreen]="true" class="ord-content">
+
+    <!-- ── Hero Header ── -->
+    <div class="ord-hero">
+      <div class="ord-hero-circles"></div>
+
+      <div class="ord-top-bar">
+        <button class="ord-back-btn" (click)="navCtrl.back()">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+        <div class="ord-top-center">
+          <h1 class="ord-hero-title">My Orders</h1>
+          @if (orders) {
+            <span class="ord-hero-sub">{{ orders.totalElements }} order{{ orders.totalElements !== 1 ? 's' : '' }}</span>
+          }
+        </div>
+        <button class="ord-search-btn" (click)="toggleSearch()">
+          <ion-icon name="search-outline"></ion-icon>
+        </button>
+      </div>
+
+      <!-- Search Bar (toggleable) -->
+      @if (showSearch) {
+        <div class="ord-search-bar">
+          <ion-icon name="search-outline" class="search-icon"></ion-icon>
+          <input
+            class="search-input"
+            type="text"
+            placeholder="Search by reference…"
+            [(ngModel)]="searchQuery"
+            (input)="onSearch()" />
+          @if (searchQuery) {
+            <button class="search-clear" (click)="clearSearch()">
+              <ion-icon name="close-circle-outline"></ion-icon>
+            </button>
+          }
+        </div>
+      }
+
+      <!-- Filter Status Tabs -->
+      <div class="ord-filter-tabs">
+        @for (tab of statusTabs; track tab.value) {
+          <button
+            class="ord-tab"
+            [class.active]="activeStatus === tab.value"
+            (click)="filterByStatus(tab.value)">
+            <ion-icon [name]="tab.icon"></ion-icon>
+            {{ tab.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- ── Date Range Quick Filters ── -->
+    <div class="ord-date-filters">
+      @for (range of dateRanges; track range.key) {
+        <button
+          class="ord-date-chip"
+          [class.active]="activeDateRange === range.key"
+          (click)="filterByDate(range.key)">
+          {{ range.label }}
+        </button>
+      }
+    </div>
+
+    <!-- ── Loading Skeletons ── -->
+    @if (isLoading) {
+      <div class="ord-list">
+        @for (sk of [1, 2, 3]; track sk) {
+          <div class="ord-card sk-card">
+            <div class="sk-accent"></div>
+            <div class="sk-body">
+              <div class="sk-line sk-w35"></div>
+              <div class="sk-line sk-w65"></div>
+              <div class="sk-line sk-w50"></div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ── Orders List ── -->
+    @if (!isLoading && orders && orders.content.length > 0) {
+      <div class="ord-list">
+
+        @for (order of filteredOrders; track order.id) {
+          <div class="ord-card" [class]="'accent-' + getAccentClass(order.status)" (click)="openOrder(order.id)">
+
+            <!-- Left Accent Bar -->
+            <div class="ord-accent-bar"></div>
+
+            <div class="ord-card-inner">
+
+              <!-- Top Row: ref + status -->
+              <div class="ord-card-top">
+                <div class="ord-ref-block">
+                  <span class="ord-ref-label">ORDER</span>
+                  <span class="ord-ref-code">#{{ order.reference }}</span>
+                </div>
+                <span class="ord-status-pill {{ getStatusClass(order.status) }}">
+                  <ion-icon [name]="getStatusIcon(order.status)"></ion-icon>
+                  {{ formatStatus(order.status) }}
+                </span>
+              </div>
+
+              <!-- Meta chips row -->
+              <div class="ord-meta-row">
+                <span class="ord-meta-chip">
+                  <ion-icon name="cube-outline"></ion-icon>
+                  {{ order.itemCount }} item{{ order.itemCount !== 1 ? 's' : '' }}
+                </span>
+                <span class="ord-meta-chip">
+                  <ion-icon [name]="order.deliveryType === 'DELIVERY' ? 'bicycle-outline' : 'storefront-outline'"></ion-icon>
+                  {{ formatDelivery(order.deliveryType) }}
+                </span>
+                <span class="ord-payment-chip {{ getPaymentClass(order.paymentMethod) }}">
+                  <ion-icon name="card-outline"></ion-icon>
+                  {{ formatPayment(order.paymentMethod) }}
+                </span>
+              </div>
+
+              <!-- Bottom Row: date + amount -->
+              <div class="ord-card-bottom">
+                <div class="ord-date-block">
+                  <ion-icon name="time-outline"></ion-icon>
+                  <span>{{ order.createdAt | date:'MMM d, y' }}</span>
+                </div>
+                <div class="ord-amount-block">
+                  @if (order.deliveryFee > 0) {
+                    <span class="ord-fee">+{{ order.deliveryFee | number:'1.0-0' }} delivery</span>
+                  }
+                  <span class="ord-total">{{ order.totalAmount | number:'1.0-0' }} <span class="ord-currency">XAF</span></span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Right Arrow -->
+            <div class="ord-card-arrow">
+              <ion-icon name="chevron-forward-outline"></ion-icon>
+            </div>
+
+          </div>
+        }
+
+        <!-- Load More -->
+        @if (!orders.last) {
+          <button class="ord-load-more" (click)="loadMore()">
+            <ion-icon name="refresh-outline"></ion-icon>
+            Load more orders
+          </button>
+        }
+
+        <!-- Pagination Info -->
+        <div class="ord-pagination-info">
+          Showing {{ orders.content.length }} of {{ orders.totalElements }} orders
+        </div>
+
+      </div>
+    }
+
+    <!-- ── Empty State ── -->
+    @if (!isLoading && (!orders || orders.content.length === 0)) {
+      <div class="ord-empty">
+        <div class="ord-empty-icon-wrap">
+          <ion-icon name="bag-handle-outline"></ion-icon>
+        </div>
+        <h2 class="ord-empty-title">No orders yet</h2>
+        <p class="ord-empty-sub">
+          @if (activeStatus !== null) {
+            No orders match this filter. Try a different status.
+          } @else {
+            Your order history will appear here once you start shopping.
+          }
+        </p>
+        @if (activeStatus !== null) {
+          <button class="ord-clear-filter-btn" (click)="filterByStatus(null)">
+            <ion-icon name="filter-outline"></ion-icon>
+            Clear filter
+          </button>
+        } @else {
+          <button class="ord-shop-btn" (click)="goToCatalog()">
+            <ion-icon name="storefront-outline"></ion-icon>
+            Browse Catalogue
+          </button>
+        }
+      </div>
+    }
+
+    <div class="ord-spacer"></div>
+  </ion-content>
+  <app-footer></app-footer>

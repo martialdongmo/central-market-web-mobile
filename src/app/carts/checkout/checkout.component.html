@@ -1,0 +1,341 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="checkout-toolbar">
+    <ion-buttons slot="start">
+      <ion-button (click)="navCtrl.back()" fill="clear" class="back-btn">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="checkout-title">Checkout</ion-title>
+    <ion-buttons slot="end">
+      <div class="cart-badge-wrap">
+        <ion-icon name="bag-outline"></ion-icon>
+        <span class="cart-badge">{{ cartItems.length }}</span>
+      </div>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <!-- ── 3-step progress bar ── -->
+  <div class="step-bar">
+    <div class="step done">
+      <div class="step-dot"><ion-icon name="cart-outline"></ion-icon></div>
+      <span>Cart</span>
+    </div>
+    <div class="step-line done"></div>
+    <div class="step active">
+      <div class="step-dot"><ion-icon name="location-outline"></ion-icon></div>
+      <span>Delivery</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step">
+      <div class="step-dot"><ion-icon name="card-outline"></ion-icon></div>
+      <span>Payment</span>
+    </div>
+  </div>
+</ion-header>
+
+<ion-content class="checkout-content" [fullscreen]="true">
+
+  <!-- Loading overlay -->
+  @if (isLoading) {
+  <div class="loading-overlay">
+    <div class="loading-glass">
+      <div class="loader-ring"></div>
+      <p>Placing your order…</p>
+    </div>
+  </div>
+}
+
+  <!-- Error toast -->
+  @if (errorMessage) {
+  <div class="toast-error" (click)="errorMessage = ''">
+    <ion-icon name="alert-circle-outline"></ion-icon>
+    <span>{{ errorMessage }}</span>
+    <ion-icon name="close-outline"></ion-icon>
+  </div>
+}
+
+  <div class="page-body">
+
+    <!-- ════════════════════════════════════
+         HERO — page intro
+    ════════════════════════════════════ -->
+    <div class="hero">
+      <div class="hero-icon-wrap">
+        <ion-icon name="bag-check-outline"></ion-icon>
+      </div>
+      <div class="hero-text">
+        <h1 class="hero-title">Almost there!</h1>
+        <p class="hero-sub">Review your items and fill in delivery details.</p>
+      </div>
+    </div>
+
+
+    <!-- ════════════════════════════════════
+         CARD 1 — ORDER SUMMARY
+    ════════════════════════════════════ -->
+    <div class="bcard">
+      <div class="bcard-head">
+        <div class="bcard-icon">
+          <ion-icon name="bag-check-outline"></ion-icon>
+        </div>
+        <span class="bcard-title">Order Summary</span>
+        <span class="count-chip">
+          {{ cartItems.length }} item{{ cartItems.length !== 1 ? 's' : '' }}
+        </span>
+      </div>
+
+      <!-- Empty state -->
+      @if (!cartItems.length) {
+        <div class="empty-state">
+        <ion-icon name="bag-outline"></ion-icon>
+        <p>Your cart is empty</p>
+        </div>
+      }
+
+      <!-- Items -->
+      @if (cartItems.length) {
+        <div class="item-list">
+          @for (item of cartItems; track item.productId) {
+          <div class="item-row">
+
+          <div class="thumb-wrap">
+            <img [src]="item.imageUrl || 'assets/placeholder.png'"
+                 [alt]="item.productName" class="thumb" />
+            <span class="qty-badge">{{ item.quantity }}</span>
+          </div>
+
+          <div class="item-meta">
+            <p class="item-name">{{ item.productName }}</p>
+            <p class="item-shop">
+              <ion-icon name="storefront-outline"></ion-icon>
+              {{ item.shopName }}
+            </p>
+            @if (item.promotionPrice) {
+              <p class="item-price">
+                <span class="promo">{{ item.promotionPrice | customCurrency }}</span>
+                <span class="struck">{{ item.price | customCurrency }}</span>
+              </p>
+            } @else {
+              <p class="item-price">{{ item.price | customCurrency }}</p>
+            }
+          </div>
+
+          <p class="line-total">
+            {{ ((item.promotionPrice ?? item.price) * item.quantity) | customCurrency }}
+          </p>
+
+          </div>
+          } <!-- /@for -->
+
+        <!-- Total strip -->
+        <div class="total-strip">
+          <div class="s-row s-total">
+            <span>Grand Total</span>
+            <span class="s-total-val">{{ totalPrice | customCurrency }}</span>
+          </div>
+        </div>
+        </div>
+      } <!-- /@if cartItems -->
+    </div>
+
+
+    <!-- ════════════════════════════════════
+         CARD 2 — DELIVERY FORM
+    ════════════════════════════════════ -->
+    <div class="bcard">
+      <div class="bcard-head">
+        <div class="bcard-icon">
+          <ion-icon name="location-outline"></ion-icon>
+        </div>
+        <span class="bcard-title">Delivery Details</span>
+      </div>
+
+      <form [formGroup]="addressForm" class="checkout-form">
+
+        <!-- Delivery Type -->
+        <div class="field-block">
+          <label class="field-label">Delivery Type <span class="req">*</span></label>
+          <div class="pill-group">
+            @for (type of deliveryTypes; track type) {
+              <button type="button"
+                      class="pill-btn"
+                      [class.active]="deliveryTypeCtrl.value === type"
+                      (click)="deliveryTypeCtrl.setValue(type); deliveryTypeCtrl.markAsTouched()">
+                <ion-icon [name]="type === 'DELIVERY' ? 'bicycle-outline' : 'bag-handle-outline'">
+                </ion-icon>
+                {{ deliveryLabel(type) }}
+              </button>
+            }
+          </div>
+          @if (deliveryTypeCtrl.invalid && deliveryTypeCtrl.touched) {
+          <p class="err">
+            Select a delivery type.
+          </p>
+          }
+        </div>
+
+        <!-- Payment Method -->
+        <div class="field-block">
+          <label class="field-label">Payment Method <span class="req">*</span></label>
+          <div class="pay-tiles">
+            @for (method of paymentMethods; track method) {
+              <button type="button"
+                      class="pay-tile"
+                      [class.active]="paymentMethodCtrl.value === method"
+                      (click)="paymentMethodCtrl.setValue(method); paymentMethodCtrl.markAsTouched()">
+                <span class="pay-name">{{ paymentLabel(method) }}</span>
+                @if (paymentMethodCtrl.value === method) {
+                  <ion-icon name="checkmark-circle" class="pay-check"></ion-icon>
+                }
+              </button>
+            }
+          </div>
+          @if (paymentMethodCtrl.invalid && paymentMethodCtrl.touched) {
+          <p class="err">
+            Choose a payment method.
+          </p>
+          }
+        </div>
+
+        <!-- Phone -->
+        <div class="field-block">
+          <label class="field-label" for="phoneNumber">
+            Phone Number <span class="req">*</span>
+          </label>
+          <div class="input-row">
+            <span class="input-pre"><ion-icon name="call-outline"></ion-icon></span>
+            <input id="phoneNumber" type="tel" class="f-input"
+                   formControlName="phoneNumber"
+                   placeholder="+237 6XX XXX XXX" />
+          </div>
+          @if (phoneNumberCtrl.invalid && phoneNumberCtrl.touched) {
+          <p class="err">
+            Phone number is required.
+          </p>
+          }
+        </div>
+
+        <!-- Address -->
+        <div class="field-block">
+          <label class="field-label" for="address">
+            Street Address <span class="req">*</span>
+          </label>
+          <div class="input-row">
+            <span class="input-pre"><ion-icon name="home-outline"></ion-icon></span>
+            <input id="address" type="text" class="f-input"
+                   formControlName="address"
+                   placeholder="e.g. Rue Foe, Bastos" />
+          </div>
+          @if (addressCtrl.invalid && addressCtrl.touched) {
+          <p class="err">
+            Street address is required.
+          </p>
+          }
+        </div>
+
+        <!-- City -->
+        <div class="field-block">
+          <label class="field-label" for="city">
+            City <span class="req">*</span>
+          </label>
+          <div class="input-row">
+            <span class="input-pre"><ion-icon name="business-outline"></ion-icon></span>
+            <input id="city" type="text" class="f-input"
+                   formControlName="city"
+                   placeholder="e.g. Yaoundé" />
+          </div>
+          @if (cityCtrl.invalid && cityCtrl.touched) {
+          <p class="err">
+            City is required.
+          </p>
+          }
+        </div>
+
+        <!-- Default address toggle -->
+        <div class="toggle-row">
+          <div>
+            <p class="toggle-lbl">Set as default address</p>
+            <p class="toggle-sub">Used automatically for future orders</p>
+          </div>
+          <ion-toggle color="primary"
+                      [checked]="defaultAddressCtrl.value"
+                      (ionChange)="defaultAddressCtrl.setValue($event.detail.checked)">
+          </ion-toggle>
+        </div>
+
+        <!-- Stripe Payment Form (only shown when STRIPE is selected) -->
+        @if (paymentMethodCtrl.value === 'STRIPE') {
+          <div class="stripe-section">
+            <app-stripe-payment-form 
+              [amount]="totalPrice"
+              [currency]="'EUR'"
+              [clientSecret]="stripeClientSecret"
+              (paymentSuccess)="onStripePaymentSuccess($event)"
+              (paymentError)="onStripePaymentError($event)"
+              (loadingChange)="onStripeLoading($event)">
+            </app-stripe-payment-form>
+          </div>
+        }
+
+      </form>
+    </div>
+
+
+    <!-- ════════════════════════════════════
+         CARD 3 — ACCOUNT
+    ════════════════════════════════════ -->
+    @if (user) {
+    <div class="bcard account-card">
+      <div class="bcard-head">
+        <div class="bcard-icon">
+          <ion-icon name="person-outline"></ion-icon>
+        </div>
+        <span class="bcard-title">Account</span>
+        <ion-icon name="shield-checkmark-outline" class="verified-icon"></ion-icon>
+      </div>
+      <div class="account-row">
+        <div class="avatar">
+          {{ (user.firstName?.[0] ?? '') + (user.lastName?.[0] ?? '') | uppercase }}
+        </div>
+        <div class="account-info">
+          <p class="a-name">{{ user.firstName }} {{ user.lastName }}</p>
+          <p class="a-email">{{ user.email }}</p>
+        </div>
+      </div>
+    </div>
+    } @else {
+      <div class="bcard skel-card">
+        <ion-skeleton-text animated
+          style="width:55%;height:14px;border-radius:6px;">
+        </ion-skeleton-text>
+        <ion-skeleton-text animated
+          style="width:38%;height:12px;border-radius:6px;margin-top:10px;">
+        </ion-skeleton-text>
+      </div>
+    }
+
+
+    <!-- ════════════════════════════════════
+         CTA — PLACE ORDER (inline, no footer)
+    ════════════════════════════════════ -->
+    <div class="cta-wrap">
+      <button class="place-btn"
+              (click)="onConfirmation()"
+              [disabled]="isLoading || !cartItems.length || addressForm.invalid">
+        @if (!isLoading) {
+          <ion-icon name="bag-check-outline"></ion-icon>
+          <span class="btn-lbl">Place Order</span>
+          <span class="btn-amt">{{ totalPrice | customCurrency }}</span>
+        } @else {
+          <ion-spinner name="crescent"></ion-spinner>
+          <span>Processing…</span>
+        }
+      </button>
+      <p class="secure-note">
+        <ion-icon name="lock-closed-outline"></ion-icon>
+        Secure &amp; encrypted checkout
+      </p>
+    </div>
+
+  </div><!-- /page-body -->
+</ion-content>
