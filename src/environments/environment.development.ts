@@ -9,7 +9,8 @@ export const environment = {
   paymentEndpoint: 'http://localhost:9009/api/v1/bis/payments',
   invoiceEndpoint: 'http://localhost:9009/api/v1/bis/invoices',
   driversEndpoint: 'http://localhost:9009/api/v1/bis/drivers',
-  redirectUri: 'http://localhost:3000/callback'
+  redirectUri: 'http://localhost:3000/callback',
+  stripePublishableKey: 'pk_test_51Tts9MLv7UFWWZoLiqlHRFoeGapNgN0pF2UrTrq2VVjqDuug0iXfGTA0Ebz1C9hciOghl3Qg5g8Y0ZV0TSsA18LY00S93ZPPTJ'
 
 
 };

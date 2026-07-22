@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit ,DestroyRef} from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PaymentMethod } from 'src/app/model/enums/payment-method';
 import { PaymentRequest } from 'src/app/model/requests/paymentRequest';
@@ -14,6 +14,9 @@ import { CustomCurrencyPipe } from "../../services/custom.currency.pipe";
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, checkmarkOutline, receiptOutline, bagCheckOutline, bicycleOutline, bagHandleOutline, walletOutline, locationOutline, personOutline, callOutline, homeOutline, businessOutline, shieldCheckmarkOutline, lockClosedOutline, phonePortraitOutline, cashOutline, storefrontOutline, alertCircleOutline, timeOutline } from 'ionicons/icons';
 import { LowerCasePipe, TitleCasePipe } from '@angular/common';
+import { Stripe, PaymentSheetEventsEnum } from '@capacitor-community/stripe';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { timer, switchMap, takeWhile, firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-confirmation-order',
@@ -41,7 +44,8 @@ export class ConfirmationOrderComponent implements OnInit {
   loading: boolean;
   isPaying: boolean;
   customerAddress: DeliveryAddressResponse | null = null;
-
+private destroyRef = inject(DestroyRef);
+isConfirming: boolean = false;
 
   constructor() {
     addIcons({
@@ -175,6 +179,10 @@ export class ConfirmationOrderComponent implements OnInit {
         this.createCASHPayment(request);
         break;
 
+      case PaymentMethod.STRIPE:
+        this.createSTRIPEPayment(request);
+        break;
+
       default:
         this.errorMessage = 'Unsupported payment method';
         this.isPaying = false;
@@ -244,6 +252,91 @@ export class ConfirmationOrderComponent implements OnInit {
   }
 
 
+  // STRIP MONEY 
+ 
+ // STRIP MONEY 
+  createSTRIPEPayment(request: PaymentRequest): void {
+    if (!this.order) {
+      this.errorMessage = 'Order not loaded';
+      return;
+    }
+
+    if (!request) {
+      this.errorMessage = 'Missing payment data';
+      return;
+    }
+
+    this.isPaying = true;
+    this.errorMessage = '';
+
+    this.paymentService.initiateStripePayment(request).subscribe({
+      next: async (response) => {
+        try {
+          await Stripe.createPaymentSheet({
+            paymentIntentClientSecret: response.clientSecret,
+            merchantDisplayName: 'BIS App'
+          });
+
+          const result = await Stripe.presentPaymentSheet();
+
+          this.isPaying = false;
+
+          if (result.paymentResult === PaymentSheetEventsEnum.Completed) {
+            this.waitForStripeConfirmation(response.referenceId);
+          } else if (result.paymentResult === PaymentSheetEventsEnum.Canceled) {
+            this.errorMessage = 'Paiement annulé.';
+          } else {
+            this.errorMessage = 'Paiement échoué. Réessayez.';
+          }
+        } catch (err) {
+          console.error('Payment sheet error:', err);
+          this.errorMessage = 'Payment failed. Try again.';
+          this.isPaying = false;
+        }
+      },
+      error: (err) => {
+        console.error('Payment error:', err);
+        this.errorMessage = 'Payment failed. Try again.';
+        this.isPaying = false;
+      }
+    });
+  }
+
+  private waitForStripeConfirmation(referenceId: string): void {
+    this.isConfirming = true;
+
+    const maxAttempts = 15; // 15 x 2s = 30s max
+    let attempts = 0;
+
+    timer(0, 2000).pipe(
+      switchMap(() => this.paymentService.getPaymentStatus(referenceId)),
+      takeWhile(res => {
+        attempts++;
+        const stillPending = res.status === 'PENDING';
+        return stillPending && attempts < maxAttempts;
+      }, true), // true = émet aussi la dernière valeur (succès/échec/timeout)
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: (res) => {
+        if (res.status === 'SUCCESS') {
+          this.isConfirming = false;
+          this.router.navigate([`/payment-success/${this.order.id}`]);
+        } else if (res.status === 'FAILED') {
+          this.isConfirming = false;
+          this.errorMessage = 'Le paiement a été refusé par la banque.';
+        } else if (attempts >= maxAttempts) {
+          this.isConfirming = false;
+          this.errorMessage = 'Paiement en cours de confirmation. Vérifiez votre commande dans quelques instants.';
+        }
+      },
+      error: (err) => {
+        console.error('Status polling error:', err);
+        this.isConfirming = false;
+        this.errorMessage = 'Erreur de connexion au serveur.';
+      }
+    });
+  }
+
   createCASHPayment(request: PaymentRequest): void {
     if (!this.order) {
       this.errorMessage = 'Order not loaded';
@@ -294,12 +387,22 @@ export class ConfirmationOrderComponent implements OnInit {
           color: 'danger'
         };
 
+
+      case PaymentMethod.STRIPE:
+        return {
+          label: 'Stripe payment',
+          logo: 'assets/payments/stripe.png',
+          color: 'primary'
+        };
+
       case PaymentMethod.CASH:
         return {
           label: 'Cash on Delivery',
           logo: 'assets/payments/cash.png',
           color: 'medium'
         };
+
+      
 
       default:
         return {
