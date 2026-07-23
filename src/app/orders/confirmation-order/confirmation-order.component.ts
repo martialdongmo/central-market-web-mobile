@@ -251,10 +251,8 @@ isConfirming: boolean = false;
     });
   }
 
-
-  // STRIP MONEY 
  
- // STRIP MONEY 
+ // STRIP PAYMENT 
   createSTRIPEPayment(request: PaymentRequest): void {
     if (!this.order) {
       this.errorMessage = 'Order not loaded';

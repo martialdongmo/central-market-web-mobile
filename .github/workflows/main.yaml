@@ -3,7 +3,7 @@ name: Central Market Web Mobile CI/CD
 on:
   push:
     branches:
-      - deployment
+      - not
 
   pull_request:
     branches:
