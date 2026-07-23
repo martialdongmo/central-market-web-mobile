@@ -2,6 +2,9 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
+import { Stripe } from '@capacitor-community/stripe';
+import { environment } from 'src/environments/environment.development';
+
 
 @Component({
   selector: 'app-root',
@@ -17,6 +20,9 @@ export class AppComponent implements OnInit, OnDestroy {
   private subs: Subscription[] = [];
  
   ngOnInit(): void {
+     Stripe.initialize({
+      publishableKey: environment.stripePublishableKey // clé PUBLIQUE Stripe, pas la secrète
+    });
     // Boot unique — peuple currentUser$ pour tout l'app
     const sub = this.authService.loadCurrentUser().subscribe({
       next:  user => console.log('[App] Auth:', user?.firstName ?? 'guest'),

@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PaymentResponse } from '../model/response/paymentResponse';
 import { tap } from 'rxjs/operators';
+import { StripePaymentIntentResponse } from '../model/response/StripePaymentIntentResponse';
 
 @Injectable({
   providedIn: 'root',
@@ -27,13 +28,32 @@ export class PaymentService {
   }
 
 
-
-  initiateOMPayment( request: PaymentRequest): Observable<any> {
+  // =====================================================
+  // INIT OM PAYMENT
+  // =====================================================
+  initiateOMPayment(request: PaymentRequest): Observable<any> {
     return this.http.post<any>(
       `${this.API_URL}/om`,
       request
     ).pipe(tap(console.log));
   }
+
+
+  // =====================================================
+  // INIT STRIPE PAYMENT
+  // =====================================================
+  initiateStripePayment(request: PaymentRequest): Observable<StripePaymentIntentResponse> {
+    return this.http.post<StripePaymentIntentResponse>(
+      `${this.API_URL}/stripe/pay`,
+      request
+    );
+  }
+
+  getPaymentStatus(referenceId: string): Observable<{ referenceId: string; status: string }> {
+  return this.http.get<{ referenceId: string; status: string }>(
+    `${this.API_URL}/stripe/status/${referenceId}`
+  );
+}
 
   // =====================================================
   // CHECK PAYMENT STATUS
@@ -44,11 +64,11 @@ export class PaymentService {
     );
   }
 
-  public createCASHPayment(request:PaymentRequest):Observable<PaymentResponse>{
-    return this.http.post<PaymentResponse>( `${this.API_URL}/cash`,request).pipe(tap(console.log));
+  public createCASHPayment(request: PaymentRequest): Observable<PaymentResponse> {
+    return this.http.post<PaymentResponse>(`${this.API_URL}/cash`, request).pipe(tap(console.log));
   }
 
- 
+
 
   getAllPaymets(): Observable<PaymentResponse[]> {
     return this.http.get<PaymentResponse[]>(`${this.API_URL}/all`)
