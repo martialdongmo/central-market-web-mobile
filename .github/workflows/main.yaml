@@ -1,13 +1,12 @@
-name: Central Market Web Mobile CI/CD
-
+name: Central Market Web Mobile Pipline
 on:
   push:
     branches:
-      - deployment
-
+      - nopush
   pull_request:
     branches:
       - deployment
+
 
 jobs:
   build-and-push:
