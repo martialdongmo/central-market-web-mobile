@@ -9,12 +9,12 @@ const config: CapacitorConfig = {
     // Allow navigation to the callback URL for OAuth
     allowNavigation: [
       'localhost',
-      'kapexpert.cloud'
+      'kapexpert.cloud'   
     ]
   },
   plugins: {
     SplashScreen: {
-      launchShowDuration: 0
+      launchShowDuration: 0  
     },
     StatusBar: {
       style: 'LIGHT',
@@ -26,4 +26,4 @@ const config: CapacitorConfig = {
   }
 };
 
-export default config;
+ export default config;
