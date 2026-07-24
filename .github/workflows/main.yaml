@@ -2,7 +2,7 @@ name: Central Market Web Mobile Pipline
 on:
   push:
     branches:
-      - nopush
+      - not
   pull_request:
     branches:
       - deployment
