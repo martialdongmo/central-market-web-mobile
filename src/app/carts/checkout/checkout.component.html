@@ -263,6 +263,20 @@
           </ion-toggle>
         </div>
 
+        <!-- Stripe Payment Form (only shown when STRIPE is selected) -->
+        @if (paymentMethodCtrl.value === 'STRIPE') {
+          <div class="stripe-section">
+            <app-stripe-payment-form 
+              [amount]="totalPrice"
+              [currency]="'EUR'"
+              [clientSecret]="stripeClientSecret"
+              (paymentSuccess)="onStripePaymentSuccess($event)"
+              (paymentError)="onStripePaymentError($event)"
+              (loadingChange)="onStripeLoading($event)">
+            </app-stripe-payment-form>
+          </div>
+        }
+
       </form>
     </div>
 

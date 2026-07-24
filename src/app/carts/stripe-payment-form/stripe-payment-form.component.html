@@ -1,0 +1,37 @@
+<div class="stripe-form-container">
+  <!-- Card Element -->
+  <div class="card-field-wrapper">
+    <label class="field-label">
+      <ion-icon name="card-outline"></ion-icon>
+      Card Details
+    </label>
+    <div #cardElement class="card-element"></div>
+    
+    @if (cardError) {
+      <div class="card-error">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        <span>{{ cardError }}</span>
+      </div>
+    }
+  </div>
+
+  <!-- Pay Button -->
+  <div class="pay-btn-wrapper">
+    <button class="pay-btn" 
+            (click)="processPayment()" 
+            [disabled]="isLoading || !cardComplete">
+      @if (!isLoading) {
+        <span>Pay {{ amount }} {{ currency }}</span>
+      } @else {
+        <ion-spinner name="crescent"></ion-spinner>
+        <span>Processing...</span>
+      }
+    </button>
+  </div>
+
+  <!-- Security Note -->
+  <div class="security-note">
+    <ion-icon name="lock-closed-outline"></ion-icon>
+    <span>Your payment information is encrypted and secure</span>
+  </div>
+</div>
