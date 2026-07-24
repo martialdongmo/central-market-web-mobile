@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ViewChild } from '@angular/core';
 import { CommonModule, UpperCasePipe } from '@angular/common';
 import { IonContent, IonIcon, NavController, IonHeader, IonButtons, IonToolbar, IonTitle, IonButton, IonSpinner, IonSkeletonText, IonFooter, IonToggle } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -18,6 +18,8 @@ import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angu
 import { LocationService } from '../../services/location.service';
 import { DeliveryType } from '../../model/enums/deliveryType';
 import { CustomCurrencyPipe } from '../../services/custom.currency.pipe';
+import { PaymentService } from '../../services/payment.service';
+import { StripePaymentFormComponent } from '../stripe-payment-form/stripe-payment-form.component';
 import {
   arrowBackOutline, bagOutline, cartOutline,
   locationOutline, cardOutline, alertCircleOutline,
@@ -35,6 +37,7 @@ import {
   imports: [CommonModule, IonContent, IonIcon, ReactiveFormsModule, IonHeader, IonButtons, 
     IonToolbar, IonTitle, IonButton, IonSpinner, IonSkeletonText, IonToggle,
   CustomCurrencyPipe,CommonModule,ReactiveFormsModule, UpperCasePipe,
+  StripePaymentFormComponent
 ],
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.scss',
@@ -50,6 +53,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   private router          = inject(Router);
   private fbuilder        = inject(FormBuilder);
   private locationService = inject(LocationService);
+  private paymentService  = inject(PaymentService);
  
   user:      UserResponse     | null = null;
   customer:  CustomerResponse | null = null;
@@ -57,6 +61,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   totalPrice   = 0;
   isLoading    = false;
   errorMessage = '';
+  stripeClientSecret: string = '';
  
   readonly paymentMethods = Object.values(PaymentMethod);
   readonly deliveryTypes  = Object.values(DeliveryType);
@@ -254,5 +259,57 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     };
   }
 
+  // ─── Stripe Payment Handlers ─────────────────────────────────────
+  stripeLoading = false;
+  stripeError = '';
 
+  onStripeLoading(isLoading: boolean) {
+    this.stripeLoading = isLoading;
+  }
+
+  onStripePaymentError(error: string) {
+    this.stripeError = error;
+    this.errorMessage = error;
+  }
+
+  onStripePaymentSuccess(paymentMethodId: string) {
+    // Payment successful - the order is already created
+    // The parent component handles navigation
+    console.log('Stripe payment successful:', paymentMethodId);
+    this.stripeClientSecret = '';
+  }
+
+  // ─── Stripe Payment Flow ───────────────────────────────────────────
+  async processStripePayment(orderId: string) {
+    if (!this.totalPrice || this.totalPrice <= 0) {
+      this.errorMessage = 'Invalid amount for payment';
+      return;
+    }
+
+    this.isLoading = true;
+    
+    try {
+      // Create Payment Intent on backend
+      const response = await this.paymentService.initiateStripePayment({
+        orderId,
+        amount: this.totalPrice,
+        paymentMethod: 'STRIPE',
+        phoneNumber: this.phoneNumberCtrl.value,
+        customerId: this.customer?.id ?? '',
+        email: this.user?.email ?? '',
+        fullName: `${this.user?.firstName} ${this.user?.lastName}`,
+        userId: Number(this.user?.userUuid) || 0
+      }).toPromise();
+
+      this.stripeClientSecret = response?.clientSecret;
+      
+      if (!this.stripeClientSecret) {
+        throw new Error('Failed to create payment intent');
+      }
+
+    } catch (err: any) {
+      this.errorMessage = err.message || 'Failed to initialize payment';
+      this.isLoading = false;
+    }
+  }
 }

@@ -1,9 +1,29 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'central-market-web-mobile',
-  webDir: 'www'
+  appId: 'cm.kapexpert.grouping',
+  appName: 'groupinG',
+  webDir: 'www',
+  server: {
+    androidScheme: 'https',
+    // Allow navigation to the callback URL for OAuth
+    allowNavigation: [
+      'localhost',
+      'kapexpert.cloud'
+    ]
+  },
+  plugins: {
+    SplashScreen: {
+      launchShowDuration: 0
+    },
+    StatusBar: {
+      style: 'LIGHT',
+      backgroundColor: '#ffffff'
+    },
+    PushNotifications: {
+      presentationOptions: ['badge', 'sound', 'alert']
+    }
+  }
 };
 
 export default config;
