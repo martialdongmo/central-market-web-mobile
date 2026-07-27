@@ -3,7 +3,7 @@ name: Central Market Web Mobile CI/CD
 on:
   push:
     branches:
-      - web-deb
+      - web-dev
 
   pull_request:
     branches:
