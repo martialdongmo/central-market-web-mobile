@@ -18,7 +18,7 @@
     private AUTH_URL = environment.USER_API_URL;
     private API_URL = environment.AUTH_API_URL;
 
-    private clientId = 'mobile';
+    private clientId = 'grouping_web';
     private redirectUri = environment.redirectUri;
     private scopes = 'openid USER_UPDATE USER_READ SHOP_READ PRODUCT_READ PRODUCT_UPDATE ORDER_WRITE ORDER_CREATE ORDER_READ PAYMENT_CREATE';
 
