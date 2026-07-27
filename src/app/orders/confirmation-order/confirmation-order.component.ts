@@ -14,7 +14,10 @@ import { CustomCurrencyPipe } from "../../services/custom.currency.pipe";
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, checkmarkOutline, receiptOutline, bagCheckOutline, bicycleOutline, bagHandleOutline, walletOutline, locationOutline, personOutline, callOutline, homeOutline, businessOutline, shieldCheckmarkOutline, lockClosedOutline, phonePortraitOutline, cashOutline, storefrontOutline, alertCircleOutline, timeOutline } from 'ionicons/icons';
 import {  TitleCasePipe } from '@angular/common';
-
+import { timer, switchMap, takeWhile, firstValueFrom } from 'rxjs';
+import { Stripe, PaymentSheetEventsEnum } from '@capacitor-community/stripe';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-confirmation-order',
@@ -251,58 +254,106 @@ export class ConfirmationOrderComponent implements OnInit {
 
 
   // STRIP PAYMENT 
-  // STRIPE PAYMENT — WEB uniquement (Checkout hébergé)
+
   createSTRIPEPayment(request: PaymentRequest): void {
-    if (!this.order) { this.errorMessage = 'Order not loaded'; return; }
-    if (!request) { this.errorMessage = 'Missing payment data'; return; }
 
-    this.isPaying = true;
-    this.errorMessage = '';
+  if (!this.order) { this.errorMessage = 'Order not loaded'; return; }
+  if (!request) { this.errorMessage = 'Missing payment data'; return; }
 
+  this.isPaying = true;
+  this.errorMessage = '';
+
+  if (Capacitor.isNativePlatform()) {
+
+    // ✅ APK — Payment Sheet + polling confirmation
+    this.paymentService.initiateStripePayment(request).subscribe({
+      next: async (response) => {
+        try {
+          await Stripe.createPaymentSheet({
+            paymentIntentClientSecret: response.clientSecret,
+            merchantDisplayName: 'BIS App'
+          });
+
+          const result = await Stripe.presentPaymentSheet();
+          this.isPaying = false;
+
+          if (result.paymentResult === PaymentSheetEventsEnum.Completed) {
+            // ✅ Payment Sheet confirmé — on poll le backend pour le statut final
+            this.waitForStripeConfirmation(response.referenceId);
+
+          } else if (result.paymentResult === PaymentSheetEventsEnum.Canceled) {
+            this.errorMessage = 'Paiement annulé.';
+
+          } else {
+            this.errorMessage = 'Paiement échoué. Réessayez.';
+          }
+
+        } catch (err) {
+          console.error('[Stripe Native] Payment sheet error:', err);
+          this.errorMessage = 'Payment failed. Try again.';
+          this.isPaying = false;
+        }
+      },
+      error: (err) => {
+        console.error('[Stripe Native] Intent error:', err);
+        this.errorMessage = 'Payment failed. Try again.';
+        this.isPaying = false;
+      }
+    });
+
+  } else {
+
+    // ✅ Web — Redirect Stripe Checkout
     this.paymentService.initiateStripeCheckout(request).subscribe({
       next: (response) => {
         window.location.href = response.url;
       },
-      error: () => {
+      error: (err) => {
+        console.error('[Stripe Web] Checkout error:', err);
         this.errorMessage = 'Payment failed. Try again.';
         this.isPaying = false;
       }
     });
   }
-  // private waitForStripeConfirmation(referenceId: string): void {
-  //   this.isConfirming = true;
+}
 
-  //   const maxAttempts = 15; // 15 x 2s = 30s max
-  //   let attempts = 0;
+private waitForStripeConfirmation(referenceId: string): void {
+  this.isConfirming = true;
 
-  //   timer(0, 2000).pipe(
-  //     switchMap(() => this.paymentService.getPaymentStatus(referenceId)),
-  //     takeWhile(res => {
-  //       attempts++;
-  //       const stillPending = res.status === 'PENDING';
-  //       return stillPending && attempts < maxAttempts;
-  //     }, true), // true = émet aussi la dernière valeur (succès/échec/timeout)
-  //     takeUntilDestroyed(this.destroyRef)
-  //   ).subscribe({
-  //     next: (res) => {
-  //       if (res.status === 'SUCCESS') {
-  //         this.isConfirming = false;
-  //         this.router.navigate([`/payment-success/${this.order.id}`]);
-  //       } else if (res.status === 'FAILED') {
-  //         this.isConfirming = false;
-  //         this.errorMessage = 'Le paiement a été refusé par la banque.';
-  //       } else if (attempts >= maxAttempts) {
-  //         this.isConfirming = false;
-  //         this.errorMessage = 'Paiement en cours de confirmation. Vérifiez votre commande dans quelques instants.';
-  //       }
-  //     },
-  //     error: (err) => {
-  //       console.error('Status polling error:', err);
-  //       this.isConfirming = false;
-  //       this.errorMessage = 'Erreur de connexion au serveur.';
-  //     }
-  //   });
-  // }
+  const maxAttempts = 15;
+  let attempts = 0;
+
+  timer(0, 2000).pipe(
+    switchMap(() => this.paymentService.getPaymentStatus(referenceId)),
+    takeWhile(res => {
+      attempts++;
+      const stillPending = res.status === 'PENDING';
+      return stillPending && attempts < maxAttempts;
+    }, true),
+    takeUntilDestroyed(this.destroyRef)
+  ).subscribe({
+    next: (res) => {
+      if (res.status === 'SUCCESS') {
+        this.isConfirming = false;
+        this.router.navigate([`/payment-success/${this.order!.id}`]);
+
+      } else if (res.status === 'FAILED') {
+        this.isConfirming = false;
+        this.errorMessage = 'Le paiement a été refusé par la banque.';
+
+      } else if (attempts >= maxAttempts) {
+        this.isConfirming = false;
+        this.errorMessage = 'Paiement en cours de confirmation. Vérifiez votre commande dans quelques instants.';
+      }
+    },
+    error: (err) => {
+      console.error('[Stripe] Status polling error:', err);
+      this.isConfirming = false;
+      this.errorMessage = 'Erreur de connexion au serveur.';
+    }
+  });
+}
+  
 
   createCASHPayment(request: PaymentRequest): void {
     if (!this.order) {

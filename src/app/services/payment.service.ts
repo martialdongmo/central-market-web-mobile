@@ -40,7 +40,7 @@ export class PaymentService {
 
 
   // =====================================================
-  // INIT STRIPE PAYMENT
+  // INIT STRIPE PAYMENT MOBILE
   // =====================================================
   initiateStripePayment(request: PaymentRequest): Observable<StripePaymentIntentResponse> {
     return this.http.post<StripePaymentIntentResponse>(
@@ -49,6 +49,9 @@ export class PaymentService {
     );
   }
 
+  // =====================================================
+  // INIT STRIPE PAYMENT WEB
+  // =====================================================
   initiateStripeCheckout(request: PaymentRequest): Observable<{ url: string; sessionId: string; referenceId: string }> {
   return this.http.post<{ url: string; sessionId: string; referenceId: string }>(
     `${this.API_URL}/stripe/checkout`, request
