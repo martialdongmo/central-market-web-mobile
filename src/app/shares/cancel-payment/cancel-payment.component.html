@@ -1,0 +1,30 @@
+<!-- cancel-payment.component.html -->
+<ion-content class="ion-padding">
+  <div class="min-h-full flex flex-col items-center justify-center px-6 py-12 bg-blue-50">
+
+    <div class="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center mb-6">
+      <ion-icon name="close-circle-outline" class="text-blue-500" style="font-size: 42px;"></ion-icon>
+    </div>
+
+    <h1 class="text-2xl font-bold text-blue-900 mb-2 text-center">
+      Paiement annulé
+    </h1>
+
+    <p class="text-blue-700 text-center mb-8 max-w-sm">
+      Votre paiement n'a pas été finalisé. Aucun montant n'a été débité de votre carte.
+    </p>
+
+    <div class="w-full max-w-sm space-y-3">
+      <ion-button expand="block" (click)="retryPayment()" class="rounded-xl" style="--background: #2563eb;">
+        <ion-icon name="card-outline" slot="start"></ion-icon>
+        Réessayer le paiement
+      </ion-button>
+
+      <ion-button expand="block" fill="outline" (click)="goToCatalog()" class="rounded-xl" style="--color: #2563eb; --border-color: #2563eb;">
+        <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+        Retour à la boutique
+      </ion-button>
+    </div>
+
+  </div>
+</ion-content>

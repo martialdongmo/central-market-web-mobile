@@ -1,0 +1,27 @@
+<ion-content class="ion-padding">
+  <div class="min-h-full flex flex-col items-center justify-center px-6 py-12">
+
+    @if (!errorMessage) {
+      <ion-spinner name="crescent" class="mb-6" style="width: 48px; height: 48px; color: #2563eb;"></ion-spinner>
+      <h1 class="text-xl font-semibold text-gray-800 mb-2 text-center">
+        Confirmation de votre paiement…
+      </h1>
+      <p class="text-gray-500 text-center max-w-sm">
+        Merci de patienter quelques instants, nous vérifions votre transaction Stripe.
+      </p>
+    } @else {
+      <ion-icon name="alert-circle-outline" class="mb-6" style="font-size: 48px; color: #f59e0b;"></ion-icon>
+      <h1 class="text-xl font-semibold text-gray-800 mb-2 text-center">
+        Vérification en attente
+      </h1>
+      <p class="text-gray-600 text-center max-w-sm mb-6">
+        {{ errorMessage }}
+      </p>
+      <ion-button expand="block" fill="outline" (click)="goToCatalog()">
+        <ion-icon name="storefront-outline" slot="start"></ion-icon>
+        Retour à la boutique
+      </ion-button>
+    }
+
+  </div>
+</ion-content>

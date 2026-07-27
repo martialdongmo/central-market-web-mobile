@@ -49,6 +49,12 @@ export class PaymentService {
     );
   }
 
+  initiateStripeCheckout(request: PaymentRequest): Observable<{ url: string; sessionId: string; referenceId: string }> {
+  return this.http.post<{ url: string; sessionId: string; referenceId: string }>(
+    `${this.API_URL}/stripe/checkout`, request
+  );
+}
+
   getPaymentStatus(referenceId: string): Observable<{ referenceId: string; status: string }> {
   return this.http.get<{ referenceId: string; status: string }>(
     `${this.API_URL}/stripe/status/${referenceId}`
