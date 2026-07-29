@@ -271,7 +271,7 @@ export class ConfirmationOrderComponent implements OnInit {
         try {
           await Stripe.createPaymentSheet({
             paymentIntentClientSecret: response.clientSecret,
-            merchantDisplayName: 'BIS App'
+            merchantDisplayName: 'BIS GroupinG'
           });
 
           const result = await Stripe.presentPaymentSheet();
@@ -279,7 +279,7 @@ export class ConfirmationOrderComponent implements OnInit {
 
           if (result.paymentResult === PaymentSheetEventsEnum.Completed) {
             // ✅ Payment Sheet confirmé — on poll le backend pour le statut final
-            this.waitForStripeConfirmation(response.referenceId);
+            this.waitForStripeConfirmation(response.orderId);
 
           } else if (result.paymentResult === PaymentSheetEventsEnum.Canceled) {
             this.errorMessage = 'Paiement annulé.';

@@ -30,22 +30,22 @@ export class StripeConfirmationComponent implements OnInit {
 
   ngOnInit(): void {
     this.orderId = this.route.snapshot.paramMap.get('orderId') ?? '';
-    const referenceId = this.route.snapshot.queryParamMap.get('reference_id');
+    // const referenceId = this.route.snapshot.queryParamMap.get('reference');
 
-    if (!referenceId) {
+    if (!this.orderId) {
       this.errorMessage = 'Référence de paiement introuvable.';
       return;
     }
 
-    this.waitForStripeConfirmation(referenceId);
+    this.waitForStripeConfirmation(this.orderId);
   }
 
-  private waitForStripeConfirmation(referenceId: string): void {
+  private waitForStripeConfirmation(orderId: string): void {
     const maxAttempts = 15; // 15 x 2s = 30s max
     let attempts = 0;
 
     timer(0, 2000).pipe(
-      switchMap(() => this.paymentService.getPaymentStatus(referenceId)),
+      switchMap(() => this.paymentService.getPaymentStatus(orderId)),
       takeWhile(res => {
         attempts++;
         const stillPending = res.status === 'PENDING';
