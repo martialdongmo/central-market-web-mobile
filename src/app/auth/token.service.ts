@@ -46,7 +46,7 @@ export class TokenService {
 
     const body = new URLSearchParams();
     body.set('grant_type', 'refresh_token');
-    body.set('client_id', 'mobile');
+    body.set('client_id', 'grouping_web');
     body.set('refresh_token', refreshToken);
 
     try {

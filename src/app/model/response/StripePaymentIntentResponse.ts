@@ -1,4 +1,5 @@
 export interface StripePaymentIntentResponse {
+    orderId: string;
   clientSecret: string;
   paymentIntentId: string;
   referenceId: string;
