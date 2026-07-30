@@ -39,18 +39,38 @@
   --r-sm: 12px; --r-md: 18px; --r-lg: 24px; --r-xl: 32px; --r-2xl: 40px;
   --font-display: 'Syne', sans-serif;
   --font-body:    'DM Sans', sans-serif;
+
+  /*
+   * Safe area native (encoche, Dynamic Island, barre gestuelle Android/iOS).
+   * Le viewport utilise déjà viewport-fit=cover dans index.html.
+   */
+  --app-safe-area-top: env(safe-area-inset-top, 0px);
+  --app-safe-area-right: env(safe-area-inset-right, 0px);
+  --app-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --app-safe-area-left: env(safe-area-inset-left, 0px);
 }
 
 /* ── Base ── */
 *, *::before, *::after { box-sizing: border-box; }
-html, body { height: 100%; }
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--bg);
+  overscroll-behavior: none;
+}
+
 * { font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
 
 /* ── Scrollbars masquées ── */
 ::-webkit-scrollbar { display: none; }
 * { scrollbar-width: none; }
 
-/* ── ion-app : plein écran partout ── */
+/* ── ion-app : plein écran, contenu limité aux zones réellement visibles ── */
 ion-app {
   width: 100%;
   height: 100%;
@@ -58,6 +78,22 @@ ion-app {
   inset: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+
+  padding-top: var(--app-safe-area-top);
+  padding-right: var(--app-safe-area-right);
+  padding-bottom: var(--app-safe-area-bottom);
+  padding-left: var(--app-safe-area-left);
+
+  /*
+   * La zone sûre est déjà consommée par le shell. Neutraliser les variables
+   * Ionic évite que ion-toolbar/ion-tab-bar appliquent les mêmes insets deux fois.
+   */
+  --ion-safe-area-top: 0px;
+  --ion-safe-area-right: 0px;
+  --ion-safe-area-bottom: 0px;
+  --ion-safe-area-left: 0px;
 }
 
 /* ── ion-router-outlet prend tout l'espace disponible ── */
