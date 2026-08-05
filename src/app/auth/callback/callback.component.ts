@@ -40,7 +40,8 @@ export class CallbackComponent implements OnInit {
         console.log('Navigating home...');
         this.router.navigate(['/catalog'], { replaceUrl: true });
       } catch (err) {
-        this.router.navigate(['/login'], { replaceUrl: true });
+        console.error('❌ [Callback] Exchange code error:', err);
+        this.router.navigate(['/secure-app'], { replaceUrl: true });
       }
     }
   }

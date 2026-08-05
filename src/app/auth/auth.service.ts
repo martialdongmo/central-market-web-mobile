@@ -3,6 +3,7 @@ import { BehaviorSubject, from, Observable, of } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 
+import { Browser } from '@capacitor/browser';
 import { environment } from 'src/environments/environment.development';
 import { PkceService } from './pkce.service';
 import { TokenService } from './token.service';
@@ -40,7 +41,7 @@ export class AuthService {
   async login() {
     const verifier = this.pkceService.generateCodeVerifier();
     const challenge = await this.pkceService.generateCodeChallenge(verifier);
-    sessionStorage.setItem('pkce_verifier', verifier);
+    localStorage.setItem('pkce_verifier', verifier);
 
     // Use custom scheme for mobile, web URL for web
     const isCapacitor = !!(window as any).Capacitor;
@@ -61,11 +62,8 @@ export class AuthService {
     // On mobile, window.open with '_blank' opens the system browser
     // On web, window.location.href navigates within the same tab
     if (isCapacitor) {
-      // Mobile platform - use window.open to open system browser
-      // This keeps the app running in the background
-      window.open(authUrl, '_blank');
+      await Browser.open({ url: authUrl });
     } else {
-      // Web platform - use window.location
       window.location.href = authUrl;
     }
   }
@@ -77,7 +75,7 @@ export class AuthService {
    * guest même après un login réussi.
    */
   async exchangeCodeForToken(code: string): Promise<any> {
-    const verifier = sessionStorage.getItem('pkce_verifier');
+    const verifier = localStorage.getItem('pkce_verifier');
     if (!verifier) throw new Error('PKCE verifier missing');
 
     // Use the same redirectUri that was used in the login
@@ -104,7 +102,7 @@ export class AuthService {
         response.access_token,
         response.refresh_token,
       );
-      sessionStorage.removeItem('pkce_verifier');
+      localStorage.removeItem('pkce_verifier');
 
       // FIX ✅ — peupler le stream immédiatement après le login
       this.me().subscribe();
