@@ -3,6 +3,5 @@ export enum PaymentMethod {
     ORANGE_MONEY = 'ORANGE_MONEY',
     CASH = 'CASH',
     PAYPAL= 'PAYPAL',
-    CREDIT_CARD = 'CREDIT_CARD',
     STRIPE = 'STRIPE',
     }   
