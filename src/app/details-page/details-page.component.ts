@@ -1,8 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { IonContent, IonIcon, NavController, ToastController, IonTitle, IonHeader, IonFooter, IonButtons, IonToolbar, IonButton, IonSkeletonText } from '@ionic/angular/standalone';
-import { arrowBackOutline, heartOutline, heart, storefront, cartOutline, bagCheckOutline, checkmarkCircle, chevronForwardOutline, closeCircle, copyOutline, locationOutline, logoWhatsapp, pricetagOutline, shareOutline, starOutline, imagesOutline, checkmarkOutline } from 'ionicons/icons';
+import { IonContent, IonIcon, ToastController, IonTitle, IonHeader, IonFooter, IonButtons, IonToolbar, IonButton, IonSkeletonText } from '@ionic/angular/standalone';
+import { arrowBackOutline, heartOutline, heart, cartOutline, bagCheckOutline, checkmarkCircle, chevronForwardOutline, closeCircle, copyOutline, locationOutline, logoWhatsapp, pricetagOutline, shareOutline, starOutline, imagesOutline, checkmarkOutline } from 'ionicons/icons';
 import { CatalogProductResponse } from '../model/response/catalogProductResponse';
 import { CatalogProductVariantResponse } from '../model/response/catalog-product-variant-response';
 import { CatalogService } from '../services/catalog.service';
