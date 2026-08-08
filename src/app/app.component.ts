@@ -26,7 +26,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.initDeepLinkListener(); // ← nouveau
 
     const sub = this.authService.loadCurrentUser().subscribe({
-      next:  user => console.log('[App] Auth:', user?.firstName ?? 'guest'),
+      next:  user => {
+        console.log('[App] Auth state changed:', user);
+        console.log('[App] Auth:', user?.firstName ?? 'guest');
+      },
       error: err  => console.error('[App] Auth error:', err),
     });
     this.subs.push(sub);
