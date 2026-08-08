@@ -8,6 +8,8 @@ import { App, URLOpenListenerEvent } from '@capacitor/app';
 import { Stripe } from '@capacitor-community/stripe';
 import { loadStripe } from '@stripe/stripe-js';
 import { environment } from 'src/environments/environment.development';
+import OneSignal from 'onesignal-cordova-plugin';
+import { OneSignalService } from './services/untils/one-signal.service';
 
 @Component({
   selector: 'app-root',
@@ -20,17 +22,20 @@ export class AppComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private subs: Subscription[] = [];
+  private readonly oneSignalService = inject(OneSignalService);
+
 
   async ngOnInit(): Promise<void> {
     await this.initStripe();
-    this.initDeepLinkListener(); // ← nouveau
+    this.initDeepLinkListener(); 
+    this.oneSignalService.init();
 
     const sub = this.authService.loadCurrentUser().subscribe({
-      next:  user => {
+      next: user => {
         console.log('[App] Auth state changed:', user);
         console.log('[App] Auth:', user?.firstName ?? 'guest');
       },
-      error: err  => console.error('[App] Auth error:', err),
+      error: err => console.error('[App] Auth error:', err),
     });
     this.subs.push(sub);
   }
@@ -68,7 +73,7 @@ export class AppComponent implements OnInit, OnDestroy {
     if (Capacitor.isNativePlatform()) {
       console.log('[Stripe] Initializing for native platform');
       await Stripe.initialize({ publishableKey: environment.stripePublishableKey });
-      console.log('[Stripe] ✅ Native initialized');
+      console.log('[Stripe]  Native initialized');
     } else {
       console.log('[Stripe] Initializing for web platform');
       const stripe = await loadStripe(environment.stripePublishableKey);
@@ -76,9 +81,10 @@ export class AppComponent implements OnInit, OnDestroy {
         console.error('[Stripe] ❌ Web initialization failed');
         return;
       }
-      console.log('[Stripe] ✅ Web initialized');
+      console.log('[Stripe] Web initialized');
     }
   }
+
 
   ngOnDestroy(): void {
     this.subs.forEach(s => s.unsubscribe());

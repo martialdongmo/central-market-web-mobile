@@ -15,6 +15,7 @@ import { TokenService } from './token.service';
 import { UserResponse } from '../model/response/usersResponse';
 import { RegisterRequest } from '../model/requests/registerRequest';
 import { VerifyOtpRequest } from '../model/requests/verifyOtpRequest';
+import { OneSignalService } from '../services/untils/one-signal.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -43,6 +44,8 @@ export class AuthService {
   // ── Auth state stream ─────────────────────────────────────────────────────
   private readonly _currentUser$ = new BehaviorSubject<UserResponse | null>(null);
   readonly currentUser$ = this._currentUser$.asObservable();
+  private oneSignalService = inject(OneSignalService);
+  
 
   get currentUser(): UserResponse | null {
     return this._currentUser$.getValue();
