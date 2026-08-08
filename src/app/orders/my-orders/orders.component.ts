@@ -201,8 +201,6 @@ export class OrdersComponent implements OnInit, OnDestroy {
       [PaymentMethod.MTN_MOBILE_MONEY]: 'MTN MoMo',
       [PaymentMethod.ORANGE_MONEY]:     'Orange Money',
       [PaymentMethod.CASH]:             'Cash',
-      [PaymentMethod.PAYPAL]:           'PayPal',
-      [PaymentMethod.CREDIT_CARD]:      'Card',
       [PaymentMethod.STRIPE]:           'Stripe',
     };
     return m[method] ?? String(method).replace(/_/g, ' ');
@@ -212,7 +210,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
     if (method === PaymentMethod.MTN_MOBILE_MONEY) return 'pay-mtn';
     if (method === PaymentMethod.ORANGE_MONEY)     return 'pay-orange';
     if (method === PaymentMethod.CASH)             return 'pay-cash';
-    if ([PaymentMethod.CREDIT_CARD, PaymentMethod.STRIPE].includes(method)) return 'pay-card';
+    if ([ PaymentMethod.STRIPE].includes(method)) return 'pay-card';
     return 'pay-other';
   }
 }
