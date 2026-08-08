@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonContent, IonProgressBar, IonIcon } from "@ionic/angular/standalone";
+import { IonContent, IonIcon } from "@ionic/angular/standalone";
 import { AuthService } from '../auth.service';
 import { addIcons } from 'ionicons';
 import {
@@ -40,7 +40,7 @@ export class CallbackComponent implements OnInit {
         console.log('Navigating home...');
         this.router.navigate(['/catalog'], { replaceUrl: true });
       } catch (err) {
-        this.router.navigate(['/login'], { replaceUrl: true });
+        this.router.navigate(['/secure-app'], { replaceUrl: true });
       }
     }
   }
