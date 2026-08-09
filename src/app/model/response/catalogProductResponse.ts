@@ -1,20 +1,23 @@
+import { CatalogProductVariantResponse } from "./catalog-product-variant-response";
+
 export interface CatalogProductResponse {
+   
     /* =========================================================
      PRODUCT INFO
      ========================================================= */
-
   productId: string;
   productName: string;
   description: string;
   imageUrl: string;
-
+  images: string[];
+  tags: string[];
+  weight: number | null;
   categoryId: string;
-  categoryName: string;
+  categoryName: string; // or a dedicated ProductCategory type
 
   /* =========================================================
      PRICING
      ========================================================= */
-
   price: number;
   promotionPrice: number;
   promotionActive: boolean;
@@ -22,14 +25,12 @@ export interface CatalogProductResponse {
   /* =========================================================
      INVENTORY
      ========================================================= */
-
   inStock: boolean;
   availableQuantity: number;
 
   /* =========================================================
      SHOP INFO
      ========================================================= */
-
   shopId: string;
   userUuid: string;
   shopEmail: string;
@@ -39,7 +40,6 @@ export interface CatalogProductResponse {
   /* =========================================================
      LOCATION / GEO
      ========================================================= */
-
   shopLatitude?: number;
   shopLongitude?: number;
   distanceKm: number;
@@ -47,7 +47,11 @@ export interface CatalogProductResponse {
   /* =========================================================
      ANALYTICS / RANKING
      ========================================================= */
-
   popularityScore: number;
   totalSales: number;
+
+  /* =========================================================
+     VARIANTS (detail view only)
+     ========================================================= */
+  variants: CatalogProductVariantResponse[];
 }

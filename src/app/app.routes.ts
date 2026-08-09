@@ -2,20 +2,20 @@ import { Routes } from '@angular/router';
 import { authGuard } from './auth/guards/auth-guard';
 
 // ─── Pages importées directement (peu fréquentes ou déjà chargées) ──────────
-import { PageNotFoundComponent }    from './page-not-found/page-not-found.component';
-import { CallbackComponent }        from './auth/callback/callback.component';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { CallbackComponent } from './auth/callback/callback.component';
 import { ConfirmationOrderComponent } from './orders/confirmation-order/confirmation-order.component';
-import { VerifyOtpComponent }       from './auth/verify-otp/verify-otp.component';
-import { CatalogComponent }         from './catalog/catalog.component';
-import { PaymentSuccessComponent }  from './shares/payment-success/payment-success.component';
-import { OrdersComponent }          from './orders/my-orders/orders.component';
-import { OrderTrackingComponent }   from './orders/order-tracking/order-tracking.component';
-import { TermsServiceComponent }    from './shares/terms-service/terms-service.component';
-import { PravacyPolicyComponent }   from './shares/pravacy-policy/pravacy-policy.component';
-import { HelpSupportComponent }     from './shares/help-support/help-support.component';
-import { PaymentPolicyComponent }   from './shares/payment-policy/payment-policy.component';
-import { ChangePasswordComponent }  from './auth/change-password/change-password.component';
-import { RegisterDriverComponent }  from './driver/register-driver/register-driver.component';
+import { VerifyOtpComponent } from './auth/verify-otp/verify-otp.component';
+import { CatalogComponent } from './catalog/catalog.component';
+import { PaymentSuccessComponent } from './shares/payment-success/payment-success.component';
+import { OrdersComponent } from './orders/my-orders/orders.component';
+import { OrderTrackingComponent } from './orders/order-tracking/order-tracking.component';
+import { TermsServiceComponent } from './shares/terms-service/terms-service.component';
+import { PravacyPolicyComponent } from './shares/pravacy-policy/pravacy-policy.component';
+import { HelpSupportComponent } from './shares/help-support/help-support.component';
+import { PaymentPolicyComponent } from './shares/payment-policy/payment-policy.component';
+import { ChangePasswordComponent } from './auth/change-password/change-password.component';
+import { RegisterDriverComponent } from './driver/register-driver/register-driver.component';
 import { ScanOrderComponent } from './driver/scan-order/scan-order.component';
 import { CancelPaymentComponent } from './shares/cancel-payment/cancel-payment.component';
 
@@ -128,16 +128,16 @@ export const routes: Routes = [
     title: 'Payment Success',
     // canActivate: [authGuard],
   },
-   {
+  {
     path: 'payment-cancel/:orderId',
     component: CancelPaymentComponent,
     title: 'Payment Canceled',
     // canActivate: [authGuard],
   },
   {
-  path: 'payment-confirm/:orderId',
-  loadComponent: () => import('./shares/stripe-confirmation/stripe-confirmation.component').then(m => m.StripeConfirmationComponent)
-},
+    path: 'payment-confirm/:orderId',
+    loadComponent: () => import('./shares/stripe-confirmation/stripe-confirmation.component').then(m => m.StripeConfirmationComponent)
+  },
   {
     path: 'become-delivery',
     component: RegisterDriverComponent,

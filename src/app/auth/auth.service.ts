@@ -1,7 +1,13 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, NgZone } from '@angular/core';
 import { BehaviorSubject, from, Observable, of } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { catchError, switchMap, tap } from 'rxjs/operators';
+import { Router } from '@angular/router';
+
+import { Capacitor } from '@capacitor/core';
+import { Browser } from '@capacitor/browser';
+import { App, URLOpenListenerEvent } from '@capacitor/app';
+import { Preferences } from '@capacitor/preferences';
 
 import { environment } from 'src/environments/environment.development';
 import { PkceService } from './pkce.service';
@@ -9,6 +15,7 @@ import { TokenService } from './token.service';
 import { UserResponse } from '../model/response/usersResponse';
 import { RegisterRequest } from '../model/requests/registerRequest';
 import { VerifyOtpRequest } from '../model/requests/verifyOtpRequest';
+import { OneSignalService } from '../services/untils/one-signal.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -18,38 +25,84 @@ export class AuthService {
   private AUTH_URL = environment.USER_API_URL;
   private API_URL = environment.AUTH_API_URL;
 
-  private clientId = 'mobile';
+  private clientIdMobile = 'mobile';
+  private clientIdWeb = 'grouping_web';
+
   private webRedirectUri = environment.redirectUri;
-  // Custom scheme for mobile OAuth callback
   private mobileRedirectUri = 'cm.kapexpert.grouping://callback';
+
   private scopes = 'openid USER_UPDATE USER_READ SHOP_READ PRODUCT_READ PRODUCT_UPDATE ORDER_WRITE ORDER_CREATE ORDER_READ PAYMENT_CREATE';
 
   private pkceService = inject(PkceService);
   private http = inject(HttpClient);
   private tokenService = inject(TokenService);
+  private router = inject(Router);
+  private zone = inject(NgZone);
+
+  private readonly PKCE_KEY = 'pkce_verifier';
 
   // ── Auth state stream ─────────────────────────────────────────────────────
   private readonly _currentUser$ = new BehaviorSubject<UserResponse | null>(null);
   readonly currentUser$ = this._currentUser$.asObservable();
+  private oneSignalService = inject(OneSignalService);
+  
 
   get currentUser(): UserResponse | null {
     return this._currentUser$.getValue();
   }
 
+  // ── Platform helpers ──────────────────────────────────────────────────────
+  private get isNative(): boolean {
+    return Capacitor.isNativePlatform();
+  }
+
+  private get clientId(): string {
+    return this.isNative ? this.clientIdMobile : this.clientIdWeb;
+  }
+
+  private get redirectUri(): string {
+    return this.isNative ? this.mobileRedirectUri : this.webRedirectUri;
+  }
+
+  constructor() {
+    // Registers the deep-link listener once, app-wide. Call
+    // authService.init() (or inject it once at bootstrap) so this runs early.
+    if (this.isNative) {
+      App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
+        this.handleNativeRedirect(event.url);
+      });
+    }
+  }
+
+  /** Extracts `code` from the custom-scheme redirect and completes the flow. */
+  private handleNativeRedirect(url: string): void {
+    if (!url.startsWith(this.mobileRedirectUri)) return;
+
+    const parsed = new URL(url.replace(this.mobileRedirectUri, 'https://callback'));
+    const code = parsed.searchParams.get('code');
+
+    // Close the in-app browser now that we have control back
+    Browser.close().catch(() => {});
+
+    if (!code) return;
+
+    this.zone.run(() => {
+      this.exchangeCodeForToken(code).catch(err =>
+        console.error('Native token exchange failed', err),
+      );
+    });
+  }
+
   // ── PKCE Login ────────────────────────────────────────────────────────────
-  async login() {
+  async login(): Promise<void> {
     const verifier = this.pkceService.generateCodeVerifier();
     const challenge = await this.pkceService.generateCodeChallenge(verifier);
-    sessionStorage.setItem('pkce_verifier', verifier);
-
-    // Use custom scheme for mobile, web URL for web
-    const isCapacitor = !!(window as any).Capacitor;
-    const redirectUri = isCapacitor ? this.mobileRedirectUri : this.webRedirectUri;
+    await Preferences.set({ key: this.PKCE_KEY, value: verifier });
 
     const params = new URLSearchParams({
       response_type: 'code',
       client_id: this.clientId,
-      redirect_uri: redirectUri,
+      redirect_uri: this.redirectUri,
       scope: this.scopes,
       code_challenge: challenge,
       code_challenge_method: 'S256',
@@ -57,15 +110,11 @@ export class AuthService {
 
     const authUrl = `${this.authEndpoint}?${params.toString()}`;
 
-    // Use window.open for mobile (opens in system browser), window.location for web
-    // On mobile, window.open with '_blank' opens the system browser
-    // On web, window.location.href navigates within the same tab
-    if (isCapacitor) {
-      // Mobile platform - use window.open to open system browser
-      // This keeps the app running in the background
-      window.open(authUrl, '_blank');
+    if (this.isNative) {
+      // Opens system-managed in-app browser (SFSafariViewController / Custom Tabs).
+      // appUrlOpen listener above catches the redirect back into the app.
+      await Browser.open({ url: authUrl, presentationStyle: 'popover' });
     } else {
-      // Web platform - use window.location
       window.location.href = authUrl;
     }
   }
@@ -77,18 +126,15 @@ export class AuthService {
    * guest même après un login réussi.
    */
   async exchangeCodeForToken(code: string): Promise<any> {
-    const verifier = sessionStorage.getItem('pkce_verifier');
+    const stored = await Preferences.get({ key: this.PKCE_KEY });
+    const verifier = stored.value;
     if (!verifier) throw new Error('PKCE verifier missing');
-
-    // Use the same redirectUri that was used in the login
-    const isCapacitor = !!(window as any).Capacitor;
-    const redirectUri = isCapacitor ? this.mobileRedirectUri : this.webRedirectUri;
 
     const body = new HttpParams()
       .set('grant_type', 'authorization_code')
       .set('client_id', this.clientId)
       .set('code', code)
-      .set('redirect_uri', redirectUri)
+      .set('redirect_uri', this.redirectUri)
       .set('code_verifier', verifier);
 
     const headers = new HttpHeaders({
@@ -104,10 +150,14 @@ export class AuthService {
         response.access_token,
         response.refresh_token,
       );
-      sessionStorage.removeItem('pkce_verifier');
+      await Preferences.remove({ key: this.PKCE_KEY });
 
-      // FIX ✅ — peupler le stream immédiatement après le login
       this.me().subscribe();
+
+      // On native, navigate into the app now that we're authenticated
+      if (this.isNative) {
+        this.router.navigateByUrl('/secure-app');
+      }
     }
 
     return response;
@@ -116,7 +166,7 @@ export class AuthService {
   // ── Boot loader ───────────────────────────────────────────────────────────
   /**
    * Appelé UNE SEULE FOIS depuis AppComponent.ngOnInit().
-   * Lit le token Capacitor → appelle /me si valide → pousse dans currentUser$.
+   * Lit le token → appelle /me si valide → pousse dans currentUser$.
    * Tous les abonnés (Footer, Profile…) réagissent automatiquement.
    */
   loadCurrentUser(): Observable<UserResponse | null> {
@@ -152,11 +202,8 @@ export class AuthService {
 
   // ── Logout ────────────────────────────────────────────────────────────────
   logout(): void {
-
     from(this.tokenService.getAccessToken()).pipe(
-
       switchMap(token => {
-
         if (!token) {
           return of(null);
         }
@@ -166,34 +213,29 @@ export class AuthService {
           {},
           {
             headers: new HttpHeaders({
-              Authorization: `Bearer ${token}`
+              Authorization: `Bearer ${token}`,
             }),
-            responseType: 'text'
-          }
+            responseType: 'text',
+          },
         ).pipe(
-
           catchError(error => {
             console.warn('Logout request failed', error);
             return of(null);
-          })
-
+          }),
         );
-
-      })
-
+      }),
     ).subscribe({
-
       next: async () => {
-
         await this.tokenService.clearTokens();
-
         this._currentUser$.next(null);
 
-        window.location.href = '/secure-app';
-      }
-
+        if (this.isNative) {
+          this.router.navigateByUrl('/secure-app');
+        } else {
+          window.location.href = '/secure-app';
+        }
+      },
     });
-
   }
 
   // ── Registration / OTP ────────────────────────────────────────────────────
