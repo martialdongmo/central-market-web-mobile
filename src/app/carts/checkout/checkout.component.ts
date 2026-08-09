@@ -245,7 +245,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       deviceInfo:        navigator.userAgent,
       items: this.cartItems.map(item => ({
         shopId:       item.shopId,
-        userUuid:     user.userUuid,
+        userUuid:     item.userUuid,
         shopEmail:    item.shopEmail,
         shopName:     item.shopName,
         shopLatitude: item.shopLatitude,
