@@ -8,6 +8,7 @@ import { App, URLOpenListenerEvent } from '@capacitor/app';
 import { Stripe } from '@capacitor-community/stripe';
 import { loadStripe } from '@stripe/stripe-js';
 import { environment } from 'src/environments/environment.development';
+import { LanguageService } from './i18n/language.service';
 import OneSignal from 'onesignal-cordova-plugin';
 import { OneSignalService } from './services/untils/one-signal.service';
 
@@ -20,10 +21,13 @@ import { OneSignalService } from './services/untils/one-signal.service';
 })
 export class AppComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
+  private readonly languageService = inject(LanguageService);
   private readonly router = inject(Router);
   private subs: Subscription[] = [];
   private readonly oneSignalService = inject(OneSignalService);
 
+
+    await this.languageService.initialize();
 
   async ngOnInit(): Promise<void> {
     await this.initStripe();

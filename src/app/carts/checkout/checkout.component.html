@@ -1,7 +1,7 @@
 <ion-header class="ion-no-border">
   <ion-toolbar class="checkout-toolbar">
     <ion-buttons slot="start">
-      <ion-button (click)="navCtrl.back()" fill="clear" class="back-btn">
+      <ion-button (click)="navCtrl.back()" fill="clear" class="back-btn" aria-label="Back">
         <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -43,7 +43,7 @@
       <p>Placing your order…</p>
     </div>
   </div>
-}
+  }
 
   <!-- Error toast -->
   @if (errorMessage) {
@@ -52,7 +52,7 @@
     <span>{{ errorMessage }}</span>
     <ion-icon name="close-outline"></ion-icon>
   </div>
-}
+  }
 
   <div class="page-body">
 
@@ -87,8 +87,8 @@
       <!-- Empty state -->
       @if (!cartItems.length) {
         <div class="empty-state">
-        <ion-icon name="bag-outline"></ion-icon>
-        <p>Your cart is empty</p>
+          <ion-icon name="bag-outline"></ion-icon>
+          <p>Your cart is empty</p>
         </div>
       }
 
@@ -98,49 +98,95 @@
           @for (item of cartItems; track item.productId) {
           <div class="item-row">
 
-          <div class="thumb-wrap">
-            <img [src]="item.imageUrl || 'assets/placeholder.png'"
-                 [alt]="item.productName" class="thumb" />
-            <span class="qty-badge">{{ item.quantity }}</span>
-          </div>
+            <div class="thumb-wrap">
+              <img [src]="item.imageUrl || 'assets/placeholder.png'"
+                   [alt]="item.productName" class="thumb" />
+              <span class="qty-badge">{{ item.quantity }}</span>
+            </div>
 
-          <div class="item-meta">
-            <p class="item-name">{{ item.productName }}</p>
-            <p class="item-shop">
-              <ion-icon name="storefront-outline"></ion-icon>
-              {{ item.shopName }}
-            </p>
-            @if (item.promotionPrice) {
-              <p class="item-price">
-                <span class="promo">{{ item.promotionPrice | customCurrency }}</span>
-                <span class="struck">{{ item.price | customCurrency }}</span>
+            <div class="item-meta">
+              <p class="item-name">{{ item.productName }}</p>
+              <p class="item-shop">
+                <ion-icon name="storefront-outline"></ion-icon>
+                {{ item.shopName }}
               </p>
-            } @else {
-              <p class="item-price">{{ item.price | customCurrency }}</p>
-            }
-          </div>
+              @if (item.promotionPrice) {
+                <p class="item-price">
+                  <span class="promo">{{ item.promotionPrice | customCurrency }}</span>
+                  <span class="struck">{{ item.price | customCurrency }}</span>
+                </p>
+              } @else {
+                <p class="item-price">{{ item.price | customCurrency }}</p>
+              }
+            </div>
 
-          <p class="line-total">
-            {{ ((item.promotionPrice ?? item.price) * item.quantity) | customCurrency }}
-          </p>
+            <p class="line-total">
+              {{ ((item.promotionPrice ?? item.price) * item.quantity) | customCurrency }}
+            </p>
 
           </div>
           } <!-- /@for -->
 
-        <!-- Total strip -->
-        <div class="total-strip">
-          <div class="s-row s-total">
-            <span>Grand Total</span>
-            <span class="s-total-val">{{ totalPrice | customCurrency }}</span>
+          <!-- Total strip -->
+          <div class="total-strip">
+            <div class="s-row s-total">
+              <span>Grand Total</span>
+              <span class="s-total-val">{{ totalPrice | customCurrency }}</span>
+            </div>
           </div>
-        </div>
         </div>
       } <!-- /@if cartItems -->
     </div>
 
 
     <!-- ════════════════════════════════════
-         CARD 2 — DELIVERY FORM
+         CARD 2 — DELIVERY LOCATION (map)
+    ════════════════════════════════════ -->
+    <div class="bcard">
+      <div class="bcard-head">
+        <div class="bcard-icon">
+          <ion-icon name="location-outline"></ion-icon>
+        </div>
+        <span class="bcard-title">Delivery Location</span>
+      </div>
+
+      <p class="map-instruction">
+        Move the marker or tap the map to select the exact delivery point.
+      </p>
+
+      <div class="map-container" *ngIf="mapLoaded; else mapUnavailable">
+        <google-map
+          [center]="mapCenter"
+          [zoom]="15"
+          [options]="{ mapTypeControl: false, streetViewControl: false, fullscreenControl: false }"
+          (mapClick)="onMapClick($event)"
+          height="300px"
+          width="100%"
+        >
+          <map-marker
+            [position]="markerPosition"
+            [options]="{ draggable: true }"
+            (mapDragend)="onMarkerDragEnd($event)"
+          ></map-marker>
+        </google-map>
+
+        <div class="coordinates-display" aria-live="polite">
+          <small>Latitude: {{ markerPosition.lat | number:'1.6-6' }}</small>
+          <small>Longitude: {{ markerPosition.lng | number:'1.6-6' }}</small>
+        </div>
+      </div>
+
+      <ng-template #mapUnavailable>
+        <div class="map-message" [class.error]="mapError">
+          <ion-icon name="location-outline"></ion-icon>
+          <span>{{ mapError || 'Loading delivery map…' }}</span>
+        </div>
+      </ng-template>
+    </div>
+
+
+    <!-- ════════════════════════════════════
+         CARD 3 — DELIVERY FORM
     ════════════════════════════════════ -->
     <div class="bcard">
       <div class="bcard-head">
@@ -224,6 +270,7 @@
             <span class="input-pre"><ion-icon name="home-outline"></ion-icon></span>
             <input id="address" type="text" class="f-input"
                    formControlName="address"
+                   autocomplete="street-address"
                    placeholder="e.g. Rue Foe, Bastos" />
           </div>
           @if (addressCtrl.invalid && addressCtrl.touched) {
@@ -266,7 +313,7 @@
         <!-- Stripe Payment Form (only shown when STRIPE is selected) -->
         @if (paymentMethodCtrl.value === 'STRIPE') {
           <div class="stripe-section">
-            <app-stripe-payment-form 
+            <app-stripe-payment-form
               [amount]="totalPrice"
               [currency]="'EUR'"
               [clientSecret]="stripeClientSecret"
@@ -282,7 +329,7 @@
 
 
     <!-- ════════════════════════════════════
-         CARD 3 — ACCOUNT
+         CARD 4 — ACCOUNT
     ════════════════════════════════════ -->
     @if (user) {
     <div class="bcard account-card">
