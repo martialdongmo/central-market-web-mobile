@@ -8,8 +8,6 @@ import { App, URLOpenListenerEvent } from '@capacitor/app';
 import { Stripe } from '@capacitor-community/stripe';
 import { loadStripe } from '@stripe/stripe-js';
 import { environment } from 'src/environments/environment.development';
-import { LanguageService } from './i18n/language.service';
-import { AppBackNavigationComponent } from './navigation/app-back-navigation.component';
 
 @Component({
   selector: 'app-root',
@@ -19,51 +17,23 @@ import { AppBackNavigationComponent } from './navigation/app-back-navigation.com
   imports: [IonApp, IonRouterOutlet, AppBackNavigationComponent],
 })
 export class AppComponent implements OnInit, OnDestroy {
-
   private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
-  private readonly languageService = inject(LanguageService);
   private subs: Subscription[] = [];
+  private readonly oneSignalService = inject(OneSignalService);
+
 
   async ngOnInit(): Promise<void> {
-    await this.languageService.initialize();
+
     await this.initStripe();
-    this.initDeepLinkListener(); // ← nouveau
 
     const sub = this.authService.loadCurrentUser().subscribe({
-      next:  user => console.log('[App] Auth:', user?.firstName ?? 'guest'),
-      error: err  => console.error('[App] Auth error:', err),
+      next: user => {
+        console.log('[App] Auth state changed:', user);
+        console.log('[App] Auth:', user?.firstName ?? 'guest');
+      },
+      error: err => console.error('[App] Auth error:', err),
     });
-
     this.subs.push(sub);
-  }
-
-  // ── Pont entre l'événement OS "appUrlOpen" et le Router Angular ──────────
-  private initDeepLinkListener(): void {
-    if (!Capacitor.isNativePlatform()) return;
-
-    App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
-      const url = event.url;
-      // On ne traite que notre callback OAuth
-      if (!url.startsWith('cm.kapexpert.grouping://callback')) {
-        return;
-      }
-
-      const parsed = new URL(url);
-      const code = parsed.searchParams.get('code');
-      const error = parsed.searchParams.get('error');
-
-      if (code) {
-        // Délègue tout le reste à CallbackComponent, comme sur le web
-        this.router.navigate(['/callback'], {
-          queryParams: { code },
-          replaceUrl: true,
-        });
-      } else if (error) {
-        console.error('[OAuth] Erreur reçue via deep link:', error);
-        this.router.navigate(['/login'], { replaceUrl: true });
-      }
-    });
   }
 
   private async initStripe(): Promise<void> {
@@ -72,11 +42,11 @@ export class AppComponent implements OnInit, OnDestroy {
       await Stripe.initialize({
         publishableKey: environment.stripePublishableKey
       });
-      console.log('[Stripe] Native initialized');
+      console.log('[Stripe] ✅ Native initialized');
+
     } else {
       console.log('[Stripe] Initializing for web platform');
       const stripe = await loadStripe(environment.stripePublishableKey);
-
       if (!stripe) {
         console.error('[Stripe] Web initialization failed');
         return;
@@ -84,6 +54,7 @@ export class AppComponent implements OnInit, OnDestroy {
       console.log('[Stripe] Web initialized');
     }
   }
+
 
   ngOnDestroy(): void {
     this.subs.forEach(s => s.unsubscribe());

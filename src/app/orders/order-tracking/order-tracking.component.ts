@@ -202,8 +202,6 @@ export class OrderTrackingComponent implements OnInit, OnDestroy {
       [PaymentMethod.MTN_MOBILE_MONEY]: 'MTN Mobile Money',
       [PaymentMethod.ORANGE_MONEY]:     'Orange Money',
       [PaymentMethod.CASH]:             'Cash on Delivery',
-      [PaymentMethod.PAYPAL]:           'PayPal',
-      [PaymentMethod.CREDIT_CARD]:      'Credit Card',
       [PaymentMethod.STRIPE]:           'Stripe',
     };
     return m[method] ?? String(method).replace(/_/g, ' ');

@@ -10,7 +10,7 @@ export interface CartItem {
   promotionPrice?: number | null;
 
   shopId: string;
-  userUuid: string;
+  userUuid: string;// shop ser owner ID
   shopName: string;
   shopEmail:string;
 

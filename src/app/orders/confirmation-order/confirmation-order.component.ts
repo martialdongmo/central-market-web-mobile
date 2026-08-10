@@ -254,7 +254,6 @@ export class ConfirmationOrderComponent implements OnInit {
 
 
   // STRIP PAYMENT 
-
   createSTRIPEPayment(request: PaymentRequest): void {
 
   if (!this.order) { this.errorMessage = 'Order not loaded'; return; }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "810504855414",
+    "project_id": "grouping-8e609",
+    "storage_bucket": "grouping-8e609.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:810504855414:android:2d72809b9681791ea02457",
+        "android_client_info": {
+          "package_name": "cm.kapexpert.grouping"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDUzzGe-tF2Uy8ZRereQ8Hhq8K0m2lvS4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
