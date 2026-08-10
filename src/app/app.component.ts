@@ -6,6 +6,7 @@ import { Capacitor } from '@capacitor/core';
 import { Stripe } from '@capacitor-community/stripe';
 import { loadStripe } from '@stripe/stripe-js';
 import { environment } from 'src/environments/environment.development';
+import { LanguageService } from './i18n/language.service';
 
 @Component({
   selector: 'app-root',
@@ -17,9 +18,12 @@ import { environment } from 'src/environments/environment.development';
 export class AppComponent implements OnInit, OnDestroy {
 
   private readonly authService = inject(AuthService);
+  private readonly languageService = inject(LanguageService);
   private subs: Subscription[] = [];
 
   async ngOnInit(): Promise<void> {
+
+    await this.languageService.initialize();
 
     await this.initStripe();
 

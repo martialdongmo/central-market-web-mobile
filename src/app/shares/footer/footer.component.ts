@@ -16,6 +16,7 @@ import {
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { UserResponse } from 'src/app/model/response/usersResponse';
+import { LanguageService } from 'src/app/i18n/language.service';
 
 const CAN_VALIDATE_ROLES = ['DELIVERY', 'ADMIN', 'MANAGER'] as const;
 const CREATE_SHOP_URL    = 'https://kapexpert.cloud:3001/create-shop';
@@ -42,6 +43,7 @@ export class FooterComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly navCtrl     = inject(NavController);
   private readonly alertCtrl   = inject(AlertController);
+  private readonly languageService = inject(LanguageService);
 
   menuOpen          = false;
   isLoggedIn        = false;
@@ -112,12 +114,20 @@ export class FooterComponent implements OnInit, OnDestroy {
     this.closeMenu();
     if (!this.isLoggedIn) {
       const alert = await this.alertCtrl.create({
-        header:  'Connexion requise',
-        message: 'Vous devez être connecté pour créer une boutique.',
+        header: this.languageService.translate('Login required'),
+        message: this.languageService.translate(
+          'You must be logged in to create a shop.',
+        ),
         buttons: [
-          { text: 'Annuler', role: 'cancel' },
-          { text: 'Se connecter', cssClass: 'alert-btn-primary',
-            handler: () => this.goToLogin() },
+          {
+            text: this.languageService.translate('Cancel'),
+            role: 'cancel',
+          },
+          {
+            text: this.languageService.translate('Log in'),
+            cssClass: 'alert-btn-primary',
+            handler: () => this.goToLogin(),
+          },
         ],
       });
       await alert.present();

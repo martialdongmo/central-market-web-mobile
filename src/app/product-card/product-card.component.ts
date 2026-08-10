@@ -7,6 +7,7 @@ import { locationOutline, cartOutline } from 'ionicons/icons';
 import { CustomCurrencyPipe } from "../services/custom.currency.pipe";
 import { CatalogProductResponse } from '../model/response/catalogProductResponse';
 import { CartService } from '../services/cart.service';
+import { NotificationService } from '../services/notification.service';
 
 @Component({
   selector: 'app-product-card',
@@ -19,26 +20,20 @@ export class ProductCardComponent {
 
   @Input() product!: CatalogProductResponse;
 
-
   private cartService = inject(CartService);
-
+  private notificationService = inject(NotificationService);
   private navCtrl = inject(NavController);
-  private toastCtrl = inject(ToastController);  
+  private toastCtrl = inject(ToastController);
 
-  
   constructor() {
     addIcons({ locationOutline, cartOutline });
   }
 
-
-
-
   async addToCart(e: Event) {
     e.stopPropagation(); e.preventDefault();
 
-
     this.cartService.addToCart(this.product);
-
+    this.notificationService.showAddProductNotification(this.product.productName);
 
     const t = await this.toastCtrl.create({ message:`${this.product.productName} ajouté !`, duration:1800, position:'bottom', mode:'ios', color:'blue' });
     await t.present();
