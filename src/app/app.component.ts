@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
-import { IonApp, IonRouterOutlet, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonSelect, IonSelectOption } from '@ionic/angular/standalone';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { Capacitor } from '@capacitor/core';
@@ -8,28 +8,27 @@ import { App, URLOpenListenerEvent } from '@capacitor/app';
 import { Stripe } from '@capacitor-community/stripe';
 import { loadStripe } from '@stripe/stripe-js';
 import { environment } from 'src/environments/environment.development';
-import { TranslatePipe } from './pipes/translate.pipe';
-import { LanguageService } from './services/language.service';
+import { LanguageService } from './i18n/language.service';
+import { AppBackNavigationComponent } from './navigation/app-back-navigation.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
   standalone: true,
-  imports: [IonApp, IonRouterOutlet, IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonSelect, IonSelectOption, TranslatePipe],
+  imports: [IonApp, IonRouterOutlet, AppBackNavigationComponent],
 })
 export class AppComponent implements OnInit, OnDestroy {
 
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  readonly languageService = inject(LanguageService);
+  private readonly languageService = inject(LanguageService);
   private subs: Subscription[] = [];
-  private urlListener: any;
 
   async ngOnInit(): Promise<void> {
-
+    await this.languageService.initialize();
     await this.initStripe();
-    this.initDeepLinkListener();
+    this.initDeepLinkListener(); // ← nouveau
 
     const sub = this.authService.loadCurrentUser().subscribe({
       next:  user => console.log('[App] Auth:', user?.firstName ?? 'guest'),
@@ -39,11 +38,13 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subs.push(sub);
   }
 
+  // ── Pont entre l'événement OS "appUrlOpen" et le Router Angular ──────────
   private initDeepLinkListener(): void {
     if (!Capacitor.isNativePlatform()) return;
 
     App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
       const url = event.url;
+      // On ne traite que notre callback OAuth
       if (!url.startsWith('cm.kapexpert.grouping://callback')) {
         return;
       }
@@ -53,47 +54,38 @@ export class AppComponent implements OnInit, OnDestroy {
       const error = parsed.searchParams.get('error');
 
       if (code) {
+        // Délègue tout le reste à CallbackComponent, comme sur le web
         this.router.navigate(['/callback'], {
           queryParams: { code },
-          replaceUrl: true
+          replaceUrl: true,
         });
       } else if (error) {
-        console.error('[App] OAuth error via deep link:', error);
-        this.router.navigate(['/secure-app'], { replaceUrl: true });
+        console.error('[OAuth] Erreur reçue via deep link:', error);
+        this.router.navigate(['/login'], { replaceUrl: true });
       }
     });
   }
 
   private async initStripe(): Promise<void> {
-
     if (Capacitor.isNativePlatform()) {
-
-      // ✅ APK — iOS / Android
       console.log('[Stripe] Initializing for native platform');
       await Stripe.initialize({
         publishableKey: environment.stripePublishableKey
       });
-      console.log('[Stripe] ✅ Native initialized');
-
+      console.log('[Stripe] Native initialized');
     } else {
-
-      // ✅ Web — Browser
       console.log('[Stripe] Initializing for web platform');
       const stripe = await loadStripe(environment.stripePublishableKey);
 
       if (!stripe) {
-        console.error('[Stripe] ❌ Web initialization failed');
+        console.error('[Stripe] Web initialization failed');
         return;
       }
-
-      console.log('[Stripe] ✅ Web initialized');
+      console.log('[Stripe] Web initialized');
     }
   }
 
   ngOnDestroy(): void {
     this.subs.forEach(s => s.unsubscribe());
-    if (this.urlListener) {
-      this.urlListener.remove();
-    }
   }
 }

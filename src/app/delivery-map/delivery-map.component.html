@@ -1,0 +1,13 @@
+<div class="map-container">
+  <google-map
+    [center]="center"
+    [zoom]="15"
+    [options]="mapOptions"
+    (mapClick)="onMapClick($event)">
+    <map-marker
+      [position]="markerPosition"
+      [options]="{ draggable: true }"
+      (dragEnd)="onMarkerDragEnd($event)">
+    </map-marker>
+  </google-map>
+</div>

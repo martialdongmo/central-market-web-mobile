@@ -1,20 +1,44 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+    <ion-title>Accueil</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <!-- Filter bar -->
+  <div class="filter-bar">
+    <ion-segment group="filter" [(ngModel)]="selectedFilter" (ionChange)="changeFilter($event)">
+      <ion-segment-button slot="start" value="all">Tous</ion-segment-button>
+      <ion-segment-button value="buy">Acheter</ion-segment-button>
+      <ion-segment-button value="driver">Livrer</ion-segment-button>
+      <ion-segment-button value="partner">Partenariat</ion-segment-button>
+    </ion-segment>
+  </div>
 
+  <!-- Scrolling blue messages -->
+  <div class="scrolling-container">
+    <div class="scrolling-messages">
+      <div class="message" *ngIf="selectedFilter === 'all' || selectedFilter === 'buy'">Vous pouvez acheter</div>
+      <div class="message" *ngIf="selectedFilter === 'all' || selectedFilter === 'driver'">Etre livreur</div>
+      <div class="message" *ngIf="selectedFilter === 'all' || selectedFilter === 'partner'">Devenir partenaire en vendant vos produits</div>
+    </div>
+  </div>
+
+  <!-- Existing content (optional) -->
   <div id="container">
     <strong>Ready to create an app?</strong>
     <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
   </div>
 </ion-content>
+</arg_value>
+<task_progress>
+- [x] Implement three scrolling blue messages on the home page (Buy, Become Delivery Driver, Become Partner)
+- [x] Add the empty "templete" template on the Near Product page
+- [x] Adjust checkout page layout: scroll text down, reposition back button, center text/button
+- [x] Add promotional product template on the product‑promotion page
+- [ ] Fix filter functionality on the home page
+- [ ] Add "Continue Shopping" button/link on the login page
+- [ ] Review UI design and add continue‑shopping button/link where needed
+- [ ] Add visible notification for product addition
+</task_progress>
+</write_to_file>

@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectionStr
 import { IonContent, IonIcon, IonModal, IonToggle, IonRange, NavController, IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/angular/standalone';
 import { ProductCardComponent } from '../product-card/product-card.component';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
 import {
   searchOutline, bagOutline, bagHandle, optionsOutline, closeCircle,
@@ -18,7 +17,9 @@ import {
   rocketOutline,
   searchCircleOutline,
   shieldCheckmarkOutline,
-  storefrontOutline
+  storefrontOutline,
+  cartOutline,
+  bicycleOutline,
 } from 'ionicons/icons';
 import { CatalogQueryParams } from '../model/utils/catalog-query-params.model';
 import { Subscription, Subject } from 'rxjs';
@@ -31,13 +32,19 @@ import { CartService } from '../services/cart.service';
 import { LocationService } from '../services/location.service';
 import { AuthService } from '../auth/auth.service';
 import { FooterComponent } from "../shares/footer/footer.component";
+import { LanguageSwitcherComponent } from '../i18n/language-switcher.component';
 
 const DEFAULT_MAX_PRICE = 10000;
+
+interface HeroMessage {
+  icon: string;
+  text: string;
+}
 
 @Component({
   selector: 'app-catalog',
   standalone: true,
-  imports: [CommonModule, FormsModule, ProductCardComponent, IonContent, IonIcon, IonModal, IonToggle, IonRange, IonInfiniteScroll, IonInfiniteScrollContent, FooterComponent],
+  imports: [CommonModule, ProductCardComponent, IonContent, IonIcon, IonModal, IonToggle, IonRange, IonInfiniteScroll, IonInfiniteScrollContent, FooterComponent, LanguageSwitcherComponent],
   templateUrl: './catalog.component.html',
   styleUrls: ['./catalog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -67,6 +74,15 @@ export class CatalogComponent implements OnInit, OnDestroy {
     keyword: '', promotionOnly: false, inStockOnly: false,
   };
 
+  // ─── rotating hero banner (blue card) ──────────────────────────────────────
+  readonly heroMessages: HeroMessage[] = [
+    { icon: 'cart-outline', text: 'Vous pouvez acheter en quelques clics' },
+    { icon: 'bicycle-outline', text: 'Devenez livreur et gagnez de l\'argent' },
+    { icon: 'storefront-outline', text: 'Devenez partenaire en vendant vos produits' },
+  ];
+  heroMessageIndex = 0;
+  private heroInterval?: ReturnType<typeof setInterval>;
+
   // ─── deps ─────────────────────────────────────────────────────────────────
   private catalogService = inject(CatalogService);         // ← real service
   private categoryService = inject(CategoryService);
@@ -85,11 +101,12 @@ export class CatalogComponent implements OnInit, OnDestroy {
       searchOutline, bagOutline, bagHandle, optionsOutline, closeCircle,
       gridOutline, tvOutline, gameControllerOutline, headsetOutline, heartOutline,
       homeOutline, refreshOutline, close, pricetagOutline, walletOutline, arrowBackOutline,
-    
+
       // new
       flash, shieldCheckmarkOutline, rocketOutline, storefrontOutline,
       searchCircleOutline, listOutline, funnelOutline,
       cubeOutline, removeCircleOutline, addCircleOutline, checkmarkCircleOutline,
+      cartOutline, bicycleOutline,
     });
   }
 
@@ -110,11 +127,20 @@ export class CatalogComponent implements OnInit, OnDestroy {
         this.resetPagination();
         this.loadProducts();
       });
+
+    // rotate the 3 promo messages in the blue hero card
+    this.heroInterval = setInterval(() => {
+      this.heroMessageIndex = (this.heroMessageIndex + 1) % this.heroMessages.length;
+      this.cdr.markForCheck();
+    }, 3500);
   }
 
   ngOnDestroy() {
     this.cartSub?.unsubscribe();
     this.searchSub?.unsubscribe();
+    if (this.heroInterval) {
+      clearInterval(this.heroInterval);
+    }
   }
 
   // ─── data loading ─────────────────────────────────────────────────────────
@@ -167,8 +193,21 @@ export class CatalogComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * ⚠️ Adjust `.getAll()` below to match the real method name on your
+   * CategoryService (e.g. `findAll()`, `search()`...). This was previously
+   * a `// todo:` stub, which is why the category chips row was always empty
+   * and "All" never appeared.
+   */
   loadCategories() {
-    // todo:
+    this.categoryService.getAllCategories().subscribe({
+      next: (categories: CategoryResponse[]) => {
+        const allChip = { id: 'all', name: 'All' } as CategoryResponse;
+        this.categories = [allChip, ...categories];
+        this.cdr.markForCheck();
+      },
+      error: (err: unknown) => console.error('Failed to load categories', err),
+    });
   }
 
    loadUser() {
@@ -202,6 +241,28 @@ export class CatalogComponent implements OnInit, OnDestroy {
 
   openFilters() { this.isFilterModalOpen = true; }
   closeFilters() { this.isFilterModalOpen = false; }
+
+  // Explicit handlers replace the old [(ngModel)] bindings below — with
+  // ion-toggle/ion-range inside an OnPush component + ion-modal's portal,
+  // ngModel updates were not reliably reaching `queryParams`, so "Apply"
+  // kept firing with stale values. [checked]/[value] + (ionChange) +
+  // markForCheck() is the robust pattern for Ionic form controls here.
+  onTogglePromotion(checked: boolean) {
+    this.queryParams.promotionOnly = checked;
+    this.cdr.markForCheck();
+  }
+
+  onToggleInStock(checked: boolean) {
+    this.queryParams.inStockOnly = checked;
+    this.cdr.markForCheck();
+  }
+
+  onMaxPriceChange(value: number | { lower: number; upper: number }) {
+    // ion-range's detail.value is typed as RangeValue (number | {lower, upper}),
+    // even without dualKnobs — narrow it to a plain number here.
+    this.queryParams.maxPrice = typeof value === 'number' ? value : value.upper;
+    this.cdr.markForCheck();
+  }
 
   applyFilters() {
     this.resetPagination();

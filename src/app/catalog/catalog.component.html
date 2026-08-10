@@ -5,6 +5,7 @@
   <div class="header-topbar">
     <div class="brand-logo">Groupin<span>G</span></div>
     <div class="header-actions">
+      <app-language-switcher></app-language-switcher>
       <button class="icon-btn" (click)="searchOverlayOpen = true">
         <ion-icon name="search-outline"></ion-icon>
       </button>
@@ -24,6 +25,17 @@
         <span>Flash Sales</span>
       </div>
       <div class="hero-title">Discover our<br><em>Deals of the Day</em></div>
+
+      <!-- rotating 3-message banner (buy / deliver / become partner) -->
+      <div class="hero-messages">
+        @for (msg of [heroMessages[heroMessageIndex]]; track heroMessageIndex) {
+          <div class="hero-message-item">
+            <ion-icon [name]="msg.icon"></ion-icon>
+            <span>{{ msg.text }}</span>
+          </div>
+        }
+      </div>
+
       <div class="hero-sub">
         <ion-icon name="shield-checkmark-outline"></ion-icon> Premium quality
         &nbsp;·&nbsp;
@@ -158,7 +170,11 @@
                 <small>Show discounted items only</small>
               </div>
             </div>
-            <ion-toggle [(ngModel)]="queryParams.promotionOnly" mode="ios"></ion-toggle>
+            <ion-toggle
+              [checked]="queryParams.promotionOnly"
+              (ionChange)="onTogglePromotion($event.detail.checked)"
+              mode="ios">
+            </ion-toggle>
           </div>
 
           <div class="filter-item">
@@ -169,7 +185,11 @@
                 <small>Hide unavailable products</small>
               </div>
             </div>
-            <ion-toggle [(ngModel)]="queryParams.inStockOnly" mode="ios"></ion-toggle>
+            <ion-toggle
+              [checked]="queryParams.inStockOnly"
+              (ionChange)="onToggleInStock($event.detail.checked)"
+              mode="ios">
+            </ion-toggle>
           </div>
 
           <div class="filter-item column">
@@ -183,7 +203,9 @@
               </div>
             </div>
             <ion-range [min]="0" [max]="10000" [step]="500"
-              [(ngModel)]="queryParams.maxPrice" style="width:100%;padding:0">
+              [value]="queryParams.maxPrice"
+              (ionChange)="onMaxPriceChange($event.detail.value)"
+              style="width:100%;padding:0">
               <ion-icon slot="start" name="remove-circle-outline"></ion-icon>
               <ion-icon slot="end"   name="add-circle-outline"></ion-icon>
             </ion-range>

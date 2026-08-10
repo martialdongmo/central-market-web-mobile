@@ -135,4 +135,12 @@ export class LocationService {
     this.longitude.set(null);
     this.error.set(null);
   }
+
+  setLatitude(lat: number): void {
+    this.latitude.set(lat);
+  }
+
+  setLongitude(lng: number): void {
+    this.longitude.set(lng);
+  }
 }

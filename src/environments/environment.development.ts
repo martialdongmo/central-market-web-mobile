@@ -15,7 +15,7 @@ export const environment = {
   paymentEndpoint: `${baseUrl}/api/v1/bis/payments`,
   invoiceEndpoint: `${baseUrl}/api/v1/bis/invoices`,
   driversEndpoint: `${baseUrl}/api/v1/bis/drivers`,
-  redirectUri,
-  stripePublishableKey: 'pk_test_51Tts9MLv7UFWWZoLiqlHRFoeGapNgN0pF2UrTrq2VVjqDuug0iXfGTA0Ebz1C9hciOghl3Qg5g8Y0ZV0TSsA18LY00S93ZPPTJ'
+  redirectUri: redirectUri,
+  stripePublishableKey: 'pk_test_51Tts9MLv7UFWWZoLiqlHRFoeGapNgN0pF2UrTrq2VVjqDuug0iXfGTA0Ebz1C9hciOghl3Qg5g8Y0ZV0TSsA18LY00S93ZPPTJ',
+  googleMapsApiKey: 'AIzaSyBdYw9B0nFTZpQmVMcsUhBrdu-vmkYIg1o'
 };
-

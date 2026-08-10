@@ -1,20 +1,4 @@
 <ion-app>
-  <ion-header>
-    <ion-toolbar>
-      <ion-buttons slot="start">
-        <ion-back-button defaultHref="/catalog" />
-      </ion-buttons>
-      <ion-title>{{ 'appTitle' | translate }}</ion-title>
-      <ion-buttons slot="end">
-        <ion-select
-          value="{{ languageService.currentLanguage }}"
-          interface="popover"
-          (ionChange)="languageService.setLanguage($event.detail.value ?? 'fr')">
-          <ion-select-option value="fr">FR</ion-select-option>
-          <ion-select-option value="en">EN</ion-select-option>
-        </ion-select>
-      </ion-buttons>
-    </ion-toolbar>
-  </ion-header>
+  <app-back-navigation></app-back-navigation>
   <ion-router-outlet id="main-content"></ion-router-outlet>
 </ion-app>

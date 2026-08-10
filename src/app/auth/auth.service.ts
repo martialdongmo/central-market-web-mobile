@@ -62,8 +62,10 @@ export class AuthService {
     // On mobile, window.open with '_blank' opens the system browser
     // On web, window.location.href navigates within the same tab
     if (isCapacitor) {
+      // Mobile platform - use Capacitor Browser (Custom Tabs) for OAuth redirection handling
       await Browser.open({ url: authUrl });
     } else {
+      // Web platform - use window.location
       window.location.href = authUrl;
     }
   }
