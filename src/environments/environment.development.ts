@@ -12,4 +12,7 @@ export const environment = {
   redirectUri: 'http://localhost:3000/callback',
   stripePublishableKey: 'pk_test_51Tts9MLv7UFWWZoLiqlHRFoeGapNgN0pF2UrTrq2VVjqDuug0iXfGTA0Ebz1C9hciOghl3Qg5g8Y0ZV0TSsA18LY00S93ZPPTJ',
   googleMapsApiKey: 'AIzaSyBdYw9B0nFTZpQmVMcsUhBrdu-vmkYIg1o'
+  ONESIGNAL_APP_ID: '5651de09-12d8-4b6c-a423-243e87a4f19f'
+
+
 };

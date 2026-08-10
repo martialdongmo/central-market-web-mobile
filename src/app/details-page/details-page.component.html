@@ -77,19 +77,36 @@
        ============================================================ -->
   @if (!isLoading && !hasError && product) {
 
-    <!-- ── Hero image ── -->
+    <!-- ── Hero image / gallery ── -->
     <div class="img-hero">
-      <img [src]="product.imageUrl" [alt]="product.productName" class="product-img" />
+      <img [src]="activeImageUrl" [alt]="product.productName" class="product-img" />
 
       <div class="img-overlay-badges">
-        @if (product.promotionActive) {
+        @if (product.promotionActive && !selectedVariant) {
           <span class="badge badge-promo">-{{ discountPercent }}%</span>
         }
-        @if (!product.inStock) {
+        @if (!isInStock) {
           <span class="badge badge-out">Épuisé</span>
         }
       </div>
     </div>
+
+    <!-- ── Thumbnail strip (only if more than 1 image) ── -->
+    @if (galleryImages.length > 1) {
+      <div class="gallery-strip">
+        @for (url of galleryImages; track url) {
+          <div
+            class="gallery-thumb"
+            [class.active]="url === activeImageUrl"
+            (click)="selectImage(url)"
+            role="button"
+            tabindex="0"
+            (keyup.enter)="selectImage(url)">
+            <img [src]="url" alt="Photo produit" />
+          </div>
+        }
+      </div>
+    }
 
     <!-- ── Main card ── -->
     <div class="detail-card">
@@ -108,34 +125,101 @@
 
         <div class="price-group">
           <span class="price-main">{{ displayPrice | number:'1.0-0' }} FCFA</span>
-          @if (product.promotionActive) {
+          @if (product.promotionActive && !selectedVariant) {
             <span class="price-crossed">{{ product.price | number:'1.0-0' }} FCFA</span>
           }
         </div>
 
-        <div class="stock-pill" [class.stock-in]="product.inStock" [class.stock-out]="!product.inStock">
-          <ion-icon [name]="product.inStock ? 'checkmark-circle' : 'close-circle'"></ion-icon>
-          {{ product.inStock ? 'En stock' : 'Épuisé' }}
+        <div class="stock-pill" [class.stock-in]="isInStock" [class.stock-out]="!isInStock">
+          <ion-icon [name]="isInStock ? 'checkmark-circle' : 'close-circle'"></ion-icon>
+          {{ isInStock ? 'En stock' : 'Épuisé' }}
         </div>
 
       </div>
 
       <!-- Available qty -->
-      @if (product.inStock && product.availableQuantity > 0) {
+      @if (isInStock && availableQty > 0) {
         <p class="qty-hint">
-          {{ product.availableQuantity }} unité(s) disponible(s)
+          {{ availableQty }} unité(s) disponible(s)
         </p>
+      }
+
+      <!-- Variant selector (color / size) — only if the product has variants -->
+      @if (hasVariants) {
+        <div class="divider"></div>
+
+        @if (availableColors.length > 0) {
+          <h2 class="section-title">Couleur</h2>
+          <div class="variant-chip-row">
+            @for (color of availableColors; track color) {
+              <button
+                class="variant-chip"
+                [class.selected]="selectedColor === color"
+                (click)="selectColor(color)">
+                {{ color }}
+              </button>
+            }
+          </div>
+        }
+
+        @if (availableSizes.length > 0) {
+          <h2 class="section-title" [style.margin-top.px]="availableColors.length ? 16 : 0">Taille</h2>
+          <div class="variant-chip-row">
+            @for (size of availableSizes; track size) {
+              <button
+                class="variant-chip"
+                [class.selected]="selectedSize === size"
+                (click)="selectSize(size)">
+                {{ size }}
+              </button>
+            }
+          </div>
+        }
+
+        @if (variantRequiredButNotSelected) {
+          <p class="variant-warning">
+            <ion-icon name="close-circle"></ion-icon>
+            Veuillez sélectionner une variante disponible.
+          </p>
+        }
+
+        @if (selectedVariant) {
+          <p class="variant-selected-info">
+            <ion-icon name="checkmark-outline"></ion-icon>
+            SKU : {{ selectedVariant.sku }} · {{ availableQty }} unité(s) disponible(s)
+          </p>
+        }
       }
 
       <!-- ── Divider ── -->
       <div class="divider"></div>
 
       <!-- Description -->
-      <h2 class="section-title">Description</h2>
-      <p class="description-text">{{ product.description }}</p>
+      @if (product.description) {
+        <h2 class="section-title">Description</h2>
+        <p class="description-text">{{ product.description }}</p>
+        <div class="divider"></div>
+      }
 
-      <!-- ── Divider ── -->
-      <div class="divider"></div>
+      <!-- Tags -->
+      @if (product.tags && product.tags.length > 0) {
+        <h2 class="section-title">Étiquettes</h2>
+        <div class="tag-chip-row">
+          @for (tag of product.tags; track tag) {
+            <span class="tag-chip-display">{{ tag }}</span>
+          }
+        </div>
+        <div class="divider"></div>
+      }
+
+      <!-- Weight -->
+      @if (product.weight) {
+        <div class="weight-row">
+          <ion-icon name="cube-outline"></ion-icon>
+          <span>Poids : {{ product.weight }} kg</span>
+        </div>
+        <div class="divider"></div>
+      }
 
       <!-- Shop card -->
       <h2 class="section-title">Boutique</h2>
@@ -221,12 +305,12 @@
       <button
         class="add-btn"
         [class.added]="addedToCart"
-        [disabled]="!product.inStock"
+        [disabled]="!isInStock || variantRequiredButNotSelected"
         (click)="addToCart()"
-        [attr.aria-label]="product.inStock ? 'Ajouter au panier' : 'Produit indisponible'"
+        [attr.aria-label]="isInStock ? 'Ajouter au panier' : 'Produit indisponible'"
       >
         <ion-icon [name]="addedToCart ? 'checkmark-circle' : 'cart-outline'"></ion-icon>
-        {{ addedToCart ? 'Ajouté !' : (product.inStock ? 'Ajouter au panier' : 'Indisponible') }}
+        {{ addedToCart ? 'Ajouté !' : (isInStock ? 'Ajouter au panier' : 'Indisponible') }}
       </button>
 
     </div>
