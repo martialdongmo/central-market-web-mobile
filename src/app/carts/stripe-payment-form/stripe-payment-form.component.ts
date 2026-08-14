@@ -45,7 +45,7 @@ export class StripePaymentFormComponent implements OnInit, OnDestroy, AfterViewI
   @ViewChild('cardElement', { static: true }) cardElementRef!: ElementRef;
   
   @Input() amount: number = 0;
-  @Input() currency: string = 'EUR';
+  @Input() currency: string = 'XAF';
   @Input() clientSecret: string = '';
   @Output() paymentSuccess = new EventEmitter<string>();
   @Output() paymentError = new EventEmitter<string>();
