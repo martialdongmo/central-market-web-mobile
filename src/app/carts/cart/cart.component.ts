@@ -3,7 +3,13 @@ import { CommonModule } from '@angular/common';
 import { IonContent, IonIcon, NavController } from '@ionic/angular/standalone';
 import { Subscription } from 'rxjs';
 import { addIcons } from 'ionicons';
-import { trashOutline, arrowForwardOutline, cartOutline } from 'ionicons/icons';
+import {
+  trashOutline,
+  arrowForwardOutline,
+  arrowBackOutline,
+  cartOutline,
+  bagAddOutline,
+} from 'ionicons/icons';
 import { Router } from '@angular/router';
 import { CartItem } from 'src/app/model/cartItem';
 import { AuthService } from 'src/app/auth/auth.service';
@@ -17,7 +23,6 @@ import { CartService } from 'src/app/services/cart.service';
   styleUrls: ['./cart.component.scss'],
 })
 export class CartComponent implements OnInit, OnDestroy {
- 
 
   cartItems: CartItem[] = [];
   totalPrice = 0;
@@ -30,7 +35,13 @@ export class CartComponent implements OnInit, OnDestroy {
   private router = inject(Router);
 
   constructor() {
-    addIcons({ trashOutline, arrowForwardOutline, cartOutline });
+    addIcons({
+      trashOutline,
+      arrowForwardOutline,
+      arrowBackOutline,
+      cartOutline,
+      bagAddOutline,
+    });
   }
 
   ngOnInit() {
@@ -45,19 +56,39 @@ export class CartComponent implements OnInit, OnDestroy {
   }
 
   // =========================
-  // UI ACTIONS
+  // PRIX AFFICHÉ PAR ITEM
+  // =========================
+  getItemPrice(item: CartItem): number {
+    return this.cartService.getItemPrice(item);
+  }
+
+  getItemSubtotal(item: CartItem): number {
+    return this.getItemPrice(item) * item.quantity;
+  }
+
+  // =========================
+  // NAVIGATION
   // =========================
 
+  // Retour à la page précédente (historique navigateur/app)
+  goBack() {
+    this.navCtrl.back();
+  }
+
+  // Toujours possible de continuer les achats, même avec des items dans le panier
   goToCatalog() {
     this.navCtrl.navigateRoot('/catalog');
   }
+
+  // =========================
+  // ACTIONS PANIER
+  // =========================
 
   removeItem(id: string) {
     this.cartService.removeItem(id);
   }
 
   addQty(item: CartItem) {
-    // reuse product-like structure from cart item
     this.cartService.addToCart(item as any);
   }
 

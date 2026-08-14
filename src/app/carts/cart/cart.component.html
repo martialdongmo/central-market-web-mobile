@@ -1,6 +1,19 @@
 <div class="cart-header">
-  <h1>Mon Panier</h1>
-  <p>Vérifiez vos pépites avant de commander.</p>
+  <button class="back-btn" (click)="goBack()" aria-label="Retour">
+    <ion-icon name="arrow-back-outline"></ion-icon>
+  </button>
+
+  <div class="cart-header-titles">
+    <h1>Mon Panier</h1>
+    <p>Vérifiez vos pépites avant de commander.</p>
+  </div>
+
+  @if (cartItems.length > 0) {
+    <button class="continue-btn" (click)="goToCatalog()">
+      <ion-icon name="bag-add-outline"></ion-icon>
+      <span>Continuer</span>
+    </button>
+  }
 </div>
 
 <ion-content>
@@ -28,7 +41,7 @@
             </h3>
 
             <p class="cart-item-price">
-              {{ (item.promotionPrice ?? item.price) | number:'1.0-0' }}
+              {{ getItemPrice(item) | number:'1.0-0' }}
               <small>FCFA</small>
             </p>
 
@@ -37,7 +50,7 @@
               <div class="qty-ctrl">
 
                 <button class="qty-btn minus"
-                        (click)="removeQty(item.productId)">
+                  (click)="removeQty(item.productId)">
                   −
                 </button>
 
@@ -46,14 +59,14 @@
                 </span>
 
                 <button class="qty-btn plus"
-                        (click)="addQty(item)">
+                  (click)="addQty(item)">
                   +
                 </button>
 
               </div>
 
               <button class="del-btn"
-                      (click)="removeItem(item.productId)">
+                (click)="removeItem(item.productId)">
                 <ion-icon name="trash-outline"></ion-icon>
               </button>
 
@@ -79,7 +92,7 @@
       <p>Votre panier attend vos pépites...</p>
 
       <button class="cart-empty-cta"
-              (click)="goToCatalog()">
+        (click)="goToCatalog()">
         Découvrir nos pépites
       </button>
 
@@ -116,12 +129,11 @@
 
     </div>
 
-    <button class="checkout-btn" (click)="checkout()" >
+    <button class="checkout-btn" (click)="checkout()">
       <span>Check my order</span>
       <div class="arrow-box">
         <ion-icon name="arrow-forward-outline"></ion-icon>
       </div>
-
     </button>
 
   </div>

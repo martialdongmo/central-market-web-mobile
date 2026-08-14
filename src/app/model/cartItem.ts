@@ -8,11 +8,12 @@ export interface CartItem {
 
   price: number;
   promotionPrice?: number | null;
+  promotionActive: boolean; 
 
   shopId: string;
-  userUuid: string;// shop ser owner ID
+  userUuid: string;
   shopName: string;
-  shopEmail:string;
+  shopEmail: string;
 
   quantity: number;
 }

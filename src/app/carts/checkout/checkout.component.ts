@@ -5,7 +5,7 @@ import { addIcons } from 'ionicons';
 import { AuthService } from '../../auth/auth.service';
 import {  Subscription, switchMap } from 'rxjs';
 import { UserResponse } from '../../model/response/usersResponse';
-import { PaymentMethod } from '../../model/enums/payment-method';
+import { PAYMENT_METHOD_LABELS, PaymentMethod } from '../../model/enums/payment-method';
 import { OrderRequest } from '../../model/requests/order-request';
 import { OrdersService } from '../../services/orders.service';
 import { CartService } from '../../services/cart.service';
@@ -16,7 +16,7 @@ import { CustomerRequest } from '../../model/requests/customerRequest';
 import { CustomerResponse } from '../../model/response/customer-response';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LocationService } from '../../services/location.service';
-import { DeliveryType } from '../../model/enums/deliveryType';
+import { DELIVERY_TYPE_LABELS, DeliveryType } from '../../model/enums/deliveryType';
 import { CustomCurrencyPipe } from '../../services/custom.currency.pipe';
 import { PaymentService } from '../../services/payment.service';
 import { StripePaymentFormComponent } from '../stripe-payment-form/stripe-payment-form.component';
@@ -87,14 +87,23 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   // Converts enum key to a readable label.
   // MTN_MOBILE_MONEY → Mtn Mobile Money
   // Swap for official branding/icon later without touching anything else.
-  paymentLabel(method: string): string {
-    return this.enumToLabel(method);
-  }
+ paymentLabel(method: PaymentMethod): string {
+  return PAYMENT_METHOD_LABELS[method];
+}
  
   // DELIVERY → Delivery  |  PICKUP → Pickup
-  deliveryLabel(type: string): string {
-    return this.enumToLabel(type);
-  }
+ deliveryLabel(type: DeliveryType): string {
+  return DELIVERY_TYPE_LABELS[type];
+}
+
+//  paymentLabel(method: string): string {
+//     return this.enumToLabel(method);
+//   }
+ 
+//   deliveryLabel(type: string): string {
+//     return this.enumToLabel(type);
+//   }
+ 
  
   // Shared formatter: SNAKE_CASE → Title Case
   private enumToLabel(value: string): string {

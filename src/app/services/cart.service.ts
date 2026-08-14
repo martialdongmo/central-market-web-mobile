@@ -76,15 +76,7 @@ export class CartService {
     }
   }
 
-  // =========================
-  // TOTAL PRICE
-  // =========================
-  getTotalPrice(): number {
-    return this.items.reduce((total, item) => {
-      const price = item.promotionPrice ?? item.price;
-      return total + price * item.quantity;
-    }, 0);
-  }
+  
 
   // =========================
   // CLEAR CART
@@ -132,24 +124,43 @@ export class CartService {
   // MAPPER
   // =========================
   private mapToCartItem(product: CatalogProductResponse): CartItem {
-    return {
-      productId: product.productId,
-      productName: product.productName,
-      imageUrl: product.imageUrl,
+  return {
+    productId: product.productId,
+    productName: product.productName,
+    imageUrl: product.imageUrl,
 
-      price: product.price,
-      promotionPrice: product.promotionPrice ?? null,
+    price: product.price,
+    promotionPrice: product.promotionPrice ?? null,
+    promotionActive: product.promotionActive, // ✅
 
-      shopId: product.shopId,
-      userUuid: product.userUuid,
-      shopName: product.shopName,
-      shopEmail: product.shopEmail,
-      shopLatitude: product.shopLatitude ?? 0,
-      shopLongitude: product.shopLongitude ?? 0,
+    shopId: product.shopId,
+    userUuid: product.userUuid,
+    shopName: product.shopName,
+    shopEmail: product.shopEmail,
+    shopLatitude: product.shopLatitude ?? 0,
+    shopLongitude: product.shopLongitude ?? 0,
 
-      quantity: 1,
-    };
-  }
+    quantity: 1,
+  };
+}
+
+// =========================
+// PRIX UNITAIRE D'UN ITEM
+// =========================
+getItemPrice(item: CartItem): number {
+  return item.promotionActive && item.promotionPrice
+    ? item.promotionPrice
+    : item.price;
+}
+
+// =========================
+// TOTAL PRICE
+// =========================
+getTotalPrice(): number {
+  return this.items.reduce((total, item) => {
+    return total + this.getItemPrice(item) * item.quantity;
+  }, 0);
+}
 
   // =========================
   // SYNC ACCESS
