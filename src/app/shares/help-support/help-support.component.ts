@@ -44,15 +44,24 @@ export class HelpSupportComponent {
     {
       title: 'How to Create an Account',
       description: 'Follow this quick walkthrough to register and secure your profile on GroupinG.',
-      youtubeUrl: 'https://youtu.be/Bwa_NnnoC5Y',
+      youtubeUrl: 'https://www.youtube.com/shorts/znQ1ykv54Fk',
       duration: '1:45',
       gradientClass: 'from-blue-600',
       isPlaying: true
     },
     {
-      title: 'How to Create an Account',
-      description: 'Follow this quick walkthrough to register and secure your profile on GroupinG.',
-      youtubeUrl: 'https://youtube.com/watch?v=acc_create',
+      title: 'How to Create a shop',
+      description: 'Follow this quick walkthrough to register your shop and secure your profile on GroupinG.',
+      youtubeUrl: 'https://www.youtube.com/shorts/acc_create',
+      duration: '1:45',
+      gradientClass: 'from-blue-600',
+      isPlaying: false
+
+    },
+     {
+      title: 'How to Create a Product',
+      description: 'Follow this quick walkthrough to create and list your products on GroupinG.',
+      youtubeUrl: 'https://www.youtube.com/shorts/acc_create',
       duration: '1:45',
       gradientClass: 'from-blue-600',
       isPlaying: false
@@ -61,7 +70,7 @@ export class HelpSupportComponent {
     {
       title: 'Placing Your First Group Order',
       description: 'Learn the process of bulk purchasing and locking orders with your community.',
-      youtubeUrl: 'https://youtube.com/watch?v=first_order',
+      youtubeUrl: 'https://www.youtube.com/shorts/XaBfYW4QxEA',
       duration: '3:20',
       gradientClass: 'from-slate-700',
       isPlaying: false

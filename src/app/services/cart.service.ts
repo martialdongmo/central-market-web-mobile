@@ -9,8 +9,6 @@ import { CatalogProductResponse } from '../model/response/catalogProductResponse
   providedIn: 'root',
 })
 export class CartService {
-  
-
 
   private readonly STORAGE_KEY = 'cart_items';
 
@@ -76,8 +74,6 @@ export class CartService {
     }
   }
 
-  
-
   // =========================
   // CLEAR CART
   // =========================
@@ -121,46 +117,61 @@ export class CartService {
   }
 
   // =========================
+  // VALIDATION PROMO
+  // Une promo n'est "réelle" que si active === true
+  // ET promotionPrice est un nombre > 0.
+  // Protège contre les données backend incohérentes
+  // (ex: promotionActive: true, promotionPrice: 0).
+  // =========================
+  private hasRealPromo(promotionActive: boolean, promotionPrice: number | null | undefined): boolean {
+    return promotionActive === true
+      && promotionPrice != null
+      && promotionPrice > 0;
+  }
+
+  // =========================
   // MAPPER
   // =========================
   private mapToCartItem(product: CatalogProductResponse): CartItem {
-  return {
-    productId: product.productId,
-    productName: product.productName,
-    imageUrl: product.imageUrl,
+    const realPromo = this.hasRealPromo(product.promotionActive, product.promotionPrice);
 
-    price: product.price,
-    promotionPrice: product.promotionPrice ?? null,
-    promotionActive: product.promotionActive, // ✅
+    return {
+      productId: product.productId,
+      productName: product.productName,
+      imageUrl: product.imageUrl,
 
-    shopId: product.shopId,
-    userUuid: product.userUuid,
-    shopName: product.shopName,
-    shopEmail: product.shopEmail,
-    shopLatitude: product.shopLatitude ?? 0,
-    shopLongitude: product.shopLongitude ?? 0,
+      price: product.price,
+      promotionPrice: realPromo ? product.promotionPrice : null,
+      promotionActive: realPromo,
 
-    quantity: 1,
-  };
-}
+      shopId: product.shopId,
+      userUuid: product.userUuid,
+      shopName: product.shopName,
+      shopEmail: product.shopEmail,
+      shopLatitude: product.shopLatitude ?? 0,
+      shopLongitude: product.shopLongitude ?? 0,
 
-// =========================
-// PRIX UNITAIRE D'UN ITEM
-// =========================
-getItemPrice(item: CartItem): number {
-  return item.promotionActive && item.promotionPrice
-    ? item.promotionPrice
-    : item.price;
-}
+      quantity: 1,
+    };
+  }
 
-// =========================
-// TOTAL PRICE
-// =========================
-getTotalPrice(): number {
-  return this.items.reduce((total, item) => {
-    return total + this.getItemPrice(item) * item.quantity;
-  }, 0);
-}
+  // =========================
+  // PRIX UNITAIRE D'UN ITEM
+  // =========================
+  getItemPrice(item: CartItem): number {
+    return this.hasRealPromo(item.promotionActive, item.promotionPrice)
+      ? (item.promotionPrice as number)
+      : item.price;
+  }
+
+  // =========================
+  // TOTAL PRICE
+  // =========================
+  getTotalPrice(): number {
+    return this.items.reduce((total, item) => {
+      return total + this.getItemPrice(item) * item.quantity;
+    }, 0);
+  }
 
   // =========================
   // SYNC ACCESS

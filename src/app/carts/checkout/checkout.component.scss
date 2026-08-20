@@ -1,565 +1,551 @@
-  // ═══════════════════════════════════════════════════════════
-  //  CHECKOUT — matches confirmation page design language
-  // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+//  CHECKOUT
+// ═══════════════════════════════════════════════════════════
 
-  :host {
-    --blue-700:    #1D4ED8;
-    --blue-600:    #2563EB;
-    --blue-500:    #3B82F6;
-    --blue-100:    #DBEAFE;
-    --blue-50:     #EFF6FF;
-    --white:       #FFFFFF;
-    --grey-50:     #F8FAFC;
-    --grey-100:    #F1F5F9;
-    --grey-200:    #E2E8F0;
-    --grey-400:    #94A3B8;
-    --grey-600:    #475569;
-    --grey-900:    #0F172A;
-    --success:     #10B981;
-    --danger:      #EF4444;
-    --card-shadow: 0 1px 3px rgba(15,23,42,.07), 0 4px 16px rgba(15,23,42,.05);
-  }
+:host {
+  --blue-700:    #1D4ED8;
+  --blue-600:    #2563EB;
+  --blue-500:    #3B82F6;
+  --blue-100:    #DBEAFE;
+  --blue-50:     #EFF6FF;
+  --white:       #FFFFFF;
+  --grey-50:     #F8FAFC;
+  --grey-100:    #F1F5F9;
+  --grey-200:    #E2E8F0;
+  --grey-400:    #94A3B8;
+  --grey-600:    #475569;
+  --grey-900:    #0F172A;
+  --success:     #10B981;
+  --danger:      #EF4444;
+  --card-shadow: 0 1px 3px rgba(15,23,42,.07), 0 4px 16px rgba(15,23,42,.05);
+}
 
-  // ── Toolbar ────────────────────────────────────────────────
-  .checkout-toolbar {
-    --background: var(--white);
-    box-shadow: 0 1px 0 var(--grey-200);
-  }
+// ── Toolbar ────────────────────────────────────────────────
+.checkout-toolbar {
+  --background: var(--white);
+  box-shadow: 0 1px 0 var(--grey-200);
+}
 
-  .checkout-title {
-    font-size: 1rem;
+.checkout-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--grey-900);
+  letter-spacing: -.3px;
+}
+
+.back-btn { --color: var(--grey-900); }
+
+.cart-badge-wrap {
+  position: relative;
+  padding: 8px 14px 8px 8px;
+  display: flex;
+  align-items: center;
+  ion-icon { font-size: 1.3rem; color: var(--grey-900); }
+
+  .cart-badge {
+    position: absolute;
+    top: 4px; right: 8px;
+    background: var(--blue-600);
+    color: var(--white);
+    font-size: .62rem;
     font-weight: 700;
-    color: var(--grey-900);
+    min-width: 17px; height: 17px;
+    border-radius: 999px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 3px;
+  }
+}
+
+// ── Step bar ───────────────────────────────────────────────
+.step-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 24px 12px;
+  background: var(--white);
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+
+  span {
+    font-size: .65rem;
+    font-weight: 600;
+    color: var(--grey-400);
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+
+  .step-dot {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--grey-100);
+    border: 2px solid var(--grey-200);
+    display: flex; align-items: center; justify-content: center;
+    ion-icon { font-size: .9rem; color: var(--grey-400); }
+  }
+
+  &.done {
+    .step-dot {
+      background: var(--blue-50);
+      border-color: var(--blue-500);
+      ion-icon { color: var(--blue-500); }
+    }
+    span { color: var(--blue-500); }
+  }
+
+  &.active {
+    .step-dot {
+      background: var(--blue-600);
+      border-color: var(--blue-600);
+      box-shadow: 0 0 0 4px var(--blue-100);
+      ion-icon { color: var(--white); }
+    }
+    span { color: var(--blue-700); font-weight: 700; }
+  }
+}
+
+.step-line {
+  flex: 1;
+  height: 2px;
+  background: var(--grey-200);
+  margin: 0 4px;
+  margin-bottom: 18px;
+  &.done { background: var(--blue-500); }
+}
+
+// ── Bandeau d'erreur — FIXE, toujours visible ────────────────
+.toast-error {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 8px);
+  left: 16px;
+  right: 16px;
+  z-index: 2000;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 14px;
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  border-radius: 12px;
+  color: var(--danger);
+  font-size: .83rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(239,68,68,.22);
+  animation: toastSlideDown .25s ease-out;
+
+  ion-icon:first-child { font-size: 1.15rem; flex-shrink: 0; }
+  span { flex: 1; line-height: 1.35; }
+  ion-icon:last-child { font-size: 1.1rem; flex-shrink: 0; opacity: .6; }
+}
+
+@keyframes toastSlideDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ── Content ────────────────────────────────────────────────
+.checkout-content { --background: var(--grey-50); }
+
+.page-body {
+  padding: 0 16px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+// ── Loading overlay ────────────────────────────────────────
+.loading-overlay {
+  position: fixed; inset: 0;
+  background: rgba(15,23,42,.45);
+  z-index: 999;
+  display: flex; align-items: center; justify-content: center;
+
+  .loading-glass {
+    background: rgba(255,255,255,.96);
+    border-radius: 20px;
+    padding: 36px 48px;
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+    box-shadow: 0 24px 64px rgba(15,23,42,.2);
+
+    p { margin: 0; font-size: .88rem; font-weight: 600; color: var(--grey-600); }
+  }
+}
+
+.loader-ring {
+  width: 44px; height: 44px;
+  border: 3px solid var(--blue-100);
+  border-top-color: var(--blue-600);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// ── Hero — compact, sans icône ────────────────────────────────
+.hero {
+  background: linear-gradient(145deg, var(--blue-700) 0%, var(--blue-500) 100%);
+  border-radius: 0 0 20px 20px;
+  padding: 18px 20px 22px;
+  margin: 0 -16px;
+  margin-bottom: 4px;
+  box-shadow: 0 6px 24px rgba(37,99,235,.22);
+
+  .hero-title {
+    margin: 0 0 4px;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--white);
     letter-spacing: -.3px;
   }
-
-  .back-btn { --color: var(--grey-900); }
-
-  .cart-badge-wrap {
-    position: relative;
-    padding: 8px 14px 8px 8px;
-    display: flex;
-    align-items: center;
-    ion-icon { font-size: 1.3rem; color: var(--grey-900); }
-
-    .cart-badge {
-      position: absolute;
-      top: 4px; right: 8px;
-      background: var(--blue-600);
-      color: var(--white);
-      font-size: .62rem;
-      font-weight: 700;
-      min-width: 17px; height: 17px;
-      border-radius: 999px;
-      display: flex; align-items: center; justify-content: center;
-      padding: 0 3px;
-    }
-  }
-
-  // ── Step bar ───────────────────────────────────────────────
-  .step-bar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 24px 12px;
-    background: var(--white);
-    gap: 0;
-  }
-
-  .step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-
-    span {
-      font-size: .65rem;
-      font-weight: 600;
-      color: var(--grey-400);
-      text-transform: uppercase;
-      letter-spacing: .4px;
-    }
-
-    .step-dot {
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      background: var(--grey-100);
-      border: 2px solid var(--grey-200);
-      display: flex; align-items: center; justify-content: center;
-      ion-icon { font-size: .9rem; color: var(--grey-400); }
-    }
-
-    &.done {
-      .step-dot {
-        background: var(--blue-50);
-        border-color: var(--blue-500);
-        ion-icon { color: var(--blue-500); }
-      }
-      span { color: var(--blue-500); }
-    }
-
-    &.active {
-      .step-dot {
-        background: var(--blue-600);
-        border-color: var(--blue-600);
-        box-shadow: 0 0 0 4px var(--blue-100);
-        ion-icon { color: var(--white); }
-      }
-      span { color: var(--blue-700); font-weight: 700; }
-    }
-  }
-
-  .step-line {
-    flex: 1;
-    height: 2px;
-    background: var(--grey-200);
-    margin: 0 4px;
-    margin-bottom: 18px;
-    &.done { background: var(--blue-500); }
-  }
-
-  // ── Content ────────────────────────────────────────────────
-  .checkout-content { --background: var(--grey-50); }
-
-  .page-body {
-    padding: 0 16px 40px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  // ── Loading overlay ────────────────────────────────────────
-  .loading-overlay {
-    position: fixed; inset: 0;
-    background: rgba(15,23,42,.45);
-    z-index: 999;
-    display: flex; align-items: center; justify-content: center;
-
-    .loading-glass {
-      background: rgba(255,255,255,.96);
-      border-radius: 20px;
-      padding: 36px 48px;
-      display: flex; flex-direction: column; align-items: center; gap: 16px;
-      box-shadow: 0 24px 64px rgba(15,23,42,.2);
-
-      p { margin: 0; font-size: .88rem; font-weight: 600; color: var(--grey-600); }
-    }
-  }
-
-  .loader-ring {
-    width: 44px; height: 44px;
-    border: 3px solid var(--blue-100);
-    border-top-color: var(--blue-600);
-    border-radius: 50%;
-    animation: spin .7s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  // ── Error toast ────────────────────────────────────────────
-  .toast-error {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 12px 16px 0;
-    padding: 12px 16px;
-    background: #FEF2F2;
-    border: 1px solid #FECACA;
-    border-radius: 10px;
-    color: var(--danger);
-    font-size: .83rem;
-    font-weight: 500;
-    cursor: pointer;
-    ion-icon:first-child { font-size: 1.1rem; flex-shrink: 0; }
-    span { flex: 1; }
-  }
-
-  // ── Hero ───────────────────────────────────────────────────
-  .hero {
-    background: linear-gradient(145deg, var(--blue-700) 0%, var(--blue-500) 100%);
-    border-radius: 0 0 28px 28px;
-    padding: 24px 20px 28px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin: 0 -16px;
-    margin-bottom: 4px;
-    box-shadow: 0 8px 32px rgba(37,99,235,.28);
-  }
-
-  .hero-icon-wrap {
-    width: 56px; height: 56px;
-    border-radius: 16px;
-    background: rgba(255,255,255,.18);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    ion-icon { font-size: 1.6rem; color: var(--white); }
-  }
-
-  .hero-text {
-    .hero-title {
-      margin: 0 0 4px;
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: var(--white);
-      letter-spacing: -.4px;
-    }
-    .hero-sub {
-      margin: 0;
-      font-size: .82rem;
-      color: rgba(255,255,255,.75);
-      line-height: 1.4;
-    }
-  }
-
-  // ── Base card ──────────────────────────────────────────────
-  .bcard {
-    background: var(--white);
-    border-radius: 16px;
-    box-shadow: var(--card-shadow);
-    overflow: hidden;
-  }
-
-  .bcard-head {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 14px 16px;
-    border-bottom: 1px solid var(--grey-100);
-  }
-
-  .bcard-icon {
-    width: 32px; height: 32px;
-    border-radius: 9px;
-    background: var(--blue-50);
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    ion-icon { font-size: .95rem; color: var(--blue-600); }
-  }
-
-  .bcard-title {
-    flex: 1;
-    font-size: .9rem;
-    font-weight: 700;
-    color: var(--grey-900);
-    letter-spacing: -.15px;
-  }
-
-  .count-chip {
-    background: var(--blue-50);
-    color: var(--blue-700);
-    font-size: .72rem;
-    font-weight: 700;
-    padding: 3px 10px;
-    border-radius: 999px;
-  }
-
-  // ── Empty state ────────────────────────────────────────────
-  .empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    padding: 32px 16px;
-    color: var(--grey-400);
-    ion-icon { font-size: 2.4rem; }
-    p { margin: 0; font-size: .88rem; }
-  }
-
-  // ── Item list ──────────────────────────────────────────────
-  .item-list { padding: 0 16px; }
-
-  .item-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 0;
-    border-bottom: 1px solid var(--grey-100);
-    &:last-of-type { border-bottom: none; }
-  }
-
-  .thumb-wrap {
-    position: relative; flex-shrink: 0;
-
-    .thumb {
-      width: 58px; height: 58px;
-      object-fit: cover;
-      border-radius: 10px;
-      background: var(--grey-100);
-    }
-
-    .qty-badge {
-      position: absolute;
-      top: -5px; right: -5px;
-      background: var(--blue-600);
-      color: var(--white);
-      font-size: .68rem;
-      font-weight: 700;
-      width: 19px; height: 19px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-    }
-  }
-
-  .item-meta {
-    flex: 1; min-width: 0;
-
-    .item-name {
-      margin: 0 0 2px;
-      font-size: .86rem;
-      font-weight: 600;
-      color: var(--grey-900);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .item-shop {
-      margin: 0 0 4px;
-      font-size: .74rem;
-      color: var(--grey-400);
-      display: flex; align-items: center; gap: 3px;
-      ion-icon { font-size: .78rem; }
-    }
-
-    .item-price {
-      margin: 0;
-      font-size: .8rem;
-      display: flex; gap: 6px; align-items: baseline;
-      .promo  { color: var(--blue-600); font-weight: 700; }
-      .struck { color: var(--grey-400); text-decoration: line-through; font-size: .73rem; }
-    }
-  }
-
-  .line-total {
-    font-size: .88rem;
-    font-weight: 700;
-    color: var(--grey-900);
-    white-space: nowrap;
-    margin: 0; flex-shrink: 0;
-  }
-
-  // ── Total strip ────────────────────────────────────────────
-  .total-strip {
-    border-top: 1px dashed var(--grey-200);
-    padding: 12px 0 14px;
-  }
-
-  .s-row { display: flex; justify-content: space-between; align-items: center; }
-
-  .s-total {
-    font-size: .95rem;
-    font-weight: 700;
-    color: var(--grey-900);
-  }
-
-  .s-total-val { color: var(--blue-700); font-size: 1rem; font-weight: 800; }
-
-  // ── Form ───────────────────────────────────────────────────
-  .checkout-form {
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .field-block { display: flex; flex-direction: column; gap: 8px; }
-
-  .field-label {
-    font-size: .78rem;
-    font-weight: 700;
-    color: var(--grey-600);
-    text-transform: uppercase;
-    letter-spacing: .5px;
-    .req { color: var(--blue-600); }
-  }
-
-  .err {
+  .hero-sub {
     margin: 0;
-    font-size: .76rem;
-    color: var(--danger);
-    font-weight: 500;
+    font-size: .8rem;
+    color: rgba(255,255,255,.75);
+    line-height: 1.4;
+  }
+}
+
+// ── Base card ──────────────────────────────────────────────
+.bcard {
+  background: var(--white);
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+}
+
+.bcard-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--grey-100);
+}
+
+.bcard-title {
+  flex: 1;
+  font-size: .9rem;
+  font-weight: 700;
+  color: var(--grey-900);
+  letter-spacing: -.15px;
+}
+
+.count-chip {
+  background: var(--blue-50);
+  color: var(--blue-700);
+  font-size: .72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+// ── Empty state ────────────────────────────────────────────
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 16px;
+  color: var(--grey-400);
+  ion-icon { font-size: 2.4rem; }
+  p { margin: 0; font-size: .88rem; }
+}
+
+// ── Item list ──────────────────────────────────────────────
+.item-list { padding: 0 16px; }
+
+.item-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--grey-100);
+  &:last-of-type { border-bottom: none; }
+}
+
+.thumb-wrap {
+  position: relative; flex-shrink: 0;
+
+  .thumb {
+    width: 58px; height: 58px;
+    object-fit: cover;
+    border-radius: 10px;
+    background: var(--grey-100);
   }
 
-  // Delivery pill buttons
-  .pill-group { display: flex; gap: 10px; }
+  .qty-badge {
+    position: absolute;
+    top: -5px; right: -5px;
+    background: var(--blue-600);
+    color: var(--white);
+    font-size: .68rem;
+    font-weight: 700;
+    width: 19px; height: 19px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+}
 
-  .pill-btn {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    padding: 13px 10px;
-    border-radius: 10px;
-    border: 2px solid var(--grey-200);
-    background: var(--grey-50);
+.item-meta {
+  flex: 1; min-width: 0;
+
+  .item-name {
+    margin: 0 0 2px;
     font-size: .86rem;
     font-weight: 600;
-    color: var(--grey-600);
-    cursor: pointer;
-    transition: border-color .15s, background .15s, color .15s;
-    ion-icon { font-size: 1rem; }
-
-    &.active {
-      border-color: var(--blue-600);
-      background: var(--blue-50);
-      color: var(--blue-700);
-    }
-  }
-
-  // Payment tiles
-  .pay-tiles { display: flex; flex-direction: column; gap: 8px; }
-
-  .pay-tile {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 16px;
-    border-radius: 10px;
-    border: 2px solid var(--grey-200);
-    background: var(--grey-50);
-    cursor: pointer;
-    transition: border-color .15s, background .15s;
-
-    .pay-name { font-size: .9rem; font-weight: 600; color: var(--grey-700, var(--grey-600)); }
-    .pay-check { font-size: 1.2rem; color: var(--blue-600); }
-
-    &.active {
-      border-color: var(--blue-600);
-      background: var(--blue-50);
-      .pay-name { color: var(--blue-700); }
-    }
-  }
-
-  // Inputs
-  .input-row {
-    display: flex;
-    align-items: center;
-    border: 2px solid var(--grey-200);
-    border-radius: 10px;
-    background: var(--grey-50);
-    overflow: hidden;
-    transition: border-color .15s;
-    &:focus-within { border-color: var(--blue-500); background: var(--white); }
-  }
-
-  .input-pre {
-    padding: 0 12px;
-    display: flex;
-    align-items: center;
-    ion-icon { font-size: 1rem; color: var(--grey-400); }
-  }
-
-  .f-input {
-    flex: 1;
-    padding: 14px 14px 14px 0;
-    border: none;
-    background: transparent;
-    font-size: .9rem;
     color: var(--grey-900);
-    font-family: inherit;
-    outline: none;
-    &::placeholder { color: var(--grey-400); }
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  // Toggle row
-  .toggle-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 4px 0;
-
-    .toggle-lbl { margin: 0 0 2px; font-size: .88rem; font-weight: 600; color: var(--grey-900); }
-    .toggle-sub { margin: 0; font-size: .75rem; color: var(--grey-400); }
-  }
-
-  // ── Account card ───────────────────────────────────────────
-  .account-card .bcard-head { border-bottom: none; padding-bottom: 0; }
-
-  .verified-icon { font-size: 1.2rem; color: var(--success); }
-
-  .account-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px 16px;
-  }
-
-  .avatar {
-    width: 44px; height: 44px;
-    border-radius: 50%;
-    background: var(--blue-600);
-    color: var(--white);
-    font-size: 1rem;
-    font-weight: 800;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .account-info {
-    flex: 1;
-    .a-name  { margin: 0 0 2px; font-size: .9rem; font-weight: 700; color: var(--grey-900); }
-    .a-email { margin: 0; font-size: .78rem; color: var(--grey-400); }
-  }
-
-  .skel-card { padding: 16px; }
-
-  // ── CTA ────────────────────────────────────────────────────
-  .cta-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    padding-top: 4px;
-  }
-
-  .place-btn {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0 20px;
-    min-height: 56px;
-    border-radius: 14px;
-    border: none;
-    background: var(--blue-600);
-    color: var(--white);
-    font-size: .97rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background .18s, transform .1s;
-    box-shadow: 0 4px 18px rgba(37,99,235,.35);
-
-    > ion-icon { font-size: 1.2rem; flex-shrink: 0; }
-
-    .btn-lbl { flex: 1; text-align: left; }
-
-    .btn-amt {
-      font-size: .82rem;
-      opacity: .8;
-      font-weight: 600;
-    }
-
-    &:active { transform: scale(.99); background: var(--blue-700); }
-
-    &:disabled {
-      background: var(--grey-200);
-      color: var(--grey-400);
-      cursor: not-allowed;
-      box-shadow: none;
-      transform: none;
-    }
-
-    ion-spinner { margin: auto; --color: var(--white); }
-  }
-
-  .secure-note {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    margin: 0;
+  .item-shop {
+    margin: 0 0 4px;
     font-size: .74rem;
     color: var(--grey-400);
-    ion-icon { font-size: .8rem; }
+    display: flex; align-items: center; gap: 3px;
+    ion-icon { font-size: .78rem; }
   }
+
+  .item-price {
+    margin: 0;
+    font-size: .8rem;
+    display: flex; gap: 6px; align-items: baseline;
+    .promo  { color: var(--blue-600); font-weight: 700; }
+    .struck { color: var(--grey-400); text-decoration: line-through; font-size: .73rem; }
+  }
+}
+
+.line-total {
+  font-size: .88rem;
+  font-weight: 700;
+  color: var(--grey-900);
+  white-space: nowrap;
+  margin: 0; flex-shrink: 0;
+}
+
+// ── Total strip ────────────────────────────────────────────
+.total-strip {
+  border-top: 1px dashed var(--grey-200);
+  padding: 12px 16px 14px;
+}
+
+.s-row { display: flex; justify-content: space-between; align-items: center; }
+
+.s-total {
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--grey-900);
+}
+
+.s-total-val { color: var(--blue-700); font-size: 1rem; font-weight: 800; }
+
+// ── Form ───────────────────────────────────────────────────
+.checkout-form {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.field-block { display: flex; flex-direction: column; gap: 8px; }
+
+.field-label {
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--grey-600);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  .req { color: var(--blue-600); }
+}
+
+.err {
+  margin: 0;
+  font-size: .76rem;
+  color: var(--danger);
+  font-weight: 500;
+}
+
+.pill-group { display: flex; gap: 10px; }
+
+.pill-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 13px 10px;
+  border-radius: 10px;
+  border: 2px solid var(--grey-200);
+  background: var(--grey-50);
+  font-size: .86rem;
+  font-weight: 600;
+  color: var(--grey-600);
+  cursor: pointer;
+  transition: border-color .15s, background .15s, color .15s;
+  ion-icon { font-size: 1rem; }
+
+  &.active {
+    border-color: var(--blue-600);
+    background: var(--blue-50);
+    color: var(--blue-700);
+  }
+}
+
+.pay-tiles { display: flex; flex-direction: column; gap: 8px; }
+
+.pay-tile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 2px solid var(--grey-200);
+  background: var(--grey-50);
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+
+  .pay-name { font-size: .9rem; font-weight: 600; color: var(--grey-600); }
+  .pay-check { font-size: 1.2rem; color: var(--blue-600); }
+
+  &.active {
+    border-color: var(--blue-600);
+    background: var(--blue-50);
+    .pay-name { color: var(--blue-700); }
+  }
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--grey-200);
+  border-radius: 10px;
+  background: var(--grey-50);
+  overflow: hidden;
+  transition: border-color .15s;
+  &:focus-within { border-color: var(--blue-500); background: var(--white); }
+}
+
+.input-pre {
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  ion-icon { font-size: 1rem; color: var(--grey-400); }
+}
+
+.f-input {
+  flex: 1;
+  padding: 14px 14px 14px 0;
+  border: none;
+  background: transparent;
+  font-size: .9rem;
+  color: var(--grey-900);
+  font-family: inherit;
+  outline: none;
+  &::placeholder { color: var(--grey-400); }
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 0;
+
+  .toggle-lbl { margin: 0 0 2px; font-size: .88rem; font-weight: 600; color: var(--grey-900); }
+  .toggle-sub { margin: 0; font-size: .75rem; color: var(--grey-400); }
+}
+
+// ── Account card ───────────────────────────────────────────
+.account-card .bcard-head { border-bottom: none; padding-bottom: 0; }
+
+.verified-icon { font-size: 1.2rem; color: var(--success); }
+
+.account-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px 16px;
+}
+
+.avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--blue-600);
+  color: var(--white);
+  font-size: 1rem;
+  font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.account-info {
+  flex: 1;
+  .a-name  { margin: 0 0 2px; font-size: .9rem; font-weight: 700; color: var(--grey-900); }
+  .a-email { margin: 0; font-size: .78rem; color: var(--grey-400); }
+}
+
+.skel-card { padding: 16px; }
+
+// ── CTA ────────────────────────────────────────────────────
+.cta-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.place-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px;
+  min-height: 56px;
+  border-radius: 14px;
+  border: none;
+  background: var(--blue-600);
+  color: var(--white);
+  font-size: .97rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .18s, transform .1s;
+  box-shadow: 0 4px 18px rgba(37,99,235,.35);
+
+  > ion-icon { font-size: 1.2rem; flex-shrink: 0; }
+
+  .btn-lbl { flex: 1; text-align: left; }
+
+  .btn-amt {
+    font-size: .82rem;
+    opacity: .8;
+    font-weight: 600;
+  }
+
+  &:active { transform: scale(.99); background: var(--blue-700); }
+
+  &:disabled {
+    background: var(--grey-200);
+    color: var(--grey-400);
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+
+  ion-spinner { margin: auto; --color: var(--white); }
+}
+
+.secure-note {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  font-size: .74rem;
+  color: var(--grey-400);
+  ion-icon { font-size: .8rem; }
+}

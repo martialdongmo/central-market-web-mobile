@@ -73,7 +73,6 @@ export const routes: Routes = [
     path: 'promotions',
     loadComponent: () =>
       import('./promotions/promotions.component').then(m => m.PromotionsComponent),
-    // → ajouter <app-footer> dans promotions.component.html
   },
   {
     path: 'details/:productId',

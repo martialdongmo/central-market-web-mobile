@@ -5,7 +5,7 @@
         <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title class="conf-title">Order Confirmation</ion-title>
+    <ion-title class="conf-title">Confirmation de commande</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -15,7 +15,7 @@
   @if (loading) {
   <div class="loader-wrap">
     <div class="loader-ring"></div>
-    <p class="loader-text">Loading your order…</p>
+    <p class="loader-text">Chargement de votre commande…</p>
   </div>
   }
 
@@ -27,11 +27,19 @@
   </div>
   }
 
-  <!-- ══════════ PHONE MESSAGE (push notification hint) ══════════ -->
+  <!-- ══════════ PHONE MESSAGE ══════════ -->
   @if (phoneMessageCode) {
   <div class="toast-info">
     <ion-icon name="phone-portrait-outline"></ion-icon>
     <span>{{ phoneMessageCode }}</span>
+  </div>
+  }
+
+  <!-- ══════════ COMMANDE INTROUVABLE / DONNÉES INVALIDES ══════════ -->
+  @if (!loading && !order && !errorMessage) {
+  <div class="toast-error">
+    <ion-icon name="alert-circle-outline"></ion-icon>
+    <span>Impossible de charger les détails de cette commande.</span>
   </div>
   }
 
@@ -47,69 +55,102 @@
           <ion-icon name="checkmark-outline"></ion-icon>
         </div>
       </div>
-      <h1 class="hero-title">Order Placed!</h1>
-      <p class="hero-sub">We've received your order and it's being processed.</p>
+      <h1 class="hero-title">Commande passée !</h1>
+      <p class="hero-sub">Nous avons bien reçu votre commande, elle est en cours de traitement.</p>
+      @if (order.reference) {
       <div class="ref-pill">
         <ion-icon name="receipt-outline"></ion-icon>
         <span>{{ order.reference }}</span>
       </div>
+      }
     </div>
 
     <!-- ────────────────────────────────────────
-           CARD 1 — ORDER SUMMARY
+           CARD 1 — RÉCAPITULATIF
       ──────────────────────────────────────── -->
     <div class="bcard">
       <div class="bcard-head">
         <div class="bcard-icon">
           <ion-icon name="bag-check-outline"></ion-icon>
         </div>
-        <span class="bcard-title">Order Summary</span>
+        <span class="bcard-title">Récapitulatif</span>
       </div>
 
       <div class="summary-rows">
+
+        <!-- Sous-total : 0 ou absent = donnée invalide, on le signale -->
         <div class="s-row">
-          <span class="s-label">Subtotal</span>
-          <span class="s-val">{{ order.subtotalAmount | customCurrency }}</span>
+          <span class="s-label">Sous-total</span>
+          @if (order.subtotalAmount != null && order.subtotalAmount > 0) {
+            <span class="s-val">{{ order.subtotalAmount | customCurrency }}</span>
+          } @else {
+            <span class="s-val s-val-error">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              Indisponible
+            </span>
+          }
         </div>
+
+        <!-- Frais de livraison : 0 est une valeur valide (livraison gratuite) -->
         <div class="s-row">
-          <span class="s-label">Delivery fee</span>
-          <span class="s-val">{{ order.deliveryFee | customCurrency }}</span>
+          <span class="s-label">Frais de livraison</span>
+          @if (order.deliveryFee != null) {
+            <span class="s-val">{{ order.deliveryFee | customCurrency }}</span>
+          } @else {
+            <span class="s-val s-val-error">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              Indisponible
+            </span>
+          }
         </div>
+
         <div class="s-row">
-          <span class="s-label">Delivery type</span>
+          <span class="s-label">Mode de livraison</span>
           <span class="s-val">
             <ion-icon [name]="order.deliveryType === 'DELIVERY' ? 'bicycle-outline' : 'bag-handle-outline'">
             </ion-icon>
             {{ order.deliveryType | titlecase }}
           </span>
         </div>
+
+        <!-- Total : jamais 0, sinon on affiche une erreur claire -->
         <div class="s-row s-total">
           <span>Total</span>
-          <span class="s-total-val">{{ order.totalAmount | customCurrency }}</span>
+          @if (order.totalAmount != null && order.totalAmount > 0) {
+            <span class="s-total-val">{{ order.totalAmount | customCurrency }}</span>
+          } @else {
+            <span class="s-total-val s-val-error">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              Montant indisponible
+            </span>
+          }
         </div>
       </div>
 
       <!-- Status badge -->
+      @if (order.status) {
       <div class="status-row">
-        <span class="s-label">Status</span>
+        <span class="s-label">Statut</span>
         <span class="status-badge" [class]="order.status">
-          {{ order.status  }}
+          {{ order.status }}
         </span>
       </div>
+      }
     </div>
 
 
     <!-- ────────────────────────────────────────
-           CARD 2 — PAYMENT METHOD
+           CARD 2 — MÉTHODE DE PAIEMENT
       ──────────────────────────────────────── -->
     @let payment = getPaymentMeta(order.paymentMethod);
 
+    @if (payment) {
     <div class="bcard pay-card">
       <div class="bcard-head">
         <div class="bcard-icon">
           <ion-icon name="wallet-outline"></ion-icon>
         </div>
-        <span class="bcard-title">Payment Method</span>
+        <span class="bcard-title">Méthode de paiement</span>
       </div>
 
       <div class="pay-method-row">
@@ -118,21 +159,27 @@
           <p class="pay-name">{{ payment.label }}</p>
           <p class="pay-sub">
             @if (order.paymentMethod !== 'CASH') {
-            Mobile payment — check your phone
+            Paiement mobile — vérifiez votre téléphone
             } @else {
-            Pay when your order arrives
+            Payez à la réception de votre commande
             }
           </p>
         </div>
         <ion-badge [color]="payment.color" class="pay-badge">
-          {{ order.paymentMethod === 'CASH' ? 'COD' : 'Mobile' }}
+          {{ order.paymentMethod === 'CASH' ? 'À la livraison' : 'Mobile' }}
         </ion-badge>
       </div>
     </div>
+    } @else {
+    <div class="toast-error">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+      <span>Méthode de paiement inconnue pour cette commande.</span>
+    </div>
+    }
 
 
     <!-- ────────────────────────────────────────
-           CARD 3 — DELIVERY ADDRESS
+           CARD 3 — ADRESSE DE LIVRAISON
       ──────────────────────────────────────── -->
     @if (customerAddress) {
     <div class="bcard">
@@ -140,31 +187,39 @@
         <div class="bcard-icon">
           <ion-icon name="location-outline"></ion-icon>
         </div>
-        <span class="bcard-title">Delivery Address</span>
+        <span class="bcard-title">Adresse de livraison</span>
       </div>
 
       <div class="address-block">
+        @if (customerAddress.fullName) {
         <div class="address-row">
           <ion-icon name="person-outline"></ion-icon>
           <span>{{ customerAddress.fullName }}</span>
         </div>
+        }
+        @if (customerAddress.phoneNumber) {
         <div class="address-row">
           <ion-icon name="call-outline"></ion-icon>
           <span>{{ customerAddress.phoneNumber }}</span>
         </div>
+        }
+        @if (customerAddress.addressLine) {
         <div class="address-row">
           <ion-icon name="home-outline"></ion-icon>
           <span>{{ customerAddress.addressLine }}</span>
         </div>
+        }
+        @if (customerAddress.city) {
         <div class="address-row">
           <ion-icon name="business-outline"></ion-icon>
           <span>{{ customerAddress.city }}</span>
         </div>
+        }
       </div>
     </div>
     }
 
-    <!-- Address loading skeleton -->
+    <!-- Skeleton pendant le chargement de l'adresse -->
     @if (!customerAddress && !errorMessage) {
     <div class="bcard skel-card">
       <ion-skeleton-text animated style="width:40%;height:13px;border-radius:6px;"></ion-skeleton-text>
@@ -175,80 +230,62 @@
 
 
     <!-- ────────────────────────────────────────
-           CTA — CONFIRM PAYMENT
-           Shown for mobile-money; hidden for cash
+           CTA — CONFIRMER LE PAIEMENT
+           Affiché uniquement pour mobile money,
+           masqué pour espèces
       ──────────────────────────────────────── -->
-    @if (order.paymentMethod !== 'CASH') {
+    @if (payment && order.paymentMethod !== 'CASH') {
     <div class="pay-cta-card">
 
       <div class="pay-cta-header">
         <img [src]="payment.logo" [alt]="payment.label" class="cta-logo" onerror="this.style.display='none'" />
         <div>
-          <p class="cta-title">Complete Payment</p>
+          <p class="cta-title">Finaliser le paiement</p>
           <p class="cta-sub">
-            {{ order.totalAmount | customCurrency }}
-            via {{ payment.label }}
+            @if (order.totalAmount > 0) {
+              {{ order.totalAmount | customCurrency }} via {{ payment.label }}
+            } @else {
+              Montant indisponible
+            }
           </p>
         </div>
       </div>
 
-      <button class="pay-btn" (click)="onConfirmPayment()" [disabled]="isPaying">
+      <button class="pay-btn" (click)="onConfirmPayment()" [disabled]="isPaying || !(order.totalAmount > 0)">
         @if (!isPaying) {
         <ion-icon name="shield-checkmark-outline"></ion-icon>
-        <span>Confirm &amp; Pay</span>
-        <span class="pay-amt">
-          {{ order.totalAmount | customCurrency }}
-        </span>
+        <span>Confirmer &amp; payer</span>
+        @if (order.totalAmount > 0) {
+          <span class="pay-amt">{{ order.totalAmount | customCurrency }}</span>
+        }
         } @else {
         <ion-spinner name="crescent"></ion-spinner>
-        <span>Processing…</span>
+        <span>Traitement…</span>
         }
       </button>
 
       <p class="cta-hint">
         <ion-icon name="lock-closed-outline"></ion-icon>
-        A confirmation request will be sent to your mobile number
+        Une demande de confirmation sera envoyée sur votre numéro
       </p>
     </div>
     }
 
-    <!-- Cash on delivery note -->
+    <!-- Note paiement à la livraison -->
     @if (order.paymentMethod === 'CASH') {
     <div class="cash-note">
       <ion-icon name="cash-outline" class="cash-icon"></ion-icon>
       <div>
-        <p class="cash-title">Pay on Delivery</p>
+        <p class="cash-title">Paiement à la livraison</p>
         <p class="cash-sub">
-          Please have
-          <strong>{{ order.totalAmount | customCurrency }}</strong>
-          ready when your order arrives.
+          @if (order.totalAmount > 0) {
+            Merci de préparer <strong>{{ order.totalAmount | customCurrency }}</strong> à la réception de votre commande.
+          } @else {
+            <span class="s-val-error">Montant indisponible — contactez le support.</span>
+          }
         </p>
       </div>
     </div>
-
-    <div class="pay-cta-header">
-        <img [src]="payment.logo" [alt]="payment.label" class="cta-logo" onerror="this.style.display='none'" />
-        <div>
-          <p class="cta-title">Complete Payment</p>
-          <p class="cta-sub">
-            {{ order.totalAmount | customCurrency }}
-            via {{ payment.label }}
-          </p>
-        </div>
-      </div>
-
-      <button class="pay-btn" (click)="onConfirmPayment()" [disabled]="isPaying">
-        @if (!isPaying) {
-        <ion-icon name="shield-checkmark-outline"></ion-icon>
-        <span>Confirm</span>
-        <span class="pay-amt">
-          {{ order.totalAmount | customCurrency }}
-        </span>
-        } @else {
-        <ion-spinner name="crescent"></ion-spinner>
-        <span>Processing…</span>
-        }
-      </button>
     }
 
 
@@ -258,7 +295,7 @@
     <div class="footer-actions">
       <ion-button expand="block" fill="outline" color="primary" class="action-btn" routerLink="/catalog">
         <ion-icon name="storefront-outline" slot="start"></ion-icon>
-        Continue Shopping
+        Continuer mes achats
       </ion-button>
     </div>
 
