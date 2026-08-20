@@ -35,7 +35,7 @@
   </div>
   }
 
-  <!-- ══════════ COMMANDE INTROUVABLE / DONNÉES INVALIDES ══════════ -->
+  <!-- ══════════ COMMANDE INTROUVABLE ══════════ -->
   @if (!loading && !order && !errorMessage) {
   <div class="toast-error">
     <ion-icon name="alert-circle-outline"></ion-icon>
@@ -78,7 +78,7 @@
 
       <div class="summary-rows">
 
-        <!-- Sous-total : 0 ou absent = donnée invalide, on le signale -->
+        <!-- Sous-total : 0 ou absent = donnée invalide -->
         <div class="s-row">
           <span class="s-label">Sous-total</span>
           @if (order.subtotalAmount != null && order.subtotalAmount > 0) {
@@ -91,7 +91,7 @@
           }
         </div>
 
-        <!-- Frais de livraison : 0 est une valeur valide (livraison gratuite) -->
+        <!-- Frais de livraison : 0 est valide (livraison gratuite) -->
         <div class="s-row">
           <span class="s-label">Frais de livraison</span>
           @if (order.deliveryFee != null) {
@@ -113,7 +113,7 @@
           </span>
         </div>
 
-        <!-- Total : jamais 0, sinon on affiche une erreur claire -->
+        <!-- Total : jamais 0 silencieux -->
         <div class="s-row s-total">
           <span>Total</span>
           @if (order.totalAmount != null && order.totalAmount > 0) {
@@ -230,62 +230,84 @@
 
 
     <!-- ────────────────────────────────────────
-           CTA — CONFIRMER LE PAIEMENT
-           Affiché uniquement pour mobile money,
-           masqué pour espèces
+           CTA — CONFIRMER (mobile money OU cash)
+           Le bouton appelle onConfirmPayment() dans
+           les deux cas — seuls les textes changent.
       ──────────────────────────────────────── -->
-    @if (payment && order.paymentMethod !== 'CASH') {
-    <div class="pay-cta-card">
+    @if (payment) {
 
-      <div class="pay-cta-header">
-        <img [src]="payment.logo" [alt]="payment.label" class="cta-logo" onerror="this.style.display='none'" />
+      @if (order.paymentMethod === 'CASH') {
+      <div class="cash-note">
+        <ion-icon name="cash-outline" class="cash-icon"></ion-icon>
         <div>
-          <p class="cta-title">Finaliser le paiement</p>
-          <p class="cta-sub">
+          <p class="cash-title">Paiement à la livraison</p>
+          <p class="cash-sub">
             @if (order.totalAmount > 0) {
-              {{ order.totalAmount | customCurrency }} via {{ payment.label }}
+              Merci de préparer <strong>{{ order.totalAmount | customCurrency }}</strong> à la réception de votre commande.
             } @else {
-              Montant indisponible
+              <span class="s-val-error">Montant indisponible — contactez le support.</span>
             }
           </p>
         </div>
       </div>
+      }
 
-      <button class="pay-btn" (click)="onConfirmPayment()" [disabled]="isPaying || !(order.totalAmount > 0)">
-        @if (!isPaying) {
-        <ion-icon name="shield-checkmark-outline"></ion-icon>
-        <span>Confirmer &amp; payer</span>
-        @if (order.totalAmount > 0) {
-          <span class="pay-amt">{{ order.totalAmount | customCurrency }}</span>
-        }
-        } @else {
-        <ion-spinner name="crescent"></ion-spinner>
-        <span>Traitement…</span>
-        }
-      </button>
+      <div class="pay-cta-card">
 
-      <p class="cta-hint">
-        <ion-icon name="lock-closed-outline"></ion-icon>
-        Une demande de confirmation sera envoyée sur votre numéro
-      </p>
-    </div>
-    }
+        <div class="pay-cta-header">
+          <img [src]="payment.logo" [alt]="payment.label" class="cta-logo" onerror="this.style.display='none'" />
+          <div>
+            <p class="cta-title">
+              @if (order.paymentMethod === 'CASH') {
+                Confirmer la commande
+              } @else {
+                Finaliser le paiement
+              }
+            </p>
+            <p class="cta-sub">
+              @if (order.totalAmount > 0) {
+                {{ order.totalAmount | customCurrency }} via {{ payment.label }}
+              } @else {
+                Montant indisponible
+              }
+            </p>
+          </div>
+        </div>
 
-    <!-- Note paiement à la livraison -->
-    @if (order.paymentMethod === 'CASH') {
-    <div class="cash-note">
-      <ion-icon name="cash-outline" class="cash-icon"></ion-icon>
-      <div>
-        <p class="cash-title">Paiement à la livraison</p>
-        <p class="cash-sub">
+        <button class="pay-btn" (click)="onConfirmPayment()" [disabled]="isPaying || !(order.totalAmount > 0)">
+          @if (!isPaying) {
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          <span>
+            @if (order.paymentMethod === 'CASH') {
+              Confirmer
+            } @else {
+              Confirmer &amp; payer
+            }
+          </span>
           @if (order.totalAmount > 0) {
-            Merci de préparer <strong>{{ order.totalAmount | customCurrency }}</strong> à la réception de votre commande.
+            <span class="pay-amt">{{ order.totalAmount | customCurrency }}</span>
+          }
           } @else {
-            <span class="s-val-error">Montant indisponible — contactez le support.</span>
+          <ion-spinner name="crescent"></ion-spinner>
+          <span>Traitement…</span>
+          }
+        </button>
+
+        <p class="cta-hint">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+          @if (order.paymentMethod === 'CASH') {
+            Confirmez pour valider votre commande et accéder à votre facture
+          } @else {
+            Une demande de confirmation sera envoyée sur votre numéro
           }
         </p>
       </div>
-    </div>
+
+    } @else {
+      <div class="toast-error">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        <span>Méthode de paiement inconnue pour cette commande.</span>
+      </div>
     }
 
 
