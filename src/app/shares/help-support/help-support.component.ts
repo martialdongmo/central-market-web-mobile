@@ -116,10 +116,12 @@ export class HelpSupportComponent {
   }
 
   private extractVideoId(url: string): string | null {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11) ? match[2] : null;
-  }
+  // Gère : youtube.com/watch?v=ID, youtu.be/ID, youtube.com/embed/ID,
+  // youtube.com/shorts/ID, et les URLs avec paramètres supplémentaires
+  const regExp = /(?:youtube\.com\/(?:shorts\/|embed\/|v\/|watch\?v=|watch\?.*&v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  const match = url.match(regExp);
+  return match ? match[1] : null;
+}
 
   getFaqCategories(): string[] {
     return Array.from(new Set(this.faqList.map(item => item.category)));
@@ -138,7 +140,7 @@ export class HelpSupportComponent {
 
   // Point de contact direct et léger (remplace un formulaire lourd)
   contactSupport() {
-    const email = 'support@grouping.com';
+    const email = 'groupingcameroon@gmail.com';
     const subject = 'GroupinG Support Request';
     window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}`, '_system');
   }
