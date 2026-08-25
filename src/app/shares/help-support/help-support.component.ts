@@ -52,7 +52,7 @@ export class HelpSupportComponent {
     {
       title: 'How to Create a shop',
       description: 'Follow this quick walkthrough to register your shop and secure your profile on GroupinG.',
-      youtubeUrl: 'https://www.youtube.com/shorts/acc_create',
+      youtubeUrl: 'https://www.youtube.com/watch?v=ApcG7VhlFho',
       duration: '1:45',
       gradientClass: 'from-blue-600',
       isPlaying: false
@@ -61,7 +61,7 @@ export class HelpSupportComponent {
      {
       title: 'How to Create a Product',
       description: 'Follow this quick walkthrough to create and list your products on GroupinG.',
-      youtubeUrl: 'https://www.youtube.com/shorts/acc_create',
+      youtubeUrl: 'https://www.youtube.com/watch?v=_WdO0hyzqEs',
       duration: '1:45',
       gradientClass: 'from-blue-600',
       isPlaying: false
