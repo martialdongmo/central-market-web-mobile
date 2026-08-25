@@ -8,7 +8,6 @@ import { App, URLOpenListenerEvent } from '@capacitor/app';
 import { Stripe } from '@capacitor-community/stripe';
 import { loadStripe } from '@stripe/stripe-js';
 import { environment } from 'src/environments/environment.development';
-import OneSignal from 'onesignal-cordova-plugin';
 import { OneSignalService } from './services/untils/one-signal.service';
 
 @Component({
@@ -27,7 +26,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     await this.initStripe();
-    this.initDeepLinkListener(); 
+    this.initDeepLinkListener();
     this.oneSignalService.init();
 
     const sub = this.authService.loadCurrentUser().subscribe({

@@ -38,14 +38,14 @@ export class AuthService {
   private tokenService = inject(TokenService);
   private router = inject(Router);
   private zone = inject(NgZone);
+  private oneSignalService = inject(OneSignalService);
 
   private readonly PKCE_KEY = 'pkce_verifier';
 
   // ── Auth state stream ─────────────────────────────────────────────────────
   private readonly _currentUser$ = new BehaviorSubject<UserResponse | null>(null);
   readonly currentUser$ = this._currentUser$.asObservable();
-  private oneSignalService = inject(OneSignalService);
-  
+
 
   get currentUser(): UserResponse | null {
     return this._currentUser$.getValue();
@@ -190,7 +190,10 @@ export class AuthService {
   // ── User profile ──────────────────────────────────────────────────────────
   me(): Observable<UserResponse> {
     return this.http.get<UserResponse>(`${this.AUTH_URL}/me`).pipe(
-      tap(user => this._currentUser$.next(user)),
+      tap(user => {
+        this._currentUser$.next(user);
+        this.oneSignalService.login(user.userUuid);
+      }),
     );
   }
 
