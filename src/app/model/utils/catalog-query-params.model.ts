@@ -1,4 +1,3 @@
-// catalog-query-params.model.ts
 export interface CatalogQueryParams {
   keyword?:       string;
   categoryId?:    string;
@@ -10,9 +9,9 @@ export interface CatalogQueryParams {
 
   lat?:           number;
   lng?:           number;
-  radiusKm?:      number;     // used by /all, /nearby, /category — NOT /promotions or /search
+  radiusKm?:      number;
 
   page?:          number;
   size?:          number;
-  sort?:          string;     // e.g. "price,asc" | "popularityScore,desc"
+  sort?:          string;
 }

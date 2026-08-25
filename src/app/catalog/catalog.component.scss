@@ -266,3 +266,20 @@ ion-content { flex: 1; }
   cursor: pointer; box-shadow: 0 4px 16px rgba(30,58,138,.3);
   &:active { transform: scale(.97); }
 }
+
+// global.scss
+.cart-toast {
+  --border-radius: 12px;
+  --box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+
+  ::part(message) {
+    font-weight: 600;
+    font-size: 13px;
+  }
+}
+
+// Optionnel : couleur exacte navy au lieu du "dark" générique d'Ionic
+.cart-toast.toast-color-dark {
+  --background: var(--navy);
+  --color: #ffffff;
+}

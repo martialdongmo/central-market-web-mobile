@@ -1,3 +1,4 @@
+import { ProductCategory } from "../enums/product-category";
 import { CatalogProductVariantResponse } from "./catalog-product-variant-response";
 
 export interface CatalogProductResponse {
@@ -13,7 +14,7 @@ export interface CatalogProductResponse {
   tags: string[];
   weight: number | null;
   categoryId: string;
-  categoryName: string; // or a dedicated ProductCategory type
+  categoryName: ProductCategory; // or a dedicated ProductCategory type
 
   /* =========================================================
      PRICING

@@ -49,12 +49,16 @@
     </button>
   </div>
 
+  <!-- accès rapide catégorie (chips) -->
   <div class="cats-row">
+    <div class="cat-chip" [class.active]="activeCategory === 'all'" (click)="selectCategory('all')">
+      <span>Tout</span>
+    </div>
     @for (cat of categories; track cat.id) {
       <div class="cat-chip"
         [class.active]="activeCategory === cat.id"
         (click)="selectCategory(cat.id)">
-        <span>{{ cat.name }}</span>
+        <span>{{ categoryLabel(cat) }}</span>
       </div>
     }
   </div>
@@ -99,7 +103,6 @@
     </div>
   }
 
-  <!-- bottom breathing room so last card clears the infinite spinner -->
   <div style="height: 16px"></div>
 
   <!-- ══ INFINITE SCROLL — must be the last child of ion-content ══ -->
@@ -111,7 +114,7 @@
 
 </ion-content>
 
-<!-- ══ SEARCH OVERLAY — full screen, own scroll ══ -->
+<!-- ══ SEARCH OVERLAY ══ -->
 <div class="search-overlay" [class.open]="searchOverlayOpen">
   <div class="search-overlay-hd">
     <button class="search-overlay-back" (click)="searchOverlayOpen = false">
@@ -120,7 +123,6 @@
     <input #overlayInput class="search-overlay-input" type="text"
       placeholder="Search products..." (input)="onSearch($event)" />
   </div>
-  <!-- overlay-scroll uses -webkit-overflow-scrolling:touch in your CSS -->
   <div class="overlay-scroll">
     <div class="section-hd">
       <h3><ion-icon name="list-outline"></ion-icon> Results</h3>
@@ -172,18 +174,35 @@
             <ion-toggle [(ngModel)]="queryParams.inStockOnly" mode="ios"></ion-toggle>
           </div>
 
+          <!-- ══ Filtre catégorie ══ -->
+          <div class="filter-item">
+            <div class="filter-item-left">
+              <div class="filter-icon-box"><ion-icon name="pricetags-outline"></ion-icon></div>
+              <div class="filter-item-info">
+                <p>Catégorie</p>
+                <small>Filtrer par type de produit</small>
+              </div>
+            </div>
+            <ion-select [(ngModel)]="filterCategoryId" interface="popover" placeholder="Toutes">
+              <ion-select-option value="all">Toutes</ion-select-option>
+              @for (cat of categories; track cat.id) {
+                <ion-select-option [value]="cat.id">{{ categoryLabel(cat) }}</ion-select-option>
+              }
+            </ion-select>
+          </div>
+
           <div class="filter-item column">
             <div class="filter-item-left">
               <div class="filter-icon-box"><ion-icon name="wallet-outline"></ion-icon></div>
               <div class="filter-item-info">
                 <p>Maximum Budget</p>
                 <div class="range-val">
-                  {{ queryParams.maxPrice | number:'1.0-0' }} <small>FCFA</small>
+                  {{ filterMaxPrice | customCurrency }}
                 </div>
               </div>
             </div>
-            <ion-range [min]="0" [max]="10000" [step]="500"
-              [(ngModel)]="queryParams.maxPrice" style="width:100%;padding:0">
+            <ion-range [min]="0" [max]="sliderMaxPrice" [step]="500"
+              [(ngModel)]="filterMaxPrice" style="width:100%;padding:0">
               <ion-icon slot="start" name="remove-circle-outline"></ion-icon>
               <ion-icon slot="end"   name="add-circle-outline"></ion-icon>
             </ion-range>
