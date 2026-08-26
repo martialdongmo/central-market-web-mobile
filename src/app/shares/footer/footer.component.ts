@@ -11,11 +11,12 @@ import {
   menuOutline, closeOutline, bagHandleOutline, personOutline,
   bicycleOutline, chatbubbleEllipsesOutline, helpCircleOutline,
   chevronForwardOutline, logOutOutline, openOutline,
-  checkmarkCircleOutline, personCircleOutline,
+  checkmarkCircleOutline, personCircleOutline, globeOutline
 } from 'ionicons/icons';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { UserResponse } from 'src/app/model/response/usersResponse';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 
 const CAN_VALIDATE_ROLES = ['DELIVERY', 'ADMIN', 'MANAGER'] as const;
 const CREATE_SHOP_URL    = 'https://kapexpert.cloud:3001/create-shop';
@@ -35,6 +36,7 @@ const ROLE_DISPLAY: Record<string, string> = {
   imports: [
     CommonModule, RouterLink, RouterLinkActive,
     IonTabBar, IonTabButton, IonIcon, IonLabel,
+    TranslatePipe,
   ],
 })
 export class FooterComponent implements OnInit, OnDestroy {
@@ -42,12 +44,14 @@ export class FooterComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly navCtrl     = inject(NavController);
   private readonly alertCtrl   = inject(AlertController);
+  private readonly translate   = inject(TranslateService);
 
   menuOpen          = false;
   isLoggedIn        = false;
   userName          = '';
   currentRole       = '';
   canValidateOrders = false;
+  currentLang: 'fr' | 'en' = 'fr';
 
   private subs: Subscription[] = [];
 
@@ -57,19 +61,23 @@ export class FooterComponent implements OnInit, OnDestroy {
       menuOutline, closeOutline, bagHandleOutline, personOutline,
       bicycleOutline, chatbubbleEllipsesOutline, helpCircleOutline,
       chevronForwardOutline, logOutOutline, openOutline,
-      checkmarkCircleOutline, personCircleOutline,
+      checkmarkCircleOutline, personCircleOutline, globeOutline
     });
+
+    // Initialize language from storage or default
+    const savedLang = localStorage.getItem('preferred_language') as 'fr' | 'en';
+    if (savedLang) {
+      this.currentLang = savedLang;
+      this.translate.use(savedLang);
+    } else {
+      const deviceLang = navigator.language.startsWith('fr') ? 'fr' : 'en';
+      this.currentLang = deviceLang;
+      this.translate.use(deviceLang);
+      localStorage.setItem('preferred_language', deviceLang);
+    }
   }
 
   ngOnInit(): void {
-    /*
-     * On s'abonne au stream — pas de HTTP ici.
-     * Le BehaviorSubject émet immédiatement sa valeur courante (null au départ),
-     * puis réémet dès que AppComponent.loadCurrentUser() reçoit la réponse /me.
-     *
-     * La subscription RESTE ACTIVE toute la durée de vie du composant,
-     * donc quand next(user) est appelé depuis AuthService, la vue se met à jour.
-     */
     const sub = this.authService.currentUser$.subscribe((user: UserResponse | null) => {
       if (user) {
         this.isLoggedIn        = true;
@@ -90,6 +98,14 @@ export class FooterComponent implements OnInit, OnDestroy {
     this.subs.forEach(s => s.unsubscribe());
   }
 
+  // ── Language Switching ──────────────────────────────────────────────
+  switchLanguage(lang: 'fr' | 'en'): void {
+    this.currentLang = lang;
+    this.translate.use(lang);
+    localStorage.setItem('preferred_language', lang);
+    this.closeMenu();
+  }
+
   // ── Menu ──────────────────────────────────────────────────────────────────
   toggleMenu(): void { this.menuOpen = !this.menuOpen; }
   closeMenu():  void { this.menuOpen = false; }
@@ -97,7 +113,7 @@ export class FooterComponent implements OnInit, OnDestroy {
   @HostListener('document:keydown.escape')
   onEscape(): void { this.closeMenu(); }
 
-  // ── Navigation ────────────────────────────────────────────────────────────
+  // ── Navigation ────────────────────────────────────────────────────────
   goToLogin(): void {
     this.closeMenu();
     this.navCtrl.navigateRoot('/secure-app');
@@ -126,7 +142,7 @@ export class FooterComponent implements OnInit, OnDestroy {
     window.open(CREATE_SHOP_URL, '_blank', 'noopener,noreferrer');
   }
 
-  // ── Role helpers ──────────────────────────────────────────────────────────
+  // ── Role helpers ──────────────────────────────────────────────────────
   private hasAnyRole(userRoles: string | string[], allowed: readonly string[]): boolean {
     const roles = Array.isArray(userRoles) ? userRoles : [userRoles];
     return roles.some(r => allowed.includes(r.trim().toUpperCase() as never));

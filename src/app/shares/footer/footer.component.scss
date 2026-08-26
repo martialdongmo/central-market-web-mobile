@@ -35,7 +35,8 @@
   display: flex; flex-direction: column;
   max-height: 86vh; overflow: hidden;
   animation: fm-up .28s cubic-bezier(.32,.72,0,1);
-  padding-bottom: calc(env(safe-area-inset-bottom,0px) + 70px);
+  /* Use CSS variable from global.scss (falls back to env() and --ion-safe-area-*) */
+  padding-bottom: calc(var(--safe-area-bottom) + 70px);
 }
 @keyframes fm-up { from{transform:translateY(100%)} to{transform:translateY(0)} }
 
@@ -196,6 +197,42 @@
   cursor:pointer; flex-shrink:0;
   ion-icon { font-size:18px; }
   &:active { background:#FFF5F5; }
+}
+
+/* ── Language Selector ── */
+.fm-language-section {
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.fm-lang-toggle {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.fm-lang-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--blue-pale);
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &.active,
+  &:hover {
+    background: var(--blue);
+    color: var(--white);
+    border-color: var(--blue);
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
 }
 
 /* ── Tab bar ── */

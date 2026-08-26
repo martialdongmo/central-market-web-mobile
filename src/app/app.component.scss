@@ -53,7 +53,8 @@
   max-height: 84vh;
   overflow: hidden;
   animation: slideUp 0.28s cubic-bezier(0.32, 0.72, 0, 1);
-  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 70px);
+  /* Use CSS variable from global.scss (falls back to env() and --ion-safe-area-*) */
+  padding-bottom: calc(var(--safe-area-bottom) + 70px);
 }
 
 @keyframes slideUp {

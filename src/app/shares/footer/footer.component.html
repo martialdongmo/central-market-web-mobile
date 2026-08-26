@@ -29,51 +29,51 @@
         </div>
         <a class="fm-profile-btn" routerLink="/profile" (click)="closeMenu()">
           <ion-icon name="person-outline"></ion-icon>
-          <span>Profil</span>
+          <span>{{ 'menu.account' | translate }}</span>
         </a>
       </div>
     } @else {
       <div class="fm-guest-row">
         <ion-icon name="person-circle-outline" class="fm-guest-icon"></ion-icon>
         <div class="fm-guest-text">
-          <span class="fm-guest-title">Bienvenue</span>
-          <span class="fm-guest-sub">Connectez-vous à votre compte</span>
+          <span class="fm-guest-title">{{ 'menu.welcome' | translate }}</span>
+          <span class="fm-guest-sub">{{ 'menu.login_prompt' | translate }}</span>
         </div>
-        <button class="fm-sign-in-btn" (click)="goToLogin()">Connexion</button>
+        <button class="fm-sign-in-btn" (click)="goToLogin()">{{ 'menu.login' | translate }}</button>
       </div>
     }
 
     <!-- ── GRILLE ACCÈS RAPIDE ── -->
     <div class="fm-quick-section">
-      <span class="fm-section-label">ACCÈS RAPIDE</span>
+      <span class="fm-section-label">{{ 'menu.quick_access' | translate }}</span>
       <div class="fm-grid">
 
         <a class="fm-grid-item" routerLink="/orders" (click)="closeMenu()">
           <div class="fm-grid-icon fm-icon--blue">
             <ion-icon name="bag-handle-outline"></ion-icon>
           </div>
-          <span class="fm-grid-label">Commandes</span>
+          <span class="fm-grid-label">{{ 'menu.orders' | translate }}</span>
         </a>
 
         <a class="fm-grid-item" routerLink="/promotions" (click)="closeMenu()">
           <div class="fm-grid-icon fm-icon--orange">
             <ion-icon name="flame-outline"></ion-icon>
           </div>
-          <span class="fm-grid-label">Promotions</span>
+          <span class="fm-grid-label">{{ 'menu.shop' | translate }}</span>
         </a>
 
         <a class="fm-grid-item" routerLink="/nearby" (click)="closeMenu()">
           <div class="fm-grid-icon fm-icon--blue">
             <ion-icon name="location-outline"></ion-icon>
           </div>
-          <span class="fm-grid-label">Proximité</span>
+          <span class="fm-grid-label">{{ 'menu.nearby' | translate }}</span>
         </a>
 
         <a class="fm-grid-item" routerLink="/cart" (click)="closeMenu()">
           <div class="fm-grid-icon fm-icon--blue">
             <ion-icon name="cart-outline"></ion-icon>
           </div>
-          <span class="fm-grid-label">Panier</span>
+          <span class="fm-grid-label">{{ 'menu.cart' | translate }}</span>
         </a>
 
         @if (canValidateOrders) {
@@ -81,7 +81,7 @@
             <div class="fm-grid-icon fm-icon--green">
               <ion-icon name="checkmark-circle-outline"></ion-icon>
             </div>
-            <span class="fm-grid-label">Valider livraison</span>
+            <span class="fm-grid-label">{{ 'scanner.title' | translate }}</span>
           </a>
         }
 
@@ -98,8 +98,8 @@
           <ion-icon name="storefront-outline"></ion-icon>
         </div>
         <div class="fm-link-body">
-          <span class="fm-link-text">Créer une boutique</span>
-          <span class="fm-link-sub">Lancez votre activité</span>
+          <span class="fm-link-text">{{ 'menu.shop' | translate }}</span>
+          <span class="fm-link-sub">{{ 'menu.shop_desc' | translate }}</span>
         </div>
         <div class="fm-ext-badge">
           <ion-icon name="open-outline"></ion-icon>
@@ -111,21 +111,21 @@
           <ion-icon name="bicycle-outline"></ion-icon>
         </div>
         <div class="fm-link-body">
-          <span class="fm-link-text">Devenir livreur</span>
-          <span class="fm-link-sub">Gagnez en livrant</span>
+          <span class="fm-link-text">{{ 'menu.delivery' | translate }}</span>
+          <span class="fm-link-sub">{{ 'menu.delivery_desc' | translate }}</span>
         </div>
         <ion-icon name="chevron-forward-outline" class="fm-link-arrow"></ion-icon>
       </a>
 
-      <span class="fm-section-label fm-section-label--nav">AIDE</span>
+      <span class="fm-section-label fm-section-label--nav">{{ 'menu.help' | translate }}</span>
 
       <a class="fm-link" routerLink="/help-support" (click)="closeMenu()">
         <div class="fm-link-icon">
           <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
         </div>
         <div class="fm-link-body">
-          <span class="fm-link-text">Support</span>
-          <span class="fm-link-sub">Discutez avec notre équipe</span>
+          <span class="fm-link-text">{{ 'menu.support' | translate }}</span>
+          <span class="fm-link-sub">{{ 'menu.support_desc' | translate }}</span>
         </div>
         <ion-icon name="chevron-forward-outline" class="fm-link-arrow"></ion-icon>
       </a>
@@ -135,50 +135,73 @@
           <ion-icon name="help-circle-outline"></ion-icon>
         </div>
         <div class="fm-link-body">
-          <span class="fm-link-text">Aide &amp; FAQ</span>
-          <span class="fm-link-sub">Trouvez des réponses</span>
+          <span class="fm-link-text">{{ 'menu.help' | translate }}</span>
+          <span class="fm-link-sub">{{ 'menu.help_desc' | translate }}</span>
         </div>
         <ion-icon name="chevron-forward-outline" class="fm-link-arrow"></ion-icon>
       </a>
 
     </nav>
 
+    <!-- ── LANGUAGE SELECTOR ── -->
+    <div class="fm-language-section">
+      <div class="fm-link">
+        <div class="fm-link-icon">
+          <ion-icon name="globe-outline"></ion-icon>
+        </div>
+        <div class="fm-link-body">
+          <span class="fm-link-text">{{ 'menu.language' | translate }}</span>
+          <span class="fm-link-sub">{{ currentLang === 'fr' ? 'Français' : 'English' }}</span>
+        </div>
+        <div class="fm-lang-toggle">
+          <button
+            class="fm-lang-btn"
+            [class.active]="currentLang === 'fr'"
+            (click)="switchLanguage('fr')">FR</button>
+          <button
+            class="fm-lang-btn"
+            [class.active]="currentLang === 'en'"
+            (click)="switchLanguage('en')">EN</button>
+        </div>
+      </div>
+    </div>
+
     @if (isLoggedIn) {
       <button class="fm-logout-btn" (click)="logout()">
         <ion-icon name="log-out-outline"></ion-icon>
-        Déconnexion
+        {{ 'menu.logout' | translate }}
       </button>
     }
 
   </div>
 }
 
-<!-- ── Tab Bar (Promotions remplacé par Commandes) ── -->
+<!-- ── Tab Bar ── -->
 <ion-tab-bar slot="bottom" class="fm-tab-bar">
 
   <ion-tab-button routerLink="/catalog" routerLinkActive="tab-selected">
     <ion-icon name="storefront-outline"></ion-icon>
-    <ion-label>Catalogue</ion-label>
+    <ion-label>{{ 'menu.catalog' | translate }}</ion-label>
   </ion-tab-button>
 
   <ion-tab-button routerLink="/orders" routerLinkActive="tab-selected">
     <ion-icon name="bag-handle-outline"></ion-icon>
-    <ion-label>Commandes</ion-label>
+    <ion-label>{{ 'menu.orders' | translate }}</ion-label>
   </ion-tab-button>
 
   <ion-tab-button routerLink="/nearby" routerLinkActive="tab-selected">
     <ion-icon name="location-outline"></ion-icon>
-    <ion-label>Proximité</ion-label>
+    <ion-label>{{ 'menu.nearby' | translate }}</ion-label>
   </ion-tab-button>
 
   <ion-tab-button routerLink="/cart" routerLinkActive="tab-selected">
     <ion-icon name="cart-outline"></ion-icon>
-    <ion-label>Panier</ion-label>
+    <ion-label>{{ 'menu.cart' | translate }}</ion-label>
   </ion-tab-button>
 
   <ion-tab-button (click)="toggleMenu()" [class.tab-selected]="menuOpen">
     <ion-icon [name]="menuOpen ? 'close-outline' : 'menu-outline'"></ion-icon>
-    <ion-label>Menu</ion-label>
+    <ion-label>{{ 'menu.menu' | translate }}</ion-label>
   </ion-tab-button>
 
 </ion-tab-bar>

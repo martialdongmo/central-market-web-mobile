@@ -487,7 +487,8 @@ $orange-500   : #F97316;
 .detail-footer {
   background: $white;
   border-top: 1px solid $gray-200;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  /* Use CSS variable for safe area bottom */
+  padding-bottom: var(--safe-area-bottom);
 
   .footer-inner {
     display: flex;
