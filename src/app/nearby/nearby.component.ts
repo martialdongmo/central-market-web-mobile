@@ -9,6 +9,7 @@ import {
   navigateOutline, storefrontOutline, cartOutline
 } from 'ionicons/icons';
 import { TranslatePipe } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { CatalogService } from '../services/catalog.service';
 import { CartService } from '../services/cart.service';
 import { CatalogProductResponse } from '../model/response/catalogProductResponse';
