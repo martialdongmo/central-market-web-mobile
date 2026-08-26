@@ -231,5 +231,17 @@
     "order_not_found": "Order not found",
     "validating": "Validating...",
     "error": "Validation failed"
+  },
+  "nearby": {
+    "title": "Nearby Products",
+    "live": "Live",
+    "flash_deals": "Flash Deals",
+    "flash_deals_sub": "Limited time offers nearby",
+    "search_placeholder": "Search products...",
+    "empty_title": "No products found",
+    "empty_sub": "Try expanding your search area",
+    "from": "From",
+    "open": "Open",
+    "closed": "Closed"
   }
 }

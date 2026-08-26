@@ -1,7 +1,11 @@
 :host { display: flex; flex-direction: column; height: 100%; }
 ion-content { flex: 1; }
 
-.nearby-header { background: linear-gradient(180deg, var(--navy) 0%, var(--navy-mid) 100%); padding: 12px 20px 16px; flex-shrink: 0; }
+.nearby-header {
+  background: linear-gradient(180deg, var(--navy) 0%, var(--navy-mid) 100%);
+  padding: calc(var(--safe-area-top, 0px) + 12px) 20px 16px;
+  flex-shrink: 0;
+}
 .nearby-hd-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
 .nearby-loc-badge { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,.12); padding: 5px 12px; border-radius: 20px; ion-icon { font-size: 11px; color: var(--accent); } span { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.9); } }
 .nearby-status { display: flex; align-items: center; gap: 6px; span { font-size: 11px; color: rgba(255,255,255,.7); font-weight: 600; } }

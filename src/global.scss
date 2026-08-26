@@ -117,6 +117,14 @@ ion-content.no-safe-area {
   --padding-end:    0;
 }
 
+/* Pages that need custom header positioning (like nearby with custom header) */
+ion-content.no-top-safe-area {
+  --padding-top:    0;
+  --padding-bottom: var(--safe-area-bottom);
+  --padding-start:  var(--safe-area-left);
+  --padding-end:    var(--safe-area-right);
+}
+
 ion-header   { --background: var(--bg); box-shadow: none; }
 ion-toolbar  { --background: var(--bg); --border-color: transparent; --padding-start: 0; --padding-end: 0; }
 ion-footer   { --background: var(--bg); box-shadow: none; }

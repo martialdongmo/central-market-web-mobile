@@ -231,5 +231,17 @@
     "order_not_found": "Commande introuvable",
     "validating": "Validation en cours...",
     "error": "Échec de la validation"
+  },
+  "nearby": {
+    "title": "Produits à proximité",
+    "live": "En direct",
+    "flash_deals": "Ventes Flash",
+    "flash_deals_sub": "Offres limitées près de chez vous",
+    "search_placeholder": "Rechercher des produits...",
+    "empty_title": "Aucun produit trouvé",
+    "empty_sub": "Essayez d'élargir votre zone de recherche",
+    "from": "À partir de",
+    "open": "Ouvert",
+    "closed": "Fermé"
   }
 }
