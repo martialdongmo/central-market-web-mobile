@@ -62,23 +62,14 @@ export class PaymentSuccessComponent implements OnInit {
   // ─── Download invoice ────────────────────────────────────
 
 
-  downloadInvoice(): void {
+  async downloadInvoice(): Promise<void> {
+    if (!this.order) return;
 
-      if (!this.order) return;
-
-    this.invoiceService.downloadInvoicePdf(this.order.id).subscribe({
-      next: (pdfBlob: Blob) => {
-        const url = window.URL.createObjectURL(pdfBlob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'invoice.pdf';
-        a.click();
-        window.URL.revokeObjectURL(url);
-      },
-      error: (err) => {
-        console.error('Error downloading PDF:', err);
-      }
-    });
+    try {
+      await this.invoiceService.downloadInvoice(this.order.id);
+    } catch (err) {
+      console.error('Error downloading invoice:', err);
+    }
   }
 
 
