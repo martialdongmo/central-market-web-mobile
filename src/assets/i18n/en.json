@@ -195,7 +195,7 @@
     "retry": "Retry",
     "no_tracking_yet": "No tracking yet",
     "address": "Address",
-    "no_address_provided": "No address provided,"
+    "no_address_provided": "No address provided",
     "cancelled": "Cancelled",
   "orders_search": {
     "placeholder": "Search by reference…",
@@ -346,4 +346,5 @@
     "open": "Open",
     "closed": "Closed"
   }
+}
 }
