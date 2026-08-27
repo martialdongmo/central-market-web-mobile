@@ -31,6 +31,7 @@ import { CustomCurrencyPipe } from "../../services/custom.currency.pipe";
 import { PaymentMethod } from 'src/app/model/enums/payment-method';
 import { ShopDeliveryStatus } from 'src/app/model/enums/shopDeliveryStatus';
 import { FooterComponent } from "src/app/shares/footer/footer.component";
+import { TranslatePipe } from '@ngx-translate/core';
 
 
 interface ProgressStep { key: string; label: string; }
@@ -39,7 +40,7 @@ interface ProgressStep { key: string; label: string; }
 @Component({
   selector: 'app-order-tracking',
   standalone: true,
-  imports: [CommonModule, IonContent, IonIcon, IonSpinner, DatePipe, CurrencyPipe, CustomCurrencyPipe, FooterComponent],
+  imports: [CommonModule, IonContent, IonIcon, IonSpinner, DatePipe, CurrencyPipe, CustomCurrencyPipe, FooterComponent, TranslatePipe],
   templateUrl: './order-tracking.component.html',
   styleUrls: ['./order-tracking.component.scss'],
 })
@@ -57,6 +58,21 @@ export class OrderTrackingComponent implements OnInit, OnDestroy {
     { key: 'DELIVERED',            label: 'Delivered'            },
     { key: 'COMPLETED',            label: 'Completed'            },
   ];
+
+  private readonly stepLabels: Record<string, string> = {
+    'Order Placed': 'orders_status.order_placed',
+    'Awaiting Payment': 'orders_status.awaiting_payment',
+    'Payment Confirmed': 'orders_status.payment_confirmed',
+    'Order Confirmed': 'orders_status.order_confirmed',
+    'Shipped': 'orders_status.shipped_status',
+    'Delivered': 'orders_status.delivered_status',
+    'Completed': 'orders_status.completed',
+  };
+
+  getStepLabel(key: string): string {
+    const label = this.progressSteps.find(s => s.key === key)?.label ?? key;
+    return this.stepLabels[label] ?? label;
+  }
  
   private readonly stepOrder = [
     'CREATED', 'DRAFF', 'PAYMENT_PENDING', 'PENDING_CONFIRMATION',
@@ -132,20 +148,34 @@ export class OrderTrackingComponent implements OnInit, OnDestroy {
  
   getStatusLabel(status: string | number): string {
     const s = String(status);
-    const m: Record<string, string> = {
-      CREATED: 'Created', '0': 'Created',
-      DRAFF: 'Draft', '1': 'Draft',
-      PAYMENT_PENDING: 'Payment Pending', '2': 'Payment Pending',
-      PENDING_CONFIRMATION: 'Confirming', '3': 'Confirming',
-      PAID: 'Paid', '4': 'Paid',
-      CONFIRMED: 'Confirmed', '5': 'Confirmed',
-      SHIPPED: 'Shipped', '6': 'Shipped',
-      DELIVERED: 'Delivered', '7': 'Delivered',
-      COMPLETED: 'Completed', '8': 'Completed',
-      CANCELED: 'Cancelled', '9': 'Cancelled',
-      FAILED: 'Failed', '10': 'Failed',
+    const enumMap: Record<string, string> = {
+      '0': 'orders_status.created',
+      '1': 'orders_status.draft',
+      '2': 'orders_status.payment_pending',
+      '3': 'orders_status.pending_confirmation',
+      '4': 'orders_status.paid',
+      '5': 'orders_status.confirmed',
+      '6': 'orders_status.shipped',
+      '7': 'orders_status.delivered',
+      '8': 'orders_status.completed',
+      '9': 'orders_status.canceled',
+      '10': 'orders_status.failed',
     };
-    return m[s] ?? 'Processing';
+    const nameMap: Record<string, string> = {
+      'CREATED': 'orders_status.created',
+      'DRAFF': 'orders_status.draft',
+      'PAYMENT_PENDING': 'orders_status.payment_pending',
+      'PENDING_CONFIRMATION': 'orders_status.pending_confirmation',
+      'PAID': 'orders_status.paid',
+      'CONFIRMED': 'orders_status.confirmed',
+      'SHIPPED': 'orders_status.shipped',
+      'DELIVERED': 'orders_status.delivered',
+      'COMPLETED': 'orders_status.completed',
+      'CANCELED': 'orders_status.canceled',
+      'FAILED': 'orders_status.failed',
+    };
+    const key = enumMap[s] ?? nameMap[s] ?? 'orders_status.processing';
+    return key;
   }
  
   getStatusClass(status: string | number): string {

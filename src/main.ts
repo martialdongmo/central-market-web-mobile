@@ -24,7 +24,7 @@ function initAppTranslations(translate: TranslateService): () => Promise<void> {
 
     // Charger la langue par défaut
     await new Promise<void>((resolve) => {
-      translate.reloadLang('en').subscribe({
+      translate.reloadLang(savedLang).subscribe({
         next: () => resolve(),
         error: () => resolve()
       });

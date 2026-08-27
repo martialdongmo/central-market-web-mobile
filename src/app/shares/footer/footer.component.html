@@ -150,18 +150,17 @@
           <ion-icon name="globe-outline"></ion-icon>
         </div>
         <div class="fm-link-body">
-          <span class="fm-link-text">{{ 'menu.language' | translate }}</span>
-          <span class="fm-link-sub">{{ currentLang === 'fr' ? 'Français' : 'English' }}</span>
+          <span class="fm-link-sub">{{ currentLang === 'fr' ? ('lang.fr' | translate) : ('lang.en' | translate) }}</span>
         </div>
         <div class="fm-lang-toggle">
           <button
             class="fm-lang-btn"
             [class.active]="currentLang === 'fr'"
-            (click)="switchLanguage('fr')">FR</button>
+            (click)="switchLanguage('fr')">{{ 'lang.fr' | translate }}</button>
           <button
             class="fm-lang-btn"
             [class.active]="currentLang === 'en'"
-            (click)="switchLanguage('en')">EN</button>
+            (click)="switchLanguage('en')">{{ 'lang.en' | translate }}</button>
         </div>
       </div>
     </div>

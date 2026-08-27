@@ -526,3 +526,8 @@
 }
 
 .ord-spacer { height: 48px; }
+
+/* ── Safe area bottom for iOS home indicator ── */
+.ord-spacer {
+  height: calc(48px + var(--safe-area-bottom));
+}
