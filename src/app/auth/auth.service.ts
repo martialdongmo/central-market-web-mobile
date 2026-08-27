@@ -156,7 +156,7 @@ export class AuthService {
 
       // On native, navigate into the app now that we're authenticated
       if (this.isNative) {
-        this.router.navigateByUrl('/secure-app');
+        this.router.navigateByUrl('/catalog');
       }
     }
 
@@ -233,7 +233,7 @@ export class AuthService {
         this._currentUser$.next(null);
 
         if (this.isNative) {
-          this.router.navigateByUrl('/secure-app');
+          this.router.navigateByUrl('/catalog');
         } else {
           window.location.href = '/secure-app';
         }
