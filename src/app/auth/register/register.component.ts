@@ -17,8 +17,8 @@ import {
   eyeOutline
 } from 'ionicons/icons';
 import { AuthService } from '../auth.service';
-import { RegisterRequest } from 'src/app/model/requests/registerRequest';
-import { LocationService } from '../../services/location.service';
+import { RegisterRequest } from 'src/app/core/model/requests/registerRequest';
+import { LocationService } from '../../core/services/location.service';
 
 @Component({
   selector: 'app-register',

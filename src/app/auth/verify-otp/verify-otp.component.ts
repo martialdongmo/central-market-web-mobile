@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { AuthService } from '../auth.service';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { VerifyOtpRequest } from 'src/app/model/requests/verifyOtpRequest';
+import { VerifyOtpRequest } from 'src/app/core/model/requests/verifyOtpRequest';
 import { ActivatedRoute } from '@angular/router';
 import { IonContent, IonIcon, NavController } from '@ionic/angular/standalone';
 

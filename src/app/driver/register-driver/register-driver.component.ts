@@ -12,11 +12,12 @@ import {
   bicycleOutline, cardOutline, carSportOutline, checkmarkCircleOutline,
   alertCircleOutline, cashOutline, timeOutline, shieldCheckmarkOutline,
 } from 'ionicons/icons';
-import { VehicleType } from 'src/app/model/enums/vehicle-type';
-import { DriverService } from 'src/app/services/driver.service';
-import { DriverRegistrationRequest } from 'src/app/model/requests/driver-registration-request';
-import { FooterComponent } from "src/app/shares/footer/footer.component";
-import { LocationService } from 'src/app/services/location.service';
+import { VehicleType } from 'src/app/core/model/enums/vehicle-type';
+
+import { DriverRegistrationRequest } from 'src/app/core/model/requests/driver-registration-request';
+import { FooterComponent } from "src/app/shared/footer/footer.component";
+import { DriverService } from 'src/app/core/services/driver.service';
+import { LocationService } from 'src/app/core/services/location.service';
 
 @Component({
   selector: 'app-register-driver',

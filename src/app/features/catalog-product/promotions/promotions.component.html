@@ -1,0 +1,56 @@
+<!-- promotions.component.html -->
+
+<div class="promo-header">
+  <div class="promo-hero">
+    <ion-icon name="flame" class="promo-hero-flame"></ion-icon>
+    <div class="promo-hero-text">
+      <h2>Promotions</h2>
+      <p>Les meilleures offres du moment</p>
+    </div>
+    <ion-icon name="gift-outline" class="promo-hero-icon"></ion-icon>
+  </div>
+</div>
+
+<ion-content>
+
+  @if (isLoading) {
+    <div class="product-grid">
+      @for (i of [1,2,3,4,5,6]; track i) {
+        <div class="skeleton-card">
+          <div class="skeleton-img"></div>
+          <div class="skeleton-body">
+            <div class="skeleton-line" style="width:80%"></div>
+            <div class="skeleton-line" style="width:50%"></div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else if (products.length > 0) {
+    <div class="section-hd">
+      <h3><ion-icon name="flame"></ion-icon> En promo</h3>
+      <small>{{ products.length }} items</small>
+    </div>
+    <div class="product-grid">
+      @for (p of products; track p.productId) {
+        <app-product-card [product]="p"></app-product-card>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <ion-icon name="search-circle-outline" class="empty-icon"></ion-icon>
+      <h3>Aucune promotion en cours</h3>
+      <p>Revenez bientôt pour découvrir nos offres</p>
+    </div>
+  }
+
+  <div class="scroll-spacer"></div>
+
+  <ion-infinite-scroll (ionInfinite)="loadMore($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="crescent"
+      loadingText="Chargement…"/>
+  </ion-infinite-scroll>
+
+</ion-content>
+
+<app-footer></app-footer>

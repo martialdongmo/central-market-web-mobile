@@ -12,10 +12,12 @@ import { Preferences } from '@capacitor/preferences';
 import { environment } from 'src/environments/environment.development';
 import { PkceService } from './pkce.service';
 import { TokenService } from './token.service';
-import { UserResponse } from '../model/response/usersResponse';
-import { RegisterRequest } from '../model/requests/registerRequest';
-import { VerifyOtpRequest } from '../model/requests/verifyOtpRequest';
-import { OneSignalService } from '../services/untils/one-signal.service';
+import { UserResponse } from '../core/model/response/usersResponse';
+import { RegisterRequest } from '../core/model/requests/registerRequest';
+import { VerifyOtpRequest } from '../core/model/requests/verifyOtpRequest';
+import { OneSignalService } from '../core/utils/one-signal.service';
+import { ForgotPasswordRequest } from '../core/model/requests/ForgotPasswordRequest';
+import { ResetPasswordRequest } from '../core/model/requests/ResetPasswordRequest';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -254,6 +256,40 @@ export class AuthService {
       `${this.API_URL}/api/v1/bis/auth/verify-otp`,
       request,
       { responseType: 'text' },
+    );
+  }
+
+
+    // ── Forgot / Reset password ───────────────────────────────────────────────
+  forgotPassword(request: ForgotPasswordRequest): Observable<string> {
+    console.log('[AuthService] forgotPassword() called for email:', request.email);
+
+    return this.http.post(
+      `${this.API_URL}/api/v1/bis/auth/forgot-password`,
+      request,
+      { responseType: 'text' },
+    ).pipe(
+      tap(response => console.log('[AuthService] forgotPassword() success:', response)),
+      catchError(err => {
+        console.error('[AuthService] forgotPassword() failed:', err);
+        throw err;
+      }),
+    );
+  }
+
+  resetPassword(request: ResetPasswordRequest): Observable<string> {
+    console.log('[AuthService] resetPassword() called for email:', request.email);
+
+    return this.http.post(
+      `${this.API_URL}/api/v1/bis/auth/reset-password`,
+      request,
+      { responseType: 'text' },
+    ).pipe(
+      tap(response => console.log('[AuthService] resetPassword() success:', response)),
+      catchError(err => {
+        console.error('[AuthService] resetPassword() failed:', err);
+        throw err;
+      }),
     );
   }
 }
