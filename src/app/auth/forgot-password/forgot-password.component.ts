@@ -8,7 +8,7 @@ import { AuthService } from '../auth.service';
 
 /** ⚠️ Vérifiez que ce chemin correspond bien à la route déclarée pour
  *  ResetPasswordComponent dans votre configuration de routes. */
-const RESET_PASSWORD_ROUTE = '/reset-password';
+const RESET_PASSWORD_ROUTE = '/change-password';
 
 @Component({
   selector: 'app-forgot-password',
