@@ -1,8 +1,13 @@
 // login.component.scss
 
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
+
+$font-base: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+
 :host {
   display: block;
   height: 100%;
+  font-family: $font-base;
 }
 
 // ── palette bleu clair ──
@@ -74,12 +79,16 @@ $text3:  #94a3b8;
   position: relative;
   z-index: 1;
   margin: 0;
-  font-family: var(--font-display, inherit);
-  font-size: 30px;
+  font-family: $font-base;
+  font-size: 28px;
   font-weight: 900;
-  letter-spacing: -.02em;
+  letter-spacing: -.01em;
   color: #ffffff;
   text-align: center;
+}
+
+.gateway-title-accent {
+  color: #FBBF24; // ambre — contraste avec le dégradé bleu du hero
 }
 
 .gateway-tagline {
@@ -130,17 +139,19 @@ $text3:  #94a3b8;
 }
 
 .gateway-panel-title {
-  margin: 0 0 4px;
-  font-family: var(--font-display, inherit);
-  font-size: 26px;
-  font-weight: 900;
-  line-height: 1.25;
+  margin: 0 0 6px;
+  font-family: $font-base;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.35;
   color: $text;
 }
 
 .gateway-panel-subtitle {
   margin: 0 0 28px;
-  font-size: 14px;
+  font-family: $font-base;
+  font-size: 13px;
+  font-weight: 400;
   color: $text3;
 }
 

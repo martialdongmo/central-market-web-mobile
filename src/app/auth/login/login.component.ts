@@ -35,6 +35,6 @@ export class LoginComponent {
 
 
   onForgetPassword() {
-    this.router.navigate(['/change-password'])
+    this.router.navigate(['/forgot-password'])
   }
 }

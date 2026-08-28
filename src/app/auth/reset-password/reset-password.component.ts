@@ -71,7 +71,7 @@ export class ResetPasswordComponent {
         this.loading.set(false);
         this.successMessage.set('Password reset successfully. Redirecting to login…');
 
-        setTimeout(() => this.router.navigateByUrl('/login'), 1500);
+        setTimeout(() => this.router.navigateByUrl('/secure-app'), 1500);
       },
       error: (err) => {
         console.error('[ResetPasswordComponent] resetPassword failed:', err);
