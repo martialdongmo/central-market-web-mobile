@@ -7,7 +7,6 @@
 // ── palette locale (fallback si les tokens globaux ne sont pas définis) ──
 $blue:        var(--primary, #2563eb);
 $blue-dark:   var(--navy, #1e3a8a);
-$blue-tint:   #eff6ff;
 $bg:          var(--bg, #ffffff);
 $bg2:         var(--bg2, #f8fafc);
 $bg3:         var(--bg3, #eef2f7);
@@ -16,43 +15,73 @@ $text2:       var(--text2, #64748b);
 $text3:       var(--text3, #94a3b8);
 $border:      var(--border-light, #e5e7eb);
 $radius-xl:   var(--r-xl, 20px);
-$radius-lg:   var(--r-lg, 14px);
 $shadow-lg:   var(--shadow-lg, 0 10px 30px rgba(15, 23, 42, .08));
 $font-display: var(--font-display, inherit);
 
-// ══ HEADER ══
-.nearby-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: $bg;
-  border-bottom: 1px solid $border;
-  padding: 14px 16px 12px;
+// ══ HEADER (ion-header réel → safe-area top gérée automatiquement) ══
+ion-header {
+  ion-toolbar.nearby-toolbar {
+    --background: #{$bg};
+    --border-width: 0 0 1px 0;
+    --border-color: #{$border};
+  }
+
+  // le slider de rayon vit sous la toolbar, toujours dans ion-header
+  // pour bénéficier du même traitement de sécurité en haut d'écran
+  padding-bottom: 10px;
 }
 
-.header-topbar {
+ion-back-button {
+  --color: #{$blue};
+}
+
+.toolbar-title {
   display: flex;
   align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  font-family: $font-display;
+  font-size: 16px;
+  font-weight: 800;
+  color: $blue-dark;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
-  h2 {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 0;
-    font-family: $font-display;
-    font-size: 17px;
-    font-weight: 800;
-    color: $blue-dark;
-
-    ion-icon {
-      font-size: 20px;
-      color: $blue;
-    }
+  ion-icon {
+    font-size: 19px;
+    color: $blue;
+    flex-shrink: 0;
   }
 }
 
+.cart-btn {
+  position: relative;
+  --color: #{$blue-dark};
+
+  ion-icon {
+    font-size: 21px;
+  }
+}
+
+.cart-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 16px;
+  --background: #ef4444;
+  --color: #ffffff;
+}
+
 .radius-row {
-  margin-top: 12px;
+  padding: 8px 16px 0;
 }
 
 .radius-label {
@@ -140,6 +169,9 @@ $font-display: var(--font-display, inherit);
   background: linear-gradient(90deg, $bg3 25%, $bg2 37%, $bg3 63%);
   background-size: 400% 100%;
   animation: shimmer 1.4s ease infinite;
+
+  &--wide   { width: 80%; }
+  &--narrow { width: 50%; }
 }
 
 @keyframes shimmer {
@@ -212,4 +244,12 @@ $font-display: var(--font-display, inherit);
 
 .scroll-spacer {
   height: 16px;
+}
+
+// ══ FOOTER (ion-footer réel → safe-area bottom gérée automatiquement) ══
+// Transparent ici : c'est <app-footer> qui porte son propre fond/ombre.
+ion-footer.app-footer-slot {
+  ion-toolbar {
+    --background: transparent;
+  }
 }

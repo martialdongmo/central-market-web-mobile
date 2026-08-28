@@ -1,11 +1,15 @@
-import { Component, OnInit, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonContent, IonIcon,
-  IonInfiniteScroll, IonInfiniteScrollContent
+  IonInfiniteScroll, IonInfiniteScrollContent,
+  IonHeader, IonToolbar, IonButtons, IonButton, IonBackButton, IonTitle, IonBadge,
+  IonFooter,
+  NavController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { flame, giftOutline, chevronForward, refreshOutline, searchCircleOutline } from 'ionicons/icons';
+import { flame, giftOutline, chevronForward, refreshOutline, searchCircleOutline, bagOutline } from 'ionicons/icons';
+import { Subscription } from 'rxjs';
 
 import { ProductCardComponent } from '../product-card/product-card.component';
 import { FooterComponent } from '../../../shared/footer/footer.component';
@@ -13,6 +17,7 @@ import { FooterComponent } from '../../../shared/footer/footer.component';
 import { CatalogProductResponse } from '../../../core/model/response/catalogProductResponse';
 import { CatalogService } from 'src/app/core/services/catalog.service';
 import { LocationService } from 'src/app/core/services/location.service';
+import { CartService } from 'src/app/core/services/cart.service';
 
 const PAGE_SIZE = 20;
 
@@ -23,28 +28,36 @@ const PAGE_SIZE = 20;
     CommonModule,
     IonContent, IonIcon,
     IonInfiniteScroll, IonInfiniteScrollContent,
+    IonHeader, IonToolbar, IonButtons, IonButton, IonBackButton, IonTitle, IonBadge,
+    IonFooter,
     ProductCardComponent, FooterComponent,
   ],
   templateUrl: './promotions.component.html',
   styleUrls: ['./promotions.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PromotionsComponent implements OnInit {
+export class PromotionsComponent implements OnInit, OnDestroy {
   @ViewChild(IonInfiniteScroll) infiniteScroll!: IonInfiniteScroll;
 
   products: CatalogProductResponse[] = [];
   isLoading = false;
   isLoadingMore = false;
 
+  /** Nombre d'articles dans le panier, affiché en badge sur le bouton panier du header */
+  cartCount = 0;
+
   private page = 0;
   private totalPages = 1;
+  private cartSub!: Subscription;
 
   private catalogService = inject(CatalogService);
   private locationService = inject(LocationService);
+  private cartService = inject(CartService);
+  private navCtrl = inject(NavController);
   private cdr = inject(ChangeDetectorRef);
 
   constructor() {
-    addIcons({ flame, giftOutline, chevronForward, refreshOutline, searchCircleOutline });
+    addIcons({ flame, giftOutline, chevronForward, refreshOutline, searchCircleOutline, bagOutline });
   }
 
   ngOnInit(): void {
@@ -57,6 +70,15 @@ export class PromotionsComponent implements OnInit {
     }
 
     this.loadProducts();
+
+    this.cartSub = this.cartService.cartCount$.subscribe(c => {
+      this.cartCount = c;
+      this.cdr.markForCheck();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.cartSub?.unsubscribe();
   }
 
   loadProducts(): void {
@@ -110,6 +132,10 @@ export class PromotionsComponent implements OnInit {
           this.cdr.markForCheck();
         },
       });
+  }
+
+  goToCart(): void {
+    this.navCtrl.navigateForward('/cart');
   }
 
   trackById(_: number, p: CatalogProductResponse) { return p.productId; }

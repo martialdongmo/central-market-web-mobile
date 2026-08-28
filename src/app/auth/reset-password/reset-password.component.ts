@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   AbstractControl,
@@ -12,7 +12,6 @@ import { IonicModule } from '@ionic/angular';
 import { ResetPasswordRequest } from 'src/app/core/model/requests/ResetPasswordRequest';
 import { AuthService } from '../auth.service';
 
-
 function passwordsMatchValidator(control: AbstractControl): ValidationErrors | null {
   const newPassword = control.get('newPassword')?.value;
   const confirmPassword = control.get('confirmPassword')?.value;
@@ -25,6 +24,7 @@ function passwordsMatchValidator(control: AbstractControl): ValidationErrors | n
   imports: [CommonModule, ReactiveFormsModule, IonicModule, RouterLink],
   templateUrl: './reset-password.component.html',
   styleUrls: ['./reset-password.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetPasswordComponent {
   private fb = inject(FormBuilder);
@@ -35,6 +35,10 @@ export class ResetPasswordComponent {
   loading = signal(false);
   errorMessage = signal<string | null>(null);
   successMessage = signal<string | null>(null);
+
+  /** Affichage/masquage des champs mot de passe (boutons œil dans le template) */
+  showPassword = signal(false);
+  showConfirmPassword = signal(false);
 
   form = this.fb.nonNullable.group(
     {
@@ -53,6 +57,14 @@ export class ResetPasswordComponent {
     }
   }
 
+  togglePassword(): void {
+    this.showPassword.update((v) => !v);
+  }
+
+  toggleConfirmPassword(): void {
+    this.showConfirmPassword.update((v) => !v);
+  }
+
   onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -62,14 +74,16 @@ export class ResetPasswordComponent {
     this.loading.set(true);
     this.errorMessage.set(null);
 
-    const request: ResetPasswordRequest = this.form.getRawValue();
+    const raw = this.form.getRawValue();
+    const request: ResetPasswordRequest = { ...raw, email: raw.email.trim().toLowerCase() };
+
     console.log('[ResetPasswordComponent] submitting reset-password for', request.email);
 
     this.authService.resetPassword(request).subscribe({
       next: (response) => {
         console.log('[ResetPasswordComponent] resetPassword success:', response);
         this.loading.set(false);
-        this.successMessage.set('Password reset successfully. Redirecting to login…');
+        this.successMessage.set('Mot de passe réinitialisé avec succès. Redirection…');
 
         setTimeout(() => this.router.navigateByUrl('/secure-app'), 1500);
       },
@@ -77,7 +91,9 @@ export class ResetPasswordComponent {
         console.error('[ResetPasswordComponent] resetPassword failed:', err);
         this.loading.set(false);
         this.errorMessage.set(
-          typeof err.error === 'string' ? err.error : 'Something went wrong. Please try again.',
+          typeof err.error === 'string'
+            ? err.error
+            : "Une erreur est survenue. Veuillez réessayer.",
         );
       },
     });

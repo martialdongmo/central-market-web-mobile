@@ -1,9 +1,24 @@
 <!-- nearby.component.html -->
 
-<div class="nearby-header">
-  <div class="header-topbar">
-    <h2><ion-icon name="location-outline"></ion-icon> Boutiques à proximité</h2>
-  </div>
+<ion-header [translucent]="true">
+  <ion-toolbar class="nearby-toolbar">
+    <ion-buttons slot="start">
+      <!-- defaultHref : ajustez vers votre route catalogue réelle si différente -->
+      <ion-back-button defaultHref="/catalog" text="" icon="arrow-back-outline"></ion-back-button>
+    </ion-buttons>
+    <div class="toolbar-title">
+      <ion-icon name="location-outline"></ion-icon>
+      <span>Boutiques à proximité</span>
+    </div>
+    <ion-buttons slot="end">
+      <ion-button class="cart-btn" (click)="goToCart()">
+        <ion-icon slot="icon-only" name="bag-outline"></ion-icon>
+        @if (cartCount > 0) {
+          <ion-badge class="cart-badge">{{ cartCount > 99 ? '99+' : cartCount }}</ion-badge>
+        }
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
 
   @if (locationService.hasLocation()) {
     <div class="radius-row">
@@ -14,7 +29,7 @@
       </ion-range>
     </div>
   }
-</div>
+</ion-header>
 
 <ion-content>
 
@@ -40,8 +55,8 @@
         <div class="skeleton-card">
           <div class="skeleton-img"></div>
           <div class="skeleton-body">
-            <div class="skeleton-line" style="width:80%"></div>
-            <div class="skeleton-line" style="width:50%"></div>
+            <div class="skeleton-line skeleton-line--wide"></div>
+            <div class="skeleton-line skeleton-line--narrow"></div>
           </div>
         </div>
       }
@@ -74,4 +89,6 @@
 
 </ion-content>
 
-<app-footer></app-footer>
+<ion-footer class="app-footer-slot">
+  <app-footer></app-footer>
+</ion-footer>

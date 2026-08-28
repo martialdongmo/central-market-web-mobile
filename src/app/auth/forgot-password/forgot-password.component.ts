@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -6,6 +6,9 @@ import { IonicModule } from '@ionic/angular';
 import { ForgotPasswordRequest } from 'src/app/core/model/requests/ForgotPasswordRequest';
 import { AuthService } from '../auth.service';
 
+/** ⚠️ Vérifiez que ce chemin correspond bien à la route déclarée pour
+ *  ResetPasswordComponent dans votre configuration de routes. */
+const RESET_PASSWORD_ROUTE = '/reset-password';
 
 @Component({
   selector: 'app-forgot-password',
@@ -13,6 +16,7 @@ import { AuthService } from '../auth.service';
   imports: [CommonModule, ReactiveFormsModule, IonicModule, RouterLink],
   templateUrl: './forgot-password.component.html',
   styleUrls: ['./forgot-password.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ForgotPasswordComponent {
   private fb = inject(FormBuilder);
@@ -36,8 +40,10 @@ export class ForgotPasswordComponent {
     this.loading.set(true);
     this.errorMessage.set(null);
 
-    const request: ForgotPasswordRequest = { email: this.form.getRawValue().email };
-    console.log('[ForgotPasswordComponent] submitting forgot-password for', request.email);
+    const email = this.form.getRawValue().email.trim().toLowerCase();
+    const request: ForgotPasswordRequest = { email };
+
+    console.log('[ForgotPasswordComponent] submitting forgot-password for', email);
 
     this.authService.forgotPassword(request).subscribe({
       next: (response) => {
@@ -46,8 +52,8 @@ export class ForgotPasswordComponent {
         this.submitted.set(true);
 
         setTimeout(() => {
-          this.router.navigate(['/change-password'], {
-            queryParams: { email: request.email },
+          this.router.navigate([RESET_PASSWORD_ROUTE], {
+            queryParams: { email },
           });
         }, 1200);
       },
@@ -55,7 +61,9 @@ export class ForgotPasswordComponent {
         console.error('[ForgotPasswordComponent] forgotPassword failed:', err);
         this.loading.set(false);
         this.errorMessage.set(
-          typeof err.error === 'string' ? err.error : 'Something went wrong. Please try again.',
+          typeof err.error === 'string'
+            ? err.error
+            : "Une erreur est survenue. Veuillez réessayer.",
         );
       },
     });

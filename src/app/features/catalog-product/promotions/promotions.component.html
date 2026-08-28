@@ -1,17 +1,37 @@
 <!-- promotions.component.html -->
 
-<div class="promo-header">
-  <div class="promo-hero">
-    <ion-icon name="flame" class="promo-hero-flame"></ion-icon>
-    <div class="promo-hero-text">
-      <h2>Promotions</h2>
-      <p>Les meilleures offres du moment</p>
-    </div>
-    <ion-icon name="gift-outline" class="promo-hero-icon"></ion-icon>
-  </div>
-</div>
+<ion-header [translucent]="true">
+  <ion-toolbar class="promo-toolbar">
+    <ion-buttons slot="start">
+      <!-- defaultHref : ajustez vers votre route catalogue réelle si différente -->
+      <ion-back-button defaultHref="/catalog" text="" icon="arrow-back-outline"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title class="promo-toolbar-title">Promotions</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button class="cart-btn" (click)="goToCart()">
+        <ion-icon slot="icon-only" name="bag-outline"></ion-icon>
+        @if (cartCount > 0) {
+          <ion-badge class="cart-badge">{{ cartCount > 99 ? '99+' : cartCount }}</ion-badge>
+        }
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
 
 <ion-content>
+
+  <div class="promo-header">
+    <div class="promo-hero">
+      <ion-icon name="flame" class="promo-hero-flame"></ion-icon>
+      <div class="promo-hero-text">
+        <h2>Promotions</h2>
+        <p>Les meilleures offres du moment</p>
+      </div>
+      <ion-icon name="gift-outline" class="promo-hero-icon"></ion-icon>
+    </div>
+  </div>
 
   @if (isLoading) {
     <div class="product-grid">
@@ -19,8 +39,8 @@
         <div class="skeleton-card">
           <div class="skeleton-img"></div>
           <div class="skeleton-body">
-            <div class="skeleton-line" style="width:80%"></div>
-            <div class="skeleton-line" style="width:50%"></div>
+            <div class="skeleton-line skeleton-line--wide"></div>
+            <div class="skeleton-line skeleton-line--narrow"></div>
           </div>
         </div>
       }
@@ -53,4 +73,6 @@
 
 </ion-content>
 
-<app-footer></app-footer>
+<ion-footer class="app-footer-slot">
+  <app-footer></app-footer>
+</ion-footer>
