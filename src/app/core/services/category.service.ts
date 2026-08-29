@@ -9,19 +9,17 @@ import { Observable } from 'rxjs';
 })
 export class CategoryService {
 
-     API_URL = environment.categoryEndpoint;
+  API_URL = environment.categoryEndpoint;
 
   constructor(private http: HttpClient) { }
 
- 
-
-  getShopProductCategories(shopId:string): Observable<CategoryResponse[]> {
+  getShopProductCategories(shopId: string): Observable<CategoryResponse[]> {
     return this.http.get<CategoryResponse[]>(`${this.API_URL}/shop-category/${shopId}`);
   }
 
   getAllCategories(): Observable<CategoryResponse[]> {
-    return this.http.get<CategoryResponse[]>(this.API_URL);
+    return this.http.get<CategoryResponse[]>(`${this.API_URL}/all`);
   }
-  
-  
+
+
 }
