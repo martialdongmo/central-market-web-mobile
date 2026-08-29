@@ -1,8 +1,9 @@
 // nearby.component.scss
 
-:host {
-  display: block;
-}
+/* ══ HOST : flex column plein écran — c'est CE bloc qui garantit
+   que app-footer reste visible en bas, comme dans catalog.component ══ */
+:host { display: flex; flex-direction: column; height: 100%; overflow: hidden; position: relative; }
+ion-content { flex: 1; }
 
 // ── palette locale (fallback si les tokens globaux ne sont pas définis) ──
 $blue:        var(--primary, #2563eb);
@@ -15,32 +16,33 @@ $text2:       var(--text2, #64748b);
 $text3:       var(--text3, #94a3b8);
 $border:      var(--border-light, #e5e7eb);
 $radius-xl:   var(--r-xl, 20px);
+$radius-md:   var(--r-md, 12px);
 $shadow-lg:   var(--shadow-lg, 0 10px 30px rgba(15, 23, 42, .08));
 $font-display: var(--font-display, inherit);
 
-// ══ HEADER (ion-header réel → safe-area top gérée automatiquement) ══
-ion-header {
-  ion-toolbar.nearby-toolbar {
-    --background: #{$bg};
-    --border-width: 0 0 1px 0;
-    --border-color: #{$border};
-  }
-
-  // le slider de rayon vit sous la toolbar, toujours dans ion-header
-  // pour bénéficier du même traitement de sécurité en haut d'écran
-  padding-bottom: 10px;
+// ══ HEADER (div sticky classique, comme .catalog-header) ══
+.nearby-header {
+  background: $bg;
+  padding: 0 20px 12px;
+  box-shadow: 0 1px 0 $border;
+  flex-shrink: 0;
 }
 
-ion-back-button {
-  --color: #{$blue};
+.header-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0 12px;
 }
 
-.toolbar-title {
+.nearby-title {
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 8px;
-  flex: 1;
-  min-width: 0;
+  margin: 0;
   font-family: $font-display;
   font-size: 16px;
   font-weight: 800;
@@ -56,32 +58,28 @@ ion-back-button {
   }
 }
 
-.cart-btn {
-  position: relative;
-  --color: #{$blue-dark};
+// ── boutons retour / panier (repris de .icon-btn / .tab-badge de catalog) ──
+.icon-btn {
+  width: 40px; height: 40px; border-radius: $radius-md;
+  background: $bg3; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: $text; font-size: 18px; transition: all .2s; position: relative;
+  flex-shrink: 0;
 
-  ion-icon {
-    font-size: 21px;
-  }
+  &:active { transform: scale(.9); }
+  &.primary { background: $blue-dark; color: #fff; }
 }
 
-.cart-badge {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  min-width: 16px;
-  height: 16px;
-  padding: 0 4px;
-  border-radius: 999px;
-  font-size: 9px;
-  font-weight: 800;
-  line-height: 16px;
-  --background: #ef4444;
-  --color: #ffffff;
+.tab-badge {
+  position: absolute; top: -4px; right: -4px;
+  background: #ef4444; color: #fff; font-size: 9px; font-weight: 800;
+  min-width: 16px; height: 16px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 4px; border: 2px solid $bg;
 }
 
 .radius-row {
-  padding: 8px 16px 0;
+  padding-top: 2px;
 }
 
 .radius-label {
@@ -240,16 +238,4 @@ ion-back-button {
 
   &:active { transform: scale(.95); }
   &:hover  { background: $blue-dark; }
-}
-
-.scroll-spacer {
-  height: 16px;
-}
-
-// ══ FOOTER (ion-footer réel → safe-area bottom gérée automatiquement) ══
-// Transparent ici : c'est <app-footer> qui porte son propre fond/ombre.
-ion-footer.app-footer-slot {
-  ion-toolbar {
-    --background: transparent;
-  }
 }

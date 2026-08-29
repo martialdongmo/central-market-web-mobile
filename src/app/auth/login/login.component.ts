@@ -13,7 +13,7 @@ import { AuthService } from '../auth.service';
 }
 )
 export class LoginComponent {
-  
+
   currentYear: any;
 
 
@@ -37,4 +37,10 @@ export class LoginComponent {
   onForgetPassword() {
     this.router.navigate(['/forgot-password'])
   }
+
+
+  onContinueShop() {
+    this.router.navigate(['/catalog'])
+  }
 }
+  

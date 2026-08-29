@@ -18,7 +18,7 @@ import { AuthService } from 'src/app/auth/auth.service';
 import { UserResponse } from 'src/app/core/model/response/usersResponse';
 
 const CAN_VALIDATE_ROLES = ['DELIVERY', 'ADMIN', 'MANAGER'] as const;
-const CREATE_SHOP_URL    = 'https://kapexpert.cloud:3001/create-shop';
+const CREATE_SHOP_URL    = 'https://kapexpert.cloud:3001/home';
 const ROLE_DISPLAY: Record<string, string> = {
   USER:     'Customer',
   DELIVERY: 'Delivery Driver',

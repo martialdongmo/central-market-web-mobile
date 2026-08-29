@@ -1,37 +1,32 @@
 <!-- promotions.component.html -->
 
-<ion-header [translucent]="true">
-  <ion-toolbar class="promo-toolbar">
-    <ion-buttons slot="start">
-      <!-- defaultHref : ajustez vers votre route catalogue réelle si différente -->
-      <ion-back-button defaultHref="/catalog" text="" icon="arrow-back-outline"></ion-back-button>
-    </ion-buttons>
+<div class="promo-header">
+  <div class="header-topbar">
+    <button class="icon-btn" (click)="goBack()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </button>
 
-    <ion-title class="promo-toolbar-title">Promotions</ion-title>
+    <h2 class="promo-topbar-title">Promotions</h2>
 
-    <ion-buttons slot="end">
-      <ion-button class="cart-btn" (click)="goToCart()">
-        <ion-icon slot="icon-only" name="bag-outline"></ion-icon>
-        @if (cartCount > 0) {
-          <ion-badge class="cart-badge">{{ cartCount > 99 ? '99+' : cartCount }}</ion-badge>
-        }
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+    <button class="icon-btn primary" (click)="goToCart()">
+      <ion-icon name="bag-outline"></ion-icon>
+      @if (cartCount > 0) {
+        <span class="tab-badge">{{ cartCount > 99 ? '99+' : cartCount }}</span>
+      }
+    </button>
+  </div>
+
+  <div class="promo-hero">
+    <ion-icon name="flame" class="promo-hero-flame"></ion-icon>
+    <div class="promo-hero-text">
+      <h2>Les meilleures offres</h2>
+      <p>Profitez des promotions du moment</p>
+    </div>
+    <ion-icon name="gift-outline" class="promo-hero-icon"></ion-icon>
+  </div>
+</div>
 
 <ion-content>
-
-  <div class="promo-header">
-    <div class="promo-hero">
-      <ion-icon name="flame" class="promo-hero-flame"></ion-icon>
-      <div class="promo-hero-text">
-        <h2>Promotions</h2>
-        <p>Les meilleures offres du moment</p>
-      </div>
-      <ion-icon name="gift-outline" class="promo-hero-icon"></ion-icon>
-    </div>
-  </div>
 
   @if (isLoading) {
     <div class="product-grid">
@@ -63,7 +58,7 @@
     </div>
   }
 
-  <div class="scroll-spacer"></div>
+  <div style="height: 16px"></div>
 
   <ion-infinite-scroll (ionInfinite)="loadMore($event)">
     <ion-infinite-scroll-content
@@ -73,6 +68,4 @@
 
 </ion-content>
 
-<ion-footer class="app-footer-slot">
-  <app-footer></app-footer>
-</ion-footer>
+<app-footer></app-footer>

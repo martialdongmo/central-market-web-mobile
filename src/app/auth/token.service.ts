@@ -11,9 +11,14 @@ export class TokenService {
   private REFRESH_TOKEN_KEY = 'CENTRAL_MARKET_MOBILE_REFRESH_TOKEN';
   private AUTH_ENDPOINT = environment.AUTH_API_URL;
 
-  // Must match the client_id values used in AuthService
   private readonly CLIENT_ID_WEB = 'grouping_web';
   private readonly CLIENT_ID_MOBILE = 'mobile';
+
+  /** Verrou single-flight : évite que deux 401 simultanés déclenchent
+   *  chacun leur propre refresh (le second, parti avec un refresh_token
+   *  déjà consommé par le premier si rotation, se ferait rejeter et
+   *  effacerait la session valide que le premier venait d'établir). */
+  private refreshInFlight: Promise<string | null> | null = null;
 
   constructor() {}
 
@@ -21,31 +26,41 @@ export class TokenService {
     return Capacitor.isNativePlatform() ? this.CLIENT_ID_MOBILE : this.CLIENT_ID_WEB;
   }
 
-  // Save tokens securely (Capacitor Preferences — works on web, Android, iOS)
   async setTokens(accessToken: string, refreshToken: string): Promise<void> {
     await Preferences.set({ key: this.ACCESS_TOKEN_KEY, value: accessToken });
     await Preferences.set({ key: this.REFRESH_TOKEN_KEY, value: refreshToken });
   }
 
-  // Get access token
   async getAccessToken(): Promise<string | null> {
     const { value } = await Preferences.get({ key: this.ACCESS_TOKEN_KEY });
     return value;
   }
 
-  // Get refresh token
   async getRefreshToken(): Promise<string | null> {
     const { value } = await Preferences.get({ key: this.REFRESH_TOKEN_KEY });
     return value;
   }
 
-  // Remove tokens (logout)
   async clearTokens(): Promise<void> {
     await Preferences.remove({ key: this.ACCESS_TOKEN_KEY });
     await Preferences.remove({ key: this.REFRESH_TOKEN_KEY });
   }
 
   async refreshAccessToken(): Promise<string | null> {
+    if (this.refreshInFlight) {
+      return this.refreshInFlight;
+    }
+
+    this.refreshInFlight = this.performRefresh();
+
+    try {
+      return await this.refreshInFlight;
+    } finally {
+      this.refreshInFlight = null;
+    }
+  }
+
+  private async performRefresh(): Promise<string | null> {
     const refreshToken = await this.getRefreshToken();
     if (!refreshToken) return null;
 
@@ -62,8 +77,6 @@ export class TokenService {
       });
 
       if (!response.ok) {
-        // Refresh token is invalid/expired — force a clean re-login
-        // instead of leaving stale tokens around.
         if (response.status === 401 || response.status === 400) {
           await this.clearTokens();
         }

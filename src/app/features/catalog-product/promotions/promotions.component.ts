@@ -1,14 +1,12 @@
 import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import {
   IonContent, IonIcon,
   IonInfiniteScroll, IonInfiniteScrollContent,
-  IonHeader, IonToolbar, IonButtons, IonButton, IonBackButton, IonTitle, IonBadge,
-  IonFooter,
   NavController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { flame, giftOutline, chevronForward, refreshOutline, searchCircleOutline, bagOutline } from 'ionicons/icons';
+import { flame, giftOutline, chevronForward, refreshOutline, searchCircleOutline, bagOutline, arrowBackOutline } from 'ionicons/icons';
 import { Subscription } from 'rxjs';
 
 import { ProductCardComponent } from '../product-card/product-card.component';
@@ -28,8 +26,6 @@ const PAGE_SIZE = 20;
     CommonModule,
     IonContent, IonIcon,
     IonInfiniteScroll, IonInfiniteScrollContent,
-    IonHeader, IonToolbar, IonButtons, IonButton, IonBackButton, IonTitle, IonBadge,
-    IonFooter,
     ProductCardComponent, FooterComponent,
   ],
   templateUrl: './promotions.component.html',
@@ -42,8 +38,6 @@ export class PromotionsComponent implements OnInit, OnDestroy {
   products: CatalogProductResponse[] = [];
   isLoading = false;
   isLoadingMore = false;
-
-  /** Nombre d'articles dans le panier, affiché en badge sur le bouton panier du header */
   cartCount = 0;
 
   private page = 0;
@@ -54,17 +48,16 @@ export class PromotionsComponent implements OnInit, OnDestroy {
   private locationService = inject(LocationService);
   private cartService = inject(CartService);
   private navCtrl = inject(NavController);
+  private location = inject(Location);
   private cdr = inject(ChangeDetectorRef);
 
   constructor() {
-    addIcons({ flame, giftOutline, chevronForward, refreshOutline, searchCircleOutline, bagOutline });
+    addIcons({ flame, giftOutline, chevronForward, refreshOutline, searchCircleOutline, bagOutline, arrowBackOutline });
   }
 
   ngOnInit(): void {
     // Non bloquant : les promos se chargent tout de suite ; si la position
     // était déjà connue (résolue ailleurs dans l'app), on l'utilise pour le tri.
-    // Sinon on lance quand même la demande en tâche de fond, sans attendre —
-    // un simple refresh de la page suffira à en bénéficier une fois résolue.
     if (!this.locationService.hasLocation() && !this.locationService.isLoading()) {
       this.locationService.getCurrentLocation();
     }
@@ -132,6 +125,10 @@ export class PromotionsComponent implements OnInit, OnDestroy {
           this.cdr.markForCheck();
         },
       });
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 
   goToCart(): void {

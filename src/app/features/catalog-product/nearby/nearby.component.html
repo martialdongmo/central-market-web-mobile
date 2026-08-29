@@ -1,24 +1,23 @@
 <!-- nearby.component.html -->
 
-<ion-header [translucent]="true">
-  <ion-toolbar class="nearby-toolbar">
-    <ion-buttons slot="start">
-      <!-- defaultHref : ajustez vers votre route catalogue réelle si différente -->
-      <ion-back-button defaultHref="/catalog" text="" icon="arrow-back-outline"></ion-back-button>
-    </ion-buttons>
-    <div class="toolbar-title">
+<div class="nearby-header">
+  <div class="header-topbar">
+    <button class="icon-btn" (click)="goBack()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </button>
+
+    <h2 class="nearby-title">
       <ion-icon name="location-outline"></ion-icon>
-      <span>Boutiques à proximité</span>
-    </div>
-    <ion-buttons slot="end">
-      <ion-button class="cart-btn" (click)="goToCart()">
-        <ion-icon slot="icon-only" name="bag-outline"></ion-icon>
-        @if (cartCount > 0) {
-          <ion-badge class="cart-badge">{{ cartCount > 99 ? '99+' : cartCount }}</ion-badge>
-        }
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
+      Boutiques à proximité
+    </h2>
+
+    <button class="icon-btn primary" (click)="goToCart()">
+      <ion-icon name="bag-outline"></ion-icon>
+      @if (cartCount > 0) {
+        <span class="tab-badge">{{ cartCount > 99 ? '99+' : cartCount }}</span>
+      }
+    </button>
+  </div>
 
   @if (locationService.hasLocation()) {
     <div class="radius-row">
@@ -29,12 +28,11 @@
       </ion-range>
     </div>
   }
-</ion-header>
+</div>
 
 <ion-content>
 
   @if (locationService.isLoading()) {
-    <!-- récupération GPS en cours -->
     <div class="empty-state">
       <ion-icon name="location-outline" class="empty-icon spin"></ion-icon>
       <h3>Localisation en cours…</h3>
@@ -79,7 +77,7 @@
     </div>
   }
 
-  <div class="scroll-spacer"></div>
+  <div style="height: 16px"></div>
 
   <ion-infinite-scroll (ionInfinite)="loadMore($event)">
     <ion-infinite-scroll-content
@@ -89,6 +87,4 @@
 
 </ion-content>
 
-<ion-footer class="app-footer-slot">
-  <app-footer></app-footer>
-</ion-footer>
+<app-footer></app-footer>

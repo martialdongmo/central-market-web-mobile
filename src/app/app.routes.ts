@@ -58,11 +58,7 @@ export const routes: Routes = [
     title: 'Forgot Password',
   },
 
-  // ════════════════════════════════════════════════════════════
-  // PAGES AVEC FOOTER
-  // Chaque template se termine par <app-footer></app-footer>
-  // ════════════════════════════════════════════════════════════
-
+ 
   {
     path: 'catalog',
     component: CatalogComponent,  // déjà <app-footer> dans son template ✓
@@ -72,7 +68,6 @@ export const routes: Routes = [
     path: 'nearby',
     loadComponent: () =>
       import('./features/catalog-product/nearby/nearby.component').then(m => m.NearbyComponent),
-    // → ajouter <app-footer> dans nearby.component.html
   },
   {
     path: 'promotions',
@@ -83,13 +78,11 @@ export const routes: Routes = [
     path: 'details/:productId',
     loadComponent: () =>
       import('./features/catalog-product/details-page/details-page.component').then(m => m.DetailsPageComponent),
-    // → ajouter <app-footer> dans details-page.component.html
   },
   {
     path: 'cart',
     loadComponent: () =>
       import('./features/carts/cart/cart.component').then(m => m.CartComponent),
-    // → ajouter <app-footer> dans cart.component.html
   },
   {
     path: 'profile',

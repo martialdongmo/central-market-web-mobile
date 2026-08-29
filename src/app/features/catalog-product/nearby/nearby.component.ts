@@ -1,16 +1,14 @@
 import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   IonContent, IonIcon, IonRange,
   IonInfiniteScroll, IonInfiniteScrollContent,
-  IonHeader, IonToolbar, IonButtons, IonButton, IonBackButton, IonBadge, IonFooter,
-  NavController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   locationOutline, refreshOutline, searchCircleOutline,
-  navigateOutline, gridOutline, bagOutline
+  navigateOutline, gridOutline, bagOutline, arrowBackOutline
 } from 'ionicons/icons';
 import { Subscription } from 'rxjs';
 
@@ -21,6 +19,7 @@ import { CatalogProductResponse } from '../../../core/model/response/catalogProd
 import { CatalogService } from 'src/app/core/services/catalog.service';
 import { LocationService } from 'src/app/core/services/location.service';
 import { CartService } from 'src/app/core/services/cart.service';
+import { NavController } from '@ionic/angular/standalone';
 
 const DEFAULT_RADIUS_KM = 10;
 const PAGE_SIZE = 20;
@@ -32,7 +31,6 @@ const PAGE_SIZE = 20;
     CommonModule, FormsModule,
     IonContent, IonIcon, IonRange,
     IonInfiniteScroll, IonInfiniteScrollContent,
-    IonHeader, IonToolbar, IonButtons, IonButton, IonBackButton, IonBadge, IonFooter,
     ProductCardComponent, FooterComponent,
   ],
   templateUrl: './nearby.component.html',
@@ -50,8 +48,6 @@ export class NearbyComponent implements OnInit, OnDestroy {
   isLoadingProducts = false;
   isLoadingMore = false;
   radiusKm = DEFAULT_RADIUS_KM;
-
-  /** Nombre d'articles dans le panier, affiché en badge sur le bouton panier du header */
   cartCount = 0;
 
   private page = 0;
@@ -61,13 +57,20 @@ export class NearbyComponent implements OnInit, OnDestroy {
   private catalogService = inject(CatalogService);
   private cartService = inject(CartService);
   private navCtrl = inject(NavController);
+  private location = inject(Location);
   private cdr = inject(ChangeDetectorRef);
 
   constructor() {
-    addIcons({ locationOutline, refreshOutline, searchCircleOutline, navigateOutline, gridOutline, bagOutline });
+    addIcons({
+      locationOutline, refreshOutline, searchCircleOutline,
+      navigateOutline, gridOutline, bagOutline, arrowBackOutline,
+    });
   }
 
   async ngOnInit(): Promise<void> {
+    
+    this.locationService.getCurrentLocation();
+
     await this.resolveLocationAndLoad();
 
     this.cartSub = this.cartService.cartCount$.subscribe(c => {
@@ -80,10 +83,12 @@ export class NearbyComponent implements OnInit, OnDestroy {
     this.cartSub?.unsubscribe();
   }
 
-  /** Demande la position puis charge les produits si elle a été obtenue.
-   *  getCurrentLocation() gère elle-même web/Android/iOS et met à jour ses signals. */
+  /** Ne redemande la position que si elle n'est pas déjà connue —
+   *  évite de re-déclencher le prompt GPS à chaque visite de la page. */
   private async resolveLocationAndLoad(): Promise<void> {
-    await this.locationService.getCurrentLocation();
+    if (!this.locationService.hasLocation()) {
+      await this.locationService.getCurrentLocation();
+    }
 
     if (this.locationService.hasLocation()) {
       this.resetPagination();
@@ -156,13 +161,17 @@ export class NearbyComponent implements OnInit, OnDestroy {
     this.loadProducts();
   }
 
-  goToCart(): void {
-    this.navCtrl.navigateForward('/cart');
-  }
-
   async retry(): Promise<void> {
     this.locationService.reset();
     await this.resolveLocationAndLoad();
+  }
+
+  goBack(): void {
+    this.location.back();
+  }
+
+  goToCart(): void {
+    this.navCtrl.navigateForward('/cart');
   }
 
   private resetPagination(): void {
