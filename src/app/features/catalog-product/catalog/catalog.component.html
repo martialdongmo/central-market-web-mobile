@@ -21,13 +21,13 @@
     <div>
       <div class="hero-badge">
         <ion-icon name="flash"></ion-icon>
-        <span>Flash Sales</span>
+        <span>Ventes flash</span>
       </div>
-      <div class="hero-title">Discover our<br><em>Deals of the Day</em></div>
+      <div class="hero-title">Découvrez nos<br><em>offres du jour</em></div>
       <div class="hero-sub">
-        <ion-icon name="shield-checkmark-outline"></ion-icon> Premium quality
+        <ion-icon name="shield-checkmark-outline"></ion-icon> Qualité garantie
         &nbsp;·&nbsp;
-        <ion-icon name="rocket-outline"></ion-icon> Fast delivery
+        <ion-icon name="rocket-outline"></ion-icon> Livraison rapide
       </div>
     </div>
     <div class="hero-icon-wrap"><ion-icon name="storefront-outline"></ion-icon></div>
@@ -36,7 +36,7 @@
   <div class="search-row">
     <div class="search-box">
       <ion-icon name="search-outline"></ion-icon>
-      <input #searchInput type="search" placeholder="Search products..."
+      <input #searchInput type="search" placeholder="Rechercher des produits..."
         [value]="queryParams.keyword" (input)="onSearch($event)" />
       @if (queryParams.keyword) {
         <button class="clear-btn" (click)="clearSearch()">
@@ -70,7 +70,7 @@
   @if (!isLoading) {
     <div class="section-hd">
       <h3><ion-icon name="grid-outline"></ion-icon> Catalogue</h3>
-      <small>{{ products.length }} items</small>
+      <small>{{ products.length }} articles</small>
     </div>
   }
 
@@ -95,10 +95,10 @@
   } @else {
     <div class="empty-state">
       <ion-icon name="search-circle-outline" class="empty-icon"></ion-icon>
-      <h3>No results found</h3>
-      <p>Try different keywords or adjust your filters</p>
+      <h3>Aucun résultat trouvé</h3>
+      <p>Essayez d'autres mots-clés ou ajustez vos filtres</p>
       <button class="btn-reset" (click)="resetFilters()">
-        <ion-icon name="refresh-outline"></ion-icon> Reset filters
+        <ion-icon name="refresh-outline"></ion-icon> Réinitialiser les filtres
       </button>
     </div>
   }
@@ -109,7 +109,7 @@
   <ion-infinite-scroll (ionInfinite)="loadMore($event)">
     <ion-infinite-scroll-content
       loadingSpinner="crescent"
-      loadingText="Loading more…"/>
+      loadingText="Chargement…"/>
   </ion-infinite-scroll>
 
 </ion-content>
@@ -121,12 +121,12 @@
       <ion-icon name="arrow-back-outline"></ion-icon>
     </button>
     <input #overlayInput class="search-overlay-input" type="text"
-      placeholder="Search products..." (input)="onSearch($event)" />
+      placeholder="Rechercher des produits..." (input)="onSearch($event)" />
   </div>
   <div class="overlay-scroll">
     <div class="section-hd">
-      <h3><ion-icon name="list-outline"></ion-icon> Results</h3>
-      <small>{{ products.length }} items</small>
+      <h3><ion-icon name="list-outline"></ion-icon> Résultats</h3>
+      <small>{{ products.length }} articles</small>
     </div>
     <div class="product-grid">
       @for (p of products; track p.productId) {
@@ -144,7 +144,7 @@
     <div class="modal-container">
       <div class="modal-handle"></div>
       <div class="modal-hd">
-        <h2><ion-icon name="funnel-outline"></ion-icon> Filter Results</h2>
+        <h2><ion-icon name="funnel-outline"></ion-icon> Filtres</h2>
         <button class="modal-close-btn" (click)="closeFilters()">
           <ion-icon name="close"></ion-icon>
         </button>
@@ -157,7 +157,7 @@
               <div class="filter-icon-box"><ion-icon name="pricetag-outline"></ion-icon></div>
               <div class="filter-item-info">
                 <p>Promotions</p>
-                <small>Show discounted items only</small>
+                <small>Afficher uniquement les articles en promotion</small>
               </div>
             </div>
             <ion-toggle [(ngModel)]="queryParams.promotionOnly" mode="ios"></ion-toggle>
@@ -167,8 +167,8 @@
             <div class="filter-item-left">
               <div class="filter-icon-box"><ion-icon name="cube-outline"></ion-icon></div>
               <div class="filter-item-info">
-                <p>In Stock Only</p>
-                <small>Hide unavailable products</small>
+                <p>En stock uniquement</p>
+                <small>Masquer les produits indisponibles</small>
               </div>
             </div>
             <ion-toggle [(ngModel)]="queryParams.inStockOnly" mode="ios"></ion-toggle>
@@ -195,7 +195,7 @@
             <div class="filter-item-left">
               <div class="filter-icon-box"><ion-icon name="wallet-outline"></ion-icon></div>
               <div class="filter-item-info">
-                <p>Maximum Budget</p>
+                <p>Budget maximum</p>
                 <div class="range-val">
                   {{ filterMaxPrice | customCurrency }}
                 </div>
@@ -212,10 +212,10 @@
       </ion-content>
       <div class="modal-footer">
         <button class="modal-reset-btn" (click)="resetFilters()">
-          <ion-icon name="refresh-outline"></ion-icon> Reset
+          <ion-icon name="refresh-outline"></ion-icon> Réinitialiser
         </button>
         <button class="modal-apply-btn" (click)="applyFilters()">
-          <ion-icon name="checkmark-circle-outline"></ion-icon> Apply Filters
+          <ion-icon name="checkmark-circle-outline"></ion-icon> Appliquer les filtres
         </button>
       </div>
     </div>

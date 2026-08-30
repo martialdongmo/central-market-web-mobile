@@ -21,19 +21,20 @@ import {
   storefrontOutline,
   pricetagsOutline
 } from 'ionicons/icons';
-import { CatalogQueryParams } from '../../../core/model/utils/catalog-query-params.model';
-import { Subscription, Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { CategoryResponse } from '../../../core/model/response/categoryResponse';
-import { ProductCategory, getProductCategoryLabel } from '../../../core/model/enums/product-category';
-import { CatalogProductResponse } from '../../../core/model/response/catalogProductResponse';
-import { AuthService } from '../../../auth/auth.service';
-import { FooterComponent } from "../../../shared/footer/footer.component";
+import { Subscription, Subject, debounceTime, distinctUntilChanged, Observable } from 'rxjs';
+import { AuthService } from 'src/app/auth/auth.service';
+import { getProductCategoryLabel, ProductCategory } from 'src/app/core/model/enums/product-category';
+import { CategoryResponse } from 'src/app/core/model/response/categoryResponse';
+import { PageResponse } from 'src/app/core/model/response/page-response.model';
+import { CatalogQueryParams } from 'src/app/core/model/utils/catalog-query-params.model';
 import { CartService } from 'src/app/core/services/cart.service';
 import { CatalogService } from 'src/app/core/services/catalog.service';
 import { CategoryService } from 'src/app/core/services/category.service';
 import { CustomCurrencyPipe } from 'src/app/core/services/custom.currency.pipe';
 import { LocationService } from 'src/app/core/services/location.service';
+import { FooterComponent } from 'src/app/shared/footer/footer.component';
+import { CatalogProductResponse } from 'src/app/core/model/response/catalogProductResponse';
+
 
 /** Valeur "plafond" purement visuelle pour le slider du modal.
  *  Elle ne part JAMAIS dans la requête tant que l'utilisateur
@@ -138,7 +139,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.cdr.markForCheck();
 
-    this.catalogService.search(this.queryParams).subscribe({
+    this.fetchPage(0).subscribe({
       next: page => {
         this.products = page.content;
         this.totalPages = page.totalPages;
@@ -164,7 +165,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
     this.queryParams.page = nextPage;
     this.isLoadingMore = true;
 
-    this.catalogService.search(this.queryParams).subscribe({
+    this.fetchPage(nextPage).subscribe({
       next: page => {
         this.products = [...this.products, ...page.content];
         this.totalPages = page.totalPages;
@@ -181,10 +182,59 @@ export class CatalogComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Le backend expose 3 endpoints distincts selon le filtre actif — l'ancien
+   * code appelait toujours /all, qui ne connaît ni `categoryId` ni `keyword`,
+   * d'où les chips catégorie et la recherche qui ne faisaient rien.
+   *
+   * - mot-clé tapé          → /search (accepte keyword + categoryId + prix + stock)
+   * - catégorie sélectionnée → /category/{id}
+   * - aucun filtre spécial   → /all (accepte promotions + prix + stock)
+   *
+   * ⚠️ Limitation backend actuelle : /category et /search ne supportent pas
+   * `promotionOnly`. Si l'utilisateur combine "Promotions" + une catégorie,
+   * le filtre promotion est ignoré côté backend (aucun endpoint ne gère les
+   * deux à la fois pour l'instant).
+   */
+  private fetchPage(page: number): Observable<PageResponse<CatalogProductResponse>> {
+    const p = this.queryParams;
+    const coords = this.locationService.asNumbers();
+    const keyword = p.keyword?.trim();
+
+    if (keyword) {
+      return this.catalogService.searchByKeyword(
+        keyword,
+        p.categoryId,
+        p.minPrice,
+        p.maxPrice,
+        p.inStockOnly ?? false,
+        coords?.lat,
+        coords?.lng,
+        page,
+        p.size ?? 20,
+        p.sort,
+      );
+    }
+
+    if (p.categoryId) {
+      return this.catalogService.getByCategory(
+        p.categoryId,
+        coords?.lat,
+        coords?.lng,
+        p.radiusKm,
+        page,
+        p.size ?? 20,
+        p.sort,
+      );
+    }
+
+    return this.catalogService.search({ ...p, page });
+  }
+
   /** Charge la liste réelle des catégories depuis le backend.
    *  ⚠️ Adaptez `getAll()` à la méthode exposée par votre CategoryService. */
   loadCategories() {
-    this.categoryService.getAllCategories().subscribe({
+    this.categoryService.getAll().subscribe({
       next: (cats: CategoryResponse[]) => {
         this.categories = cats;
         this.cdr.markForCheck();
