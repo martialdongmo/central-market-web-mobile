@@ -1,77 +1,94 @@
-<!-- ── Sticky Header ── -->
-<div class="ot-header">
+<!-- order-tracking.component.html -->
+
+<div class="ot-header custom-header">
   <button class="ot-back-btn" (click)="goBack()">
     <ion-icon name="arrow-back-outline"></ion-icon>
   </button>
-  <h1 class="ot-header-title">Order Details</h1>
+  <h1 class="ot-header-title">{{ 'orders.header_title' | translate }}</h1>
   <div class="ot-header-spacer"></div>
 </div>
 
-<ion-content [fullscreen]="true" class="ot-content">
+<ion-content class="ot-content">
 
-  <!-- ── Loading ── -->
+  <!-- ── Chargement ── -->
   @if (isLoading) {
     <div class="ot-loading">
       <ion-spinner name="crescent" color="primary"></ion-spinner>
-      <p class="ot-loading-text">Loading order details…</p>
+      <p class="ot-loading-text">{{ 'orders.loading' | translate }}</p>
     </div>
   }
 
   @if (!isLoading && order) {
     <div class="ot-body">
 
-      <!-- ① Reference & Status Card -->
+      <!-- ① Référence & statut -->
       <div class="ot-card ot-ref-card">
         <div class="ot-ref-left">
-          <span class="ot-label">Reference</span>
+          <span class="ot-label">{{ 'orders.reference' | translate }}</span>
           <h2 class="ot-ref-code">#{{ order.reference }}</h2>
           <div class="ot-ref-date">
             <ion-icon name="time-outline"></ion-icon>
-            <span>{{ order.createdAt | date:'MMM d, y · h:mm a' }}</span>
+            <span>{{ order.createdAt | date:'d MMM y · HH:mm' }}</span>
           </div>
         </div>
+        <!-- Label de statut : lu directement depuis OrderStatusLabel (déjà en
+             français dans orderStatus.ts) — pas de double indirection via ngx-translate -->
         <span class="ot-status-pill {{ getStatusClass(order.status) }}">
           <ion-icon [name]="getStatusIcon(order.status)"></ion-icon>
           {{ getStatusLabel(order.status) }}
         </span>
       </div>
 
-      <!-- ② Order Progress Stepper -->
-      <div class="ot-card ot-stepper-card">
-        <div class="ot-card-head">
-          <ion-icon name="git-branch-outline"></ion-icon>
-          <h3>Order Progress</h3>
+      <!-- ② Progression -->
+      @if (isCanceledOrFailed) {
+        <div class="ot-card ot-canceled-card">
+          <ion-icon name="close-circle-outline"></ion-icon>
+          <div>
+            <h3>{{ getStatusLabel(order.status) }}</h3>
+            <p>{{ 'orders.canceled_message' | translate }}</p>
+          </div>
         </div>
-        <div class="ot-stepper">
-          @for (step of progressSteps; track step.key; let i = $index) {
-            <div class="ot-step" [class.done]="isStepDone(step.key)" [class.active]="isStepActive(step.key)">
-              <div class="ot-step-indicator">
-                <div class="ot-step-dot">
-                  @if (isStepDone(step.key)) {
-                    <ion-icon name="checkmark-outline"></ion-icon>
-                  } @else if (isStepActive(step.key)) {
-                    <ion-icon name="ellipse" class="ot-pulse"></ion-icon>
-                  } @else {
-                    <ion-icon name="ellipse-outline"></ion-icon>
+      } @else {
+        <div class="ot-card ot-stepper-card">
+          <div class="ot-card-head">
+            <ion-icon name="git-branch-outline"></ion-icon>
+            <h3>{{ 'orders.order_progress' | translate }}</h3>
+          </div>
+
+          @if (activeStepDescriptionKey) {
+            <p class="ot-active-step-desc">{{ activeStepDescriptionKey | translate }}</p>
+          }
+
+          <div class="ot-stepper">
+            @for (step of progressSteps; track step.key; let i = $index) {
+              <div class="ot-step" [class.done]="isStepDone(step.key)" [class.active]="isStepActive(step.key)">
+                <div class="ot-step-indicator">
+                  <div class="ot-step-dot">
+                    @if (isStepDone(step.key)) {
+                      <ion-icon name="checkmark-outline"></ion-icon>
+                    } @else if (isStepActive(step.key)) {
+                      <ion-icon name="ellipse" class="ot-pulse"></ion-icon>
+                    } @else {
+                      <ion-icon name="ellipse-outline"></ion-icon>
+                    }
+                  </div>
+                  @if (i < progressSteps.length - 1) {
+                    <div class="ot-step-line" [class.done]="isStepDone(step.key)"></div>
                   }
                 </div>
-                @if (i < progressSteps.length - 1) {
-                  <div class="ot-step-line" [class.done]="isStepDone(step.key)"></div>
-                }
+                <div class="ot-step-label">
+                  <span class="ot-step-name">{{ step.labelKey | translate }}</span>
+                </div>
               </div>
-              <div class="ot-step-label">
-                <span class="ot-step-name">{{ step.label }}</span>
-              </div>
-            </div>
-          }
+            }
+          </div>
         </div>
-      </div>
+      }
 
-      <!-- ③ Shop Groups (items grouped by shop) -->
+      <!-- ③ Groupes par boutique -->
       @for (group of order.shopGroups; track group.shopOrderId) {
         <div class="ot-card ot-shop-card">
 
-          <!-- Shop Header -->
           <div class="ot-shop-head">
             <div class="ot-shop-left">
               <div class="ot-shop-avatar">
@@ -79,29 +96,28 @@
               </div>
               <div>
                 <span class="ot-shop-name">{{ group.shopName }}</span>
-                <span class="ot-shop-id">{{ group.trackingCode || 'No tracking yet' }}</span>
+                <span class="ot-shop-id">{{ group.trackingCode || ('orders.no_tracking' | translate) }}</span>
               </div>
             </div>
+            <!-- Statut de livraison boutique : lu directement depuis ShopDeliveryStatusLabel -->
             <span class="ot-delivery-pill {{ getDeliveryClass(group.deliveryStatus) }}">
               {{ formatDeliveryStatus(group.deliveryStatus) }}
             </span>
           </div>
 
-          <!-- Estimated Delivery -->
           @if (group.estimatedDeliveryAt) {
             <div class="ot-eta-row">
               <ion-icon name="calendar-outline"></ion-icon>
-              <span>Est. delivery: <strong>{{ group.estimatedDeliveryAt | date:'EEE, MMM d' }}</strong></span>
+              <span>{{ 'orders.estimated_delivery' | translate }} <strong>{{ group.estimatedDeliveryAt | date:'EEE d MMM' }}</strong></span>
             </div>
           }
           @if (group.deliveredAt) {
             <div class="ot-eta-row ot-eta-done">
               <ion-icon name="checkmark-circle-outline"></ion-icon>
-              <span>Delivered on <strong>{{ group.deliveredAt | date:'EEE, MMM d · h:mm a' }}</strong></span>
+              <span>{{ 'orders.delivered_on' | translate }} <strong>{{ group.deliveredAt | date:'EEE d MMM · HH:mm' }}</strong></span>
             </div>
           }
 
-          <!-- Items List -->
           <div class="ot-items-list">
             @for (item of group.items; track item.productId) {
               <div class="ot-item">
@@ -109,31 +125,32 @@
                   @if (item.imageUrl) {
                     <img [src]="item.imageUrl" [alt]="item.productName" />
                   } @else {
-                    <ion-icon name="image-outline"></ion-icon>
+                    <ion-icon name="image-outline" class="ot-placeholder-icon" />
                   }
                 </div>
                 <div class="ot-item-info">
                   <span class="ot-item-name">{{ item.productName }}</span>
-                  <span class="ot-item-qty">Qty: {{ item.quantity }} × {{ item.priceAtPurchase | customCurrency }}</span>
+                  <span class="ot-item-qty">x{{ item.quantity }}</span>
                 </div>
-                <span class="ot-item-total">{{ (item.priceAtPurchase * item.quantity) | customCurrency }}</span>
+                <div class="ot-item-total">
+                  {{ item.priceAtPurchase | customCurrency }}
+                </div>
               </div>
             }
           </div>
 
-          <!-- Shop Subtotal -->
           <div class="ot-shop-subtotal">
-            <span>Shop subtotal</span>
+            <span>{{ 'orders.shop_subtotal' | translate }}</span>
             <strong>{{ group.shopSubtotal | customCurrency }}</strong>
           </div>
         </div>
       }
 
-      <!-- ④ Delivery Details -->
+      <!-- ④ Détails de livraison -->
       <div class="ot-card">
         <div class="ot-card-head">
           <ion-icon name="location-outline"></ion-icon>
-          <h3>Delivery Details</h3>
+          <h3>{{ 'orders.delivery_details' | translate }}</h3>
         </div>
 
         <div class="ot-detail-row">
@@ -156,8 +173,8 @@
             <ion-icon name="location-outline"></ion-icon>
           </div>
           <div class="ot-detail-body">
-            <span class="ot-detail-label">{{ order.deliveryType }} Address</span>
-            <span class="ot-detail-title">{{ order.addressLine || 'No address provided' }}</span>
+            <span class="ot-detail-label">{{ getAddressLabelKey(order.deliveryType) | translate }}</span>
+            <span class="ot-detail-title">{{ order.addressLine || ('orders.no_address' | translate) }}</span>
           </div>
         </div>
 
@@ -166,38 +183,39 @@
           <div class="ot-note-box">
             <ion-icon name="document-text-outline"></ion-icon>
             <div>
-              <span class="ot-note-label">Delivery Note</span>
-              <p class="ot-note-text">"{{ order.note }}"</p>
+              <span class="ot-note-label">{{ 'orders.delivery_note' | translate }}</span>
+              <p class="ot-note-text">« {{ order.note }} »</p>
             </div>
           </div>
         }
       </div>
 
-      <!-- ⑤ Payment Summary -->
+      <!-- ⑤ Résumé du paiement -->
       <div class="ot-card">
         <div class="ot-card-head">
           <ion-icon name="wallet-outline"></ion-icon>
-          <h3>Payment Summary</h3>
+          <h3>{{ 'orders.payment_summary' | translate }}</h3>
         </div>
 
         <div class="ot-payment-rows">
           <div class="ot-pay-row">
-            <span>Subtotal</span>
+            <span>{{ 'orders.subtotal' | translate }}</span>
             <span>{{ order.subtotalAmount | customCurrency }}</span>
           </div>
           <div class="ot-pay-row">
-            <span>Delivery fee</span>
+            <span>{{ 'orders.delivery_fee' | translate }}</span>
             <span>{{ order.deliveryFee | customCurrency }}</span>
           </div>
         </div>
 
         <div class="ot-total-row">
-          <span class="ot-total-label">Total charged</span>
+          <span class="ot-total-label">{{ 'orders.total_charged' | translate }}</span>
           <span class="ot-total-amount">{{ order.totalAmount | customCurrency }}</span>
         </div>
 
         <div class="ot-payment-method">
           <ion-icon name="card-outline"></ion-icon>
+          <!-- Moyen de paiement : lu directement depuis PAYMENT_METHOD_LABELS -->
           <span>{{ formatPaymentMethod(order.paymentMethod) }}</span>
         </div>
       </div>
@@ -205,23 +223,22 @@
     </div>
   }
 
-  <!-- ── Empty / Error ── -->
+  <!-- ── Vide / Erreur ── -->
   @if (!isLoading && !order) {
     <div class="ot-empty">
       <div class="ot-empty-icon">
         <ion-icon name="alert-circle-outline"></ion-icon>
       </div>
-      <p class="ot-empty-title">Order not found</p>
-      <p class="ot-empty-sub">We couldn't load this order. Please try again.</p>
+      <p class="ot-empty-title">{{ 'orders.order_not_found' | translate }}</p>
+      <p class="ot-empty-sub">{{ 'orders.order_not_found_sub' | translate }}</p>
       <button class="ot-retry-btn" (click)="retry()">
         <ion-icon name="refresh-outline"></ion-icon>
-        Retry
+        {{ 'orders.retry' | translate }}
       </button>
     </div>
   }
 
   <div class="ot-bottom-spacer"></div>
 
-  
 </ion-content>
 <app-footer></app-footer>

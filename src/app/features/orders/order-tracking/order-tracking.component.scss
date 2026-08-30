@@ -3,12 +3,23 @@
    ========================================= */
 
 :host {
+  /* ══ flex column plein écran — garantit que TOUT le contenu défile
+     correctement jusqu'au footer, même comportement que catalog/nearby/
+     promotions ══ */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+
   --blue-dark:    #0D47A1;
   --blue-primary: #1565C0;
   --blue-mid:     #1E88E5;
   --blue-light:   #BBDEFB;
   --blue-pale:    #E3F2FD;
   --blue-bg:      #EFF6FF;
+  --indigo:       #3730A3;
+  --indigo-pale:  #E0E7FF;
   --white:        #FFFFFF;
   --text-primary:   #0D1B2A;
   --text-secondary: #546E7A;
@@ -25,12 +36,13 @@
 }
 
 /* ── Content ── */
-.ot-content { --background: var(--blue-bg); }
+.ot-content { --background: var(--blue-bg); flex: 1; }
 
 /* ─────────────────────────────────────────
    STICKY HEADER
 ───────────────────────────────────────── */
 .ot-header {
+  flex-shrink: 0;
   position: sticky;
   top: 0;
   z-index: 50;
@@ -180,14 +192,55 @@
   ion-icon { font-size: 13px; }
 }
 
-.pill-blue     { background: var(--blue-pale);  color: var(--blue-primary); border: 1px solid var(--blue-light); }
+.pill-blue     { background: var(--blue-pale);   color: var(--blue-primary); border: 1px solid var(--blue-light); }
+.pill-indigo   { background: var(--indigo-pale); color: var(--indigo);       border: 1px solid #C7D2FE; }
 .pill-amber    { background: #FFF8E1; color: #E65100; border: 1px solid #FFCC02; }
 .pill-green    { background: #E8F5E9; color: #1B5E20; border: 1px solid #A5D6A7; }
 .pill-red      { background: #FFEBEE; color: #B71C1C; border: 1px solid #FFCDD2; }
 
 /* ─────────────────────────────────────────
+   ANNULÉE / ÉCHOUÉE
+───────────────────────────────────────── */
+.ot-canceled-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #FFEBEE;
+  border-color: #FFCDD2;
+
+  ion-icon {
+    font-size: 24px;
+    color: var(--danger);
+    flex-shrink: 0;
+  }
+
+  h3 {
+    margin: 0 0 4px;
+    font-size: 14px;
+    font-weight: 800;
+    color: #B71C1C;
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: #7f1d1d;
+    line-height: 1.5;
+  }
+}
+
+/* ─────────────────────────────────────────
    PROGRESS STEPPER
 ───────────────────────────────────────── */
+.ot-active-step-desc {
+  margin: -6px 0 14px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  background: var(--blue-pale);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+
 .ot-stepper {
   display: flex;
   flex-direction: column;
@@ -609,4 +662,8 @@
   ion-icon { font-size: 18px; }
 }
 
-.ot-bottom-spacer { height: 48px; }
+/* Zone de sécurité basse (encoche / home indicator iOS) — définie une
+   seule fois (le fichier précédent avait deux règles contradictoires). */
+.ot-bottom-spacer {
+  height: calc(48px + var(--ion-safe-area-bottom, 0px));
+}

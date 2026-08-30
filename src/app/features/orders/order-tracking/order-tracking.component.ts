@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { IonContent, IonIcon, NavController, IonSpinner } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -15,6 +15,8 @@ import {
   storefrontOutline,
   checkmarkOutline,
   checkmarkCircleOutline,
+  checkmarkDoneOutline,
+  closeCircleOutline,
   ellipse,
   ellipseOutline,
   calendarOutline,
@@ -25,62 +27,74 @@ import {
   gitBranchOutline,
 } from 'ionicons/icons';
 import { Subscription } from 'rxjs';
+import { TranslatePipe } from '@ngx-translate/core';
 
-import { PaymentMethod } from 'src/app/core/model/enums/payment-method';
-import { ShopDeliveryStatus } from 'src/app/core/model/enums/shopDeliveryStatus';
-import { FooterComponent } from "src/app/shared/footer/footer.component";
+import { ShopDeliveryStatus, ShopDeliveryStatusLabel } from 'src/app/core/model/enums/shopDeliveryStatus';
+import { DeliveryType, DELIVERY_TYPE_LABELS } from 'src/app/core/model/enums/deliveryType';
+import { PaymentMethod, PAYMENT_METHOD_LABELS } from 'src/app/core/model/enums/payment-method';
+import { OrderStatus, OrderStatusLabel } from 'src/app/core/model/response/orders/orderStatus';
 import { CustomerOrderDetailResponse } from 'src/app/core/model/response/orders/customer.order.detail.response';
 import { CustomCurrencyPipe } from 'src/app/core/services/custom.currency.pipe';
 import { OrdersService } from 'src/app/core/services/orders.service';
+import { FooterComponent } from 'src/app/shared/footer/footer.component';
 
+interface ProgressStep {
+  key: OrderStatus;
+  labelKey: string;
+  descriptionKey: string;
+}
 
-interface ProgressStep { key: string; label: string; }
-
+/** Ordre déclaré de l'enum OrderStatus (enum numérique côté TS/Java) — sert
+ *  à retrouver le bon statut que le backend renvoie un index numérique
+ *  (ordinal Java) ou le nom littéral ("SHIPPED"). */
+const ORDER_STATUS_ORDINALS: OrderStatus[] = [
+  OrderStatus.CREATED, OrderStatus.DRAFF, OrderStatus.PAYMENT_PENDING, OrderStatus.PENDING_CONFIRMATION,
+  OrderStatus.PAID, OrderStatus.CONFIRMED, OrderStatus.SHIPPED, OrderStatus.DELIVERED,
+  OrderStatus.COMPLETED, OrderStatus.CANCELED, OrderStatus.FAILED,
+];
 
 @Component({
   selector: 'app-order-tracking',
   standalone: true,
-  imports: [CommonModule, IonContent, IonIcon, IonSpinner, DatePipe, CurrencyPipe, CustomCurrencyPipe, FooterComponent],
+  imports: [CommonModule, IonContent, IonIcon, IonSpinner, DatePipe, CustomCurrencyPipe, FooterComponent, TranslatePipe],
   templateUrl: './order-tracking.component.html',
   styleUrls: ['./order-tracking.component.scss'],
 })
 export class OrderTrackingComponent implements OnInit, OnDestroy {
- 
+
   order: CustomerOrderDetailResponse | null = null;
   isLoading = false;
- 
+
+  /** Étapes du parcours "normal" d'une commande (hors annulation/échec,
+   *  gérés séparément par une bannière dédiée dans le template). */
   readonly progressSteps: ProgressStep[] = [
-    { key: 'CREATED',              label: 'Order Placed'         },
-    { key: 'PAYMENT_PENDING',      label: 'Awaiting Payment'     },
-    { key: 'PAID',                 label: 'Payment Confirmed'    },
-    { key: 'CONFIRMED',            label: 'Order Confirmed'      },
-    { key: 'SHIPPED',              label: 'Shipped'              },
-    { key: 'DELIVERED',            label: 'Delivered'            },
-    { key: 'COMPLETED',            label: 'Completed'            },
+    { key: OrderStatus.CREATED,         labelKey: 'orders_progress.order_placed',       descriptionKey: 'orders_progress.order_placed_desc' },
+    { key: OrderStatus.PAYMENT_PENDING, labelKey: 'orders_progress.payment_pending',    descriptionKey: 'orders_progress.payment_pending_desc' },
+    { key: OrderStatus.PAID,            labelKey: 'orders_progress.payment_confirmed',  descriptionKey: 'orders_progress.payment_confirmed_desc' },
+    { key: OrderStatus.CONFIRMED,       labelKey: 'orders_progress.order_confirmed',    descriptionKey: 'orders_progress.order_confirmed_desc' },
+    { key: OrderStatus.SHIPPED,         labelKey: 'orders_progress.shipped',            descriptionKey: 'orders_progress.shipped_desc' },
+    { key: OrderStatus.DELIVERED,       labelKey: 'orders_progress.delivered',          descriptionKey: 'orders_progress.delivered_desc' },
+    { key: OrderStatus.COMPLETED,       labelKey: 'orders_progress.completed',          descriptionKey: 'orders_progress.completed_desc' },
   ];
- 
-  private readonly stepOrder = [
-    'CREATED', 'DRAFF', 'PAYMENT_PENDING', 'PENDING_CONFIRMATION',
-    'PAID', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'COMPLETED',
-  ];
- 
+
   private subs: Subscription[] = [];
   private orderId: string | null = null;
- 
+
   private route        = inject(ActivatedRoute);
-  private orderService = inject(OrdersService);
-  private navCtrl      = inject(NavController);
- 
+  private orderService  = inject(OrdersService);
+  private navCtrl       = inject(NavController);
+
   constructor() {
     addIcons({
       arrowBackOutline, locationOutline, callOutline, personOutline,
       documentTextOutline, walletOutline, cubeOutline, timeOutline,
       storefrontOutline, checkmarkOutline, checkmarkCircleOutline,
+      checkmarkDoneOutline, closeCircleOutline,
       ellipse, ellipseOutline, calendarOutline, cardOutline,
       imageOutline, alertCircleOutline, refreshOutline, gitBranchOutline,
     });
   }
- 
+
   ngOnInit(): void {
     this.orderId = this.route.snapshot.paramMap.get('id');
     if (this.orderId) {
@@ -90,11 +104,11 @@ export class OrderTrackingComponent implements OnInit, OnDestroy {
       this.goBack();
     }
   }
- 
+
   ngOnDestroy(): void {
     this.subs.forEach(s => s.unsubscribe());
   }
- 
+
   getDetails(id: string): void {
     this.isLoading = true;
     const sub = this.orderService.getCustomerOrderDetail(id).subscribe({
@@ -103,85 +117,110 @@ export class OrderTrackingComponent implements OnInit, OnDestroy {
     });
     this.subs.push(sub);
   }
- 
+
   retry(): void {
     if (this.orderId) this.getDetails(this.orderId);
   }
- 
+
   goBack(): void { this.navCtrl.back(); }
- 
+
+  /* ── Normalisation du statut ──────────────────────────────────────────
+   *  Le backend peut renvoyer le statut sous 3 formes selon la sérialisation
+   *  Jackson : l'ordinal numérique (0, 6, 8...), le nom littéral ("SHIPPED"),
+   *  ou une chaîne numérique ("6"). On normalise vers l'enum TS dans tous
+   *  les cas pour ne plus avoir à dupliquer la logique partout. */
+  private resolveStatus(raw: unknown): OrderStatus {
+    if (typeof raw === 'number') {
+      return ORDER_STATUS_ORDINALS[raw] ?? OrderStatus.CREATED;
+    }
+    if (typeof raw === 'string') {
+      const byName = (OrderStatus as unknown as Record<string, OrderStatus>)[raw];
+      if (byName !== undefined) return byName;
+      const asNumber = parseInt(raw, 10);
+      if (!isNaN(asNumber)) return ORDER_STATUS_ORDINALS[asNumber] ?? OrderStatus.CREATED;
+    }
+    return OrderStatus.CREATED;
+  }
+
+  get currentStatus(): OrderStatus | null {
+    return this.order ? this.resolveStatus(this.order.status) : null;
+  }
+
+  get isCanceledOrFailed(): boolean {
+    return this.currentStatus === OrderStatus.CANCELED || this.currentStatus === OrderStatus.FAILED;
+  }
+
   /* ── Progress stepper helpers ── */
- 
+
   private currentStepIndex(): number {
-    if (!this.order) return -1;
-    const s = String(this.order.status);
-    const idx = this.stepOrder.indexOf(s);
-    return idx >= 0 ? idx : parseInt(s, 10);
+    const status = this.currentStatus;
+    if (status === null) return -1;
+    return this.progressSteps.findIndex(s => s.key === status);
   }
- 
-  isStepDone(key: string): boolean {
+
+  isStepDone(key: OrderStatus): boolean {
     const cur = this.currentStepIndex();
-    return cur > this.stepOrder.indexOf(key);
+    const idx = this.progressSteps.findIndex(s => s.key === key);
+    return cur > idx;
   }
- 
-  isStepActive(key: string): boolean {
+
+  isStepActive(key: OrderStatus): boolean {
     const cur = this.currentStepIndex();
-    return cur === this.stepOrder.indexOf(key);
+    const idx = this.progressSteps.findIndex(s => s.key === key);
+    return cur === idx;
   }
- 
-  /* ── Status display helpers ── */
- 
-  getStatusLabel(status: string | number): string {
-    const s = String(status);
-    const m: Record<string, string> = {
-      CREATED: 'Created', '0': 'Created',
-      DRAFF: 'Draft', '1': 'Draft',
-      PAYMENT_PENDING: 'Payment Pending', '2': 'Payment Pending',
-      PENDING_CONFIRMATION: 'Confirming', '3': 'Confirming',
-      PAID: 'Paid', '4': 'Paid',
-      CONFIRMED: 'Confirmed', '5': 'Confirmed',
-      SHIPPED: 'Shipped', '6': 'Shipped',
-      DELIVERED: 'Delivered', '7': 'Delivered',
-      COMPLETED: 'Completed', '8': 'Completed',
-      CANCELED: 'Cancelled', '9': 'Cancelled',
-      FAILED: 'Failed', '10': 'Failed',
-    };
-    return m[s] ?? 'Processing';
+
+  get activeStepDescriptionKey(): string | null {
+    const idx = this.currentStepIndex();
+    return idx >= 0 ? this.progressSteps[idx].descriptionKey : null;
   }
- 
-  getStatusClass(status: string | number): string {
-    const s = String(status);
-    if (['PAID','CONFIRMED','DELIVERED','COMPLETED','4','5','7','8'].includes(s)) return 'pill-green';
-    if (['CANCELED','FAILED','9','10'].includes(s)) return 'pill-red';
-    if (['SHIPPED','6'].includes(s)) return 'pill-blue';
-    return 'pill-amber';
+
+  /* ── Statut de la commande : libellé / couleur / icône ── */
+
+  getStatusLabel(status: unknown): string {
+    return OrderStatusLabel[this.resolveStatus(status)] ?? 'En traitement';
   }
- 
-  getStatusIcon(status: string | number): string {
-    const s = String(status);
-    if (['DELIVERED','COMPLETED','7','8'].includes(s)) return 'checkmark-circle-outline';
-    if (['CANCELED','FAILED','9','10'].includes(s))    return 'close-circle-outline';
-    if (['SHIPPED','6'].includes(s))                   return 'cube-outline';
-    if (['PAID','CONFIRMED','4','5'].includes(s))      return 'card-outline';
-    return 'time-outline';
+
+  getStatusClass(status: unknown): string {
+    switch (this.resolveStatus(status)) {
+      case OrderStatus.PAID:
+      case OrderStatus.CONFIRMED:
+        return 'pill-blue';
+      case OrderStatus.SHIPPED:
+        return 'pill-indigo';
+      case OrderStatus.DELIVERED:
+      case OrderStatus.COMPLETED:
+        return 'pill-green';
+      case OrderStatus.CANCELED:
+      case OrderStatus.FAILED:
+        return 'pill-red';
+      default:
+        return 'pill-amber'; // CREATED, DRAFF, PAYMENT_PENDING, PENDING_CONFIRMATION
+    }
   }
- 
-  /* ── Shop delivery status ── */
- 
-  formatDeliveryStatus(status: ShopDeliveryStatus): string {
-    const m: Record<ShopDeliveryStatus, string> = {
-      [ShopDeliveryStatus.PENDING]:          'Pending',
-      [ShopDeliveryStatus.CONFIRMED]:        'Confirmed',
-      [ShopDeliveryStatus.PREPARING]:        'Preparing',
-      [ShopDeliveryStatus.READY_FOR_PICKUP]: 'Ready',
-      [ShopDeliveryStatus.OUT_FOR_DELIVERY]: 'On the way',
-      [ShopDeliveryStatus.DELIVERED]:        'Delivered',
-      [ShopDeliveryStatus.FAILED]:           'Failed',
-      [ShopDeliveryStatus.CANCELED]:         'Cancelled',
-    };
-    return m[status] ?? status;
+
+  getStatusIcon(status: unknown): string {
+    switch (this.resolveStatus(status)) {
+      case OrderStatus.PAID:
+        return 'card-outline';
+      case OrderStatus.CONFIRMED:
+        return 'checkmark-circle-outline';
+      case OrderStatus.SHIPPED:
+        return 'cube-outline';
+      case OrderStatus.DELIVERED:
+        return 'checkmark-circle-outline';
+      case OrderStatus.COMPLETED:
+        return 'checkmark-done-outline';
+      case OrderStatus.CANCELED:
+      case OrderStatus.FAILED:
+        return 'close-circle-outline';
+      default:
+        return 'time-outline';
+    }
   }
- 
+
+  /* ── Statut de livraison par boutique ── */
+
   getDeliveryClass(status: ShopDeliveryStatus): string {
     const m: Record<ShopDeliveryStatus, string> = {
       [ShopDeliveryStatus.PENDING]:          'dp-pending',
@@ -195,16 +234,22 @@ export class OrderTrackingComponent implements OnInit, OnDestroy {
     };
     return m[status] ?? 'dp-pending';
   }
- 
-  /* ── Payment ── */
- 
+
+  formatDeliveryStatus(status: ShopDeliveryStatus): string {
+    return ShopDeliveryStatusLabel[status] ?? 'En attente';
+  }
+
+  /* ── Adresse / mode de retrait ── */
+
+  getAddressLabelKey(deliveryType: DeliveryType): string {
+    return deliveryType === DeliveryType.PICKUP
+      ? 'orders.pickup_location'
+      : 'orders.delivery_address';
+  }
+
+  /* ── Moyen de paiement ── */
+
   formatPaymentMethod(method: PaymentMethod): string {
-    const m: Partial<Record<PaymentMethod, string>> = {
-      [PaymentMethod.MTN_MOBILE_MONEY]: 'MTN Mobile Money',
-      [PaymentMethod.ORANGE_MONEY]:     'Orange Money',
-      [PaymentMethod.CASH]:             'Cash on Delivery',
-      [PaymentMethod.STRIPE]:           'Stripe',
-    };
-    return m[method] ?? String(method).replace(/_/g, ' ');
+    return PAYMENT_METHOD_LABELS[method] ?? 'Non renseigné';
   }
 }

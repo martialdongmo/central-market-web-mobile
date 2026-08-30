@@ -9,6 +9,7 @@ import { Stripe } from '@capacitor-community/stripe';
 import { loadStripe } from '@stripe/stripe-js';
 import { environment } from 'src/environments/environment.development';
 import { OneSignalService } from './core/utils/one-signal.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +23,18 @@ export class AppComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private subs: Subscription[] = [];
   private readonly oneSignalService = inject(OneSignalService);
+  private readonly translate = inject(TranslateService);
 
+  constructor() {
+    const savedLang = localStorage.getItem('preferred_language');
+    if (savedLang) {
+      this.translate.use(savedLang);
+    } else {
+      const deviceLang = navigator.language.startsWith('fr') ? 'fr' : 'en';
+      this.translate.use(deviceLang);
+      localStorage.setItem('preferred_language', deviceLang);
+    }
+  }
 
   async ngOnInit(): Promise<void> {
     await this.initStripe();
@@ -39,8 +51,8 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subs.push(sub);
   }
 
-  // ── Pont entre l'événement OS "appUrlOpen" et le Router Angular ──────────
-  private initDeepLinkListener(): void {
+  // Deep link listener
+   private initDeepLinkListener(): void {
     if (!Capacitor.isNativePlatform()) return;
 
     App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
@@ -67,23 +79,22 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     });
   }
-
+  // Stripe initialization
   private async initStripe(): Promise<void> {
     if (Capacitor.isNativePlatform()) {
       console.log('[Stripe] Initializing for native platform');
       await Stripe.initialize({ publishableKey: environment.stripePublishableKey });
-      console.log('[Stripe]  Native initialized');
+      console.log('[Stripe] Native initialized');
     } else {
       console.log('[Stripe] Initializing for web platform');
       const stripe = await loadStripe(environment.stripePublishableKey);
       if (!stripe) {
-        console.error('[Stripe] ❌ Web initialization failed');
+        console.error('[Stripe] Web initialization failed');
         return;
       }
       console.log('[Stripe] Web initialized');
     }
   }
-
 
   ngOnDestroy(): void {
     this.subs.forEach(s => s.unsubscribe());

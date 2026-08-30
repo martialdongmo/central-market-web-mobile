@@ -8,3 +8,16 @@ export enum ShopDeliveryStatus {
   FAILED = 'FAILED',                // Delivery attempt failed
   CANCELED = 'CANCELED'             // Shop canceled their part
 }
+
+
+// Labels en français
+export const ShopDeliveryStatusLabel: Record<ShopDeliveryStatus, string> = {
+  [ShopDeliveryStatus.PENDING]: 'En attente',
+  [ShopDeliveryStatus.CONFIRMED]: 'Confirmé',
+  [ShopDeliveryStatus.PREPARING]: 'En préparation',
+  [ShopDeliveryStatus.READY_FOR_PICKUP]: 'Prêt pour retrait',
+  [ShopDeliveryStatus.OUT_FOR_DELIVERY]: 'En cours de livraison',
+  [ShopDeliveryStatus.DELIVERED]: 'Livré',
+  [ShopDeliveryStatus.FAILED]: 'Échec de livraison',
+  [ShopDeliveryStatus.CANCELED]: 'Annulé',
+};
