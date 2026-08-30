@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 })
 export class CategoryService {
 
-  API_URL = environment.categoryEndpoint;
+  API_URL = environment.publicEndPoint;
 
   constructor(private http: HttpClient) { }
 
@@ -18,7 +18,7 @@ export class CategoryService {
   }
 
   getAllCategories(): Observable<CategoryResponse[]> {
-    return this.http.get<CategoryResponse[]>(`${this.API_URL}/public/all`);
+    return this.http.get<CategoryResponse[]>(`${this.API_URL}/categories/all`);
   }
 
 

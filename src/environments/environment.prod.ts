@@ -11,5 +11,7 @@ export const environment = {
   invoiceEndpoint: 'https://kapexpert.cloud:9009/api/v1/bis/invoices',
   driversEndpoint: 'https://kapexpert.cloud:9009/api/v1/bis/drivers',
   stripePublishableKey: 'pk_live_51Tts90LZvUAOkWTzqT3QqdC17dmhNeN3UcbrYfAQNmHjmijrn7bNNgsw0AlujJHSezAUCgONhdlLOJpFyqexqmlr00MphlzVtZ',
-  ONESIGNAL_APP_ID: '5651de09-12d8-4b6c-a423-243e87a4f19f'
+  ONESIGNAL_APP_ID: '5651de09-12d8-4b6c-a423-243e87a4f19f',
+  publicEndPoint: 'https://kapexpert.cloud:9009/api/v1/bis/public',
+
 };
