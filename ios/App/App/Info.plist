@@ -2,9 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+
+    <!-- Capacitor -->
     <key>CAPACITOR_DEBUG</key>
     <string>$(CAPACITOR_DEBUG)</string>
 
+    <!-- Application -->
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
 
@@ -30,24 +33,27 @@
     <key>CFBundleShortVersionString</key>
     <string>2.4.2</string>
 
-    <!-- Build Number -->
+    <!-- Build -->
     <key>CFBundleVersion</key>
     <string>15</string>
 
     <key>LSRequiresIPhoneOS</key>
     <true/>
 
+    <!-- Launch Screen -->
     <key>UILaunchStoryboardName</key>
     <string>LaunchScreen</string>
 
     <key>UIMainStoryboardFile</key>
     <string>Main</string>
 
+    <!-- Device capabilities -->
     <key>UIRequiredDeviceCapabilities</key>
     <array>
         <string>armv7</string>
     </array>
 
+    <!-- iPhone orientation -->
     <key>UISupportedInterfaceOrientations</key>
     <array>
         <string>UIInterfaceOrientationPortrait</string>
@@ -55,6 +61,7 @@
         <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
 
+    <!-- iPad orientation -->
     <key>UISupportedInterfaceOrientations~ipad</key>
     <array>
         <string>UIInterfaceOrientationPortrait</string>
@@ -66,10 +73,32 @@
     <key>UIViewControllerBasedStatusBarAppearance</key>
     <true/>
 
-    <!-- OAuth URL Scheme for callback handling -->
+    <!-- ================================ -->
+    <!-- PRIVACY PERMISSIONS -->
+    <!-- ================================ -->
+
+    <!-- Camera -->
+    <key>NSCameraUsageDescription</key>
+    <string>GroupinG utilise votre caméra pour vous permettre de prendre des photos et d'utiliser les fonctionnalités nécessitant l'accès à la caméra.</string>
+
+    <!-- Location - precise / approximate -->
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>GroupinG utilise votre position pour vous proposer des contenus et services à proximité.</string>
+
+    <!-- Location - always (à conserver uniquement si l'application demande réellement l'accès en arrière-plan) -->
+    <!--
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>GroupinG utilise votre position pour vous proposer des contenus et services à proximité.</string>
+    -->
+
+    <!-- ================================ -->
+    <!-- OAUTH CALLBACK -->
+    <!-- ================================ -->
+
     <key>CFBundleURLTypes</key>
     <array>
         <dict>
+
             <key>CFBundleURLName</key>
             <string>OAuth Callback</string>
 
@@ -77,6 +106,7 @@
             <array>
                 <string>cm.kapexpert.grouping</string>
             </array>
+
         </dict>
     </array>
 
