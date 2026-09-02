@@ -1,203 +1,211 @@
-// oauth-callback.page.scss
+// callback.component.scss
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+$font-base: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+
+// ── palette bleu clair (cohérente avec login.component.scss) ──
+$blue-deep:   #0C4A6E;
+$blue-mid:    #0284C7;
+$blue-light:  #38BDF8;
+$blue-pale:   #E0F2FE;
+$blue-accent: #FBBF24; // ambre, réservé à l'accent de marque (le "G")
+
+$text:   #0f172a;
+$text2:  #64748b;
+$text3:  #94a3b8;
+$bg:     #ffffff;
+
+:host {
+  display: block;
+  height: 100%;
+  font-family: $font-base;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 0.12; transform: scale(1); }
-  50%       { opacity: 0.28; transform: scale(1.14); }
-}
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-// Palette
-$blue-50:  #E6F1FB;
-$blue-100: #B5D4F4;
-$blue-400: #378ADD;
-$blue-600: #185FA5;
-$blue-800: #0C447C;
-
-ion-content.callback-theme {
-  --background: #{$blue-50};
+.callback-theme {
+  --background: #{$bg};
 }
 
 .auth-container {
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100%;
-  padding: 2rem 1.5rem;
+  gap: 28px;
+  padding: 40px 32px;
   text-align: center;
-  animation: fadeUp 0.45s ease both;
 }
 
-// ─── Card wrapper (optional — remove if you prefer full bleed) ───
-.auth-container {
-  background: #ffffff;
-  border-radius: 20px;
-  max-width: 380px;
-  margin: auto;
-  padding: 2.5rem 2rem 2.25rem;
-}
-
-// ─── Logo ───────────────────────────────────────────────────────
+// ══ LOGO ══
 .brand-logo {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 10px;
-  margin-bottom: 2rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 0.5px solid #{$blue-100};
 }
 
 .logo-image {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: $blue-pale;
+  padding: 6px;
   object-fit: contain;
-  flex-shrink: 0;
 }
 
 .logo-name {
-  font-size: 20px;
-  font-weight: 500;
-  color: #{$blue-800};
-  letter-spacing: -0.4px;
+  font-family: $font-base;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -.01em;
+  color: $blue-deep;
 }
 
 .logo-accent {
-  color: #{$blue-400};
+  color: $blue-accent;
 }
 
-// ─── Spinner ─────────────────────────────────────────────────────
+// ══ SPINNER ══
 .spinner-wrapper {
   position: relative;
-  width: 76px;
-  height: 76px;
-  margin: 0 auto 1.75rem;
+  width: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .pulse-ring {
   position: absolute;
-  inset: -12px;
+  inset: 0;
   border-radius: 50%;
-  background: #{$blue-400};
-  animation: pulse 2.4s ease-in-out infinite;
+  background: $blue-pale;
+  animation: pulse 2s ease-out infinite;
 }
 
 .spin-ring {
   position: absolute;
-  inset: 0;
+  inset: 6px;
   border-radius: 50%;
-  border: 2.5px solid #{$blue-100};
-  border-top-color: #{$blue-600};
-  border-right-color: #{$blue-400};
-  animation: spin 1s linear infinite;
+  border: 3px solid $blue-pale;
+  border-top-color: $blue-light;
+  animation: spin .9s linear infinite;
 }
 
 .icon-circle {
-  position: absolute;
-  inset: 10px;
+  position: relative;
+  z-index: 1;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  background: #{$blue-50};
   display: flex;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(135deg, $blue-mid, $blue-light);
+  box-shadow: 0 10px 25px rgba(14, 165, 233, .35);
 
   ion-icon {
-    font-size: 22px;
-    color: #{$blue-600};
+    font-size: 26px;
+    color: #ffffff;
   }
 }
 
-// ─── Status text ─────────────────────────────────────────────────
-.status-text {
-  margin-bottom: 1.75rem;
+@keyframes pulse {
+  0%   { transform: scale(.85); opacity: .9; }
+  70%  { transform: scale(1.25); opacity: 0; }
+  100% { transform: scale(1.25); opacity: 0; }
+}
 
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+// ══ STATUS TEXT ══
+.status-text {
   h1 {
+    margin: 0 0 4px;
+    font-family: $font-base;
     font-size: 18px;
-    font-weight: 500;
-    color: #{$blue-800};
-    margin: 0 0 0.4rem;
+    font-weight: 700;
+    color: $text;
   }
 
   p {
-    font-size: 13px;
-    color: #{$blue-400};
-    line-height: 1.6;
     margin: 0;
+    font-size: 13px;
+    color: $text3;
   }
 }
 
-// ─── Steps ───────────────────────────────────────────────────────
+// ══ STEPS ══
 .steps-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   width: 100%;
-  margin-bottom: 1.75rem;
+  max-width: 260px;
 }
 
 .step {
   display: flex;
   align-items: center;
   gap: 10px;
-  border-radius: 8px;
-  padding: 10px 14px;
   font-size: 13px;
-  text-align: left;
-  animation: fadeUp 0.5s ease both;
+  font-weight: 600;
+  color: $text3;
 
-  &.done {
-    background: #{$blue-50};
-    color: #{$blue-800};
-  }
-
-  &.active {
-    background: #{$blue-50};
-    color: #{$blue-600};
-  }
-
-  &.idle {
-    background: #f4f8fd;
-    color: #{$blue-100};
+  span {
+    text-align: left;
   }
 }
 
-.step-check {
-  font-size: 15px;
-  color: #{$blue-600};
-  flex-shrink: 0;
+.step.done {
+  color: $text2;
+
+  .step-check {
+    font-size: 18px;
+    color: $blue-mid;
+    flex-shrink: 0;
+  }
+}
+
+.step.active {
+  color: $text;
+  font-weight: 700;
 }
 
 .step-dot {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
+  background: $text3;
 
-  &.active { background: #{$blue-400}; }
-  &.idle   { background: #{$blue-100}; }
+  &.active {
+    background: $blue-light;
+    box-shadow: 0 0 0 4px $blue-pale;
+    animation: dot-pulse 1.4s ease-in-out infinite;
+  }
 }
 
-// ─── Security badge ──────────────────────────────────────────────
+@keyframes dot-pulse {
+  0%, 100% { box-shadow: 0 0 0 4px $blue-pale; }
+  50%      { box-shadow: 0 0 0 7px $blue-pale; }
+}
+
+// ══ SECURITY BADGE ══
 .security-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
-  color: #{$blue-600};
-  background: #{$blue-50};
-  border-radius: 100px;
-  padding: 5px 14px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: $blue-pale;
+  color: $blue-deep;
+  font-size: 11px;
+  font-weight: 700;
 
   ion-icon {
     font-size: 13px;
-    color: #{$blue-400};
+    color: $blue-mid;
   }
 }

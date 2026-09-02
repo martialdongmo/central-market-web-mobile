@@ -1,23 +1,23 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './auth/guards/auth-guard';
 
-// ─── Pages importées directement (peu fréquentes ou déjà chargées) ──────────
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { CallbackComponent } from './auth/callback/callback.component';
-import { ConfirmationOrderComponent } from './orders/confirmation-order/confirmation-order.component';
+import { ConfirmationOrderComponent } from './features/orders/confirmation-order/confirmation-order.component';
 import { VerifyOtpComponent } from './auth/verify-otp/verify-otp.component';
-import { CatalogComponent } from './catalog/catalog.component';
-import { PaymentSuccessComponent } from './shares/payment-success/payment-success.component';
-import { OrdersComponent } from './orders/my-orders/orders.component';
-import { OrderTrackingComponent } from './orders/order-tracking/order-tracking.component';
-import { TermsServiceComponent } from './shares/terms-service/terms-service.component';
-import { PravacyPolicyComponent } from './shares/pravacy-policy/pravacy-policy.component';
-import { HelpSupportComponent } from './shares/help-support/help-support.component';
-import { PaymentPolicyComponent } from './shares/payment-policy/payment-policy.component';
-import { ChangePasswordComponent } from './auth/change-password/change-password.component';
+import { CatalogComponent } from './features/catalog-product/catalog/catalog.component';
+import { PaymentSuccessComponent } from './features/payments/payment-success/payment-success.component';
+import { OrdersComponent } from './features/orders/my-orders/orders.component';
+import { OrderTrackingComponent } from './features/orders/order-tracking/order-tracking.component';
+import { TermsServiceComponent } from './shared/terms-service/terms-service.component';
+import { PravacyPolicyComponent } from './shared/pravacy-policy/pravacy-policy.component';
+import { HelpSupportComponent } from './shared/help-support/help-support.component';
+import { PaymentPolicyComponent } from './shared/payment-policy/payment-policy.component';
 import { RegisterDriverComponent } from './driver/register-driver/register-driver.component';
 import { ScanOrderComponent } from './driver/scan-order/scan-order.component';
-import { CancelPaymentComponent } from './shares/cancel-payment/cancel-payment.component';
+import { CancelPaymentComponent } from './features/payments/cancel-payment/cancel-payment.component';
+import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './auth/reset-password/reset-password.component';
 
 export const routes: Routes = [
 
@@ -49,15 +49,16 @@ export const routes: Routes = [
   },
   {
     path: 'change-password',
-    component: ChangePasswordComponent,
+    component: ResetPasswordComponent,
     title: 'Change Password',
   },
+  {
+    path: 'forgot-password',
+    component: ForgotPasswordComponent,
+    title: 'Forgot Password',
+  },
 
-  // ════════════════════════════════════════════════════════════
-  // PAGES AVEC FOOTER
-  // Chaque template se termine par <app-footer></app-footer>
-  // ════════════════════════════════════════════════════════════
-
+ 
   {
     path: 'catalog',
     component: CatalogComponent,  // déjà <app-footer> dans son template ✓
@@ -66,39 +67,38 @@ export const routes: Routes = [
   {
     path: 'nearby',
     loadComponent: () =>
-      import('./nearby/nearby.component').then(m => m.NearbyComponent),
-    // → ajouter <app-footer> dans nearby.component.html
+      import('./features/catalog-product/nearby/nearby.component').then(m => m.NearbyComponent),
   },
   {
     path: 'promotions',
     loadComponent: () =>
-      import('./promotions/promotions.component').then(m => m.PromotionsComponent),
+      import('./features/catalog-product/promotions/promotions.component').then(m => m.PromotionsComponent),
   },
   {
     path: 'details/:productId',
     loadComponent: () =>
-      import('./details-page/details-page.component').then(m => m.DetailsPageComponent),
-    // → ajouter <app-footer> dans details-page.component.html
+      import('./features/catalog-product/details-page/details-page.component').then(m => m.DetailsPageComponent),
   },
+  
+  // par exemple juste après la route 'promotions'
+  {
+    path: 'shop/:shopId',
+    loadComponent: () =>
+      import('./features/catalog-product/shop/shop.component').then(m => m.ShopComponent),
+  },
+
   {
     path: 'cart',
     loadComponent: () =>
-      import('./carts/cart/cart.component').then(m => m.CartComponent),
-    // → ajouter <app-footer> dans cart.component.html
+      import('./features/carts/cart/cart.component').then(m => m.CartComponent),
   },
-  {
-    path: 'profile',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./profil/profil.component').then(m => m.ProfilComponent),
-    // → ajouter <app-footer> dans profil.component.html
-  },
+ 
   {
     path: 'checkout',
     canActivate: [authGuard],
     title: 'Checkout',
     loadComponent: () =>
-      import('./carts/checkout/checkout.component').then(m => m.CheckoutComponent),
+      import('./features/carts/checkout/checkout.component').then(m => m.CheckoutComponent),
     // → ajouter <app-footer> dans checkout.component.html (ou pas, selon votre choix)
   },
   {
@@ -121,6 +121,15 @@ export const routes: Routes = [
     component: ConfirmationOrderComponent,
     title: 'Order Confirmation',
   },
+
+   {
+    path: 'profile',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/profil/profil.component').then(m => m.ProfilComponent),
+    // → ajouter <app-footer> dans profil.component.html
+  },
+  // payments
   {
     path: 'payment-success/:orderId',
     component: PaymentSuccessComponent,
@@ -135,7 +144,7 @@ export const routes: Routes = [
   },
   {
     path: 'payment-confirm/:orderId',
-    loadComponent: () => import('./shares/stripe-confirmation/stripe-confirmation.component').then(m => m.StripeConfirmationComponent)
+    loadComponent: () => import('./features/payments/stripe-confirmation/stripe-confirmation.component').then(m => m.StripeConfirmationComponent)
   },
   {
     path: 'become-delivery',

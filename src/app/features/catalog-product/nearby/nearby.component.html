@@ -1,0 +1,90 @@
+<!-- nearby.component.html -->
+
+<div class="nearby-header">
+  <div class="header-topbar">
+    <button class="icon-btn" (click)="goBack()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </button>
+
+    <h2 class="nearby-title">
+      <ion-icon name="location-outline"></ion-icon>
+      Boutiques à proximité
+    </h2>
+
+    <button class="icon-btn primary" (click)="goToCart()">
+      <ion-icon name="bag-outline"></ion-icon>
+      @if (cartCount > 0) {
+        <span class="tab-badge">{{ cartCount > 99 ? '99+' : cartCount }}</span>
+      }
+    </button>
+  </div>
+
+  @if (locationService.hasLocation()) {
+    <div class="radius-row">
+      <span class="radius-label">Rayon de recherche : {{ radiusKm }} km</span>
+      <ion-range class="radius-range" [min]="1" [max]="50" [step]="1" [(ngModel)]="radiusKm"
+        (ionChange)="onRadiusChange()">
+        <ion-icon slot="start" name="navigate-outline"></ion-icon>
+      </ion-range>
+    </div>
+  }
+</div>
+
+<ion-content>
+
+  @if (locationService.isLoading()) {
+    <div class="empty-state">
+      <ion-icon name="location-outline" class="empty-icon spin"></ion-icon>
+      <h3>Localisation en cours…</h3>
+      <p>Un instant, nous cherchons les boutiques autour de vous.</p>
+    </div>
+  } @else if (locationService.error()) {
+    <div class="empty-state">
+      <ion-icon name="location-outline" class="empty-icon"></ion-icon>
+      <h3>Localisation indisponible</h3>
+      <p>{{ locationService.error() }}</p>
+      <button class="btn-reset" (click)="retry()">
+        <ion-icon name="refresh-outline"></ion-icon> Réessayer
+      </button>
+    </div>
+  } @else if (isLoadingProducts) {
+    <div class="product-grid">
+      @for (i of [1,2,3,4,5,6]; track i) {
+        <div class="skeleton-card">
+          <div class="skeleton-img"></div>
+          <div class="skeleton-body">
+            <div class="skeleton-line skeleton-line--wide"></div>
+            <div class="skeleton-line skeleton-line--narrow"></div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else if (products.length > 0) {
+    <div class="section-hd">
+      <h3><ion-icon name="grid-outline"></ion-icon> À proximité</h3>
+      <small>{{ products.length }} items</small>
+    </div>
+    <div class="product-grid">
+      @for (p of products; track p.productId) {
+        <app-product-card [product]="p"></app-product-card>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <ion-icon name="search-circle-outline" class="empty-icon"></ion-icon>
+      <h3>Aucune boutique trouvée</h3>
+      <p>Essayez d'élargir le rayon de recherche</p>
+    </div>
+  }
+
+  <div style="height: 16px"></div>
+
+  <ion-infinite-scroll (ionInfinite)="loadMore($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="crescent"
+      loadingText="Chargement…"/>
+  </ion-infinite-scroll>
+
+</ion-content>
+
+<app-footer></app-footer>

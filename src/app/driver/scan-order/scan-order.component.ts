@@ -15,8 +15,8 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { qrCodeOutline, checkmarkCircleOutline, alertCircleOutline } from 'ionicons/icons';
-import { OrdersService } from 'src/app/services/orders.service';
-import { ValidateOrderRequest } from 'src/app/model/requests/validate-order-request';
+import { ValidateOrderRequest } from 'src/app/core/model/requests/validate-order-request';
+import { OrdersService } from 'src/app/core/services/orders.service';
 
 @Component({
   selector: 'app-scan-order',

@@ -8,7 +8,7 @@ import { App, URLOpenListenerEvent } from '@capacitor/app';
 import { Stripe } from '@capacitor-community/stripe';
 import { loadStripe } from '@stripe/stripe-js';
 import { environment } from 'src/environments/environment.development';
-import { OneSignalService } from './services/untils/one-signal.service';
+import { OneSignalService } from './core/utils/one-signal.service';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({

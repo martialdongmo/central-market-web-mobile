@@ -1,0 +1,669 @@
+/* =========================================
+   Order Tracking  –  Blue & White Theme
+   ========================================= */
+
+:host {
+  /* ══ flex column plein écran — garantit que TOUT le contenu défile
+     correctement jusqu'au footer, même comportement que catalog/nearby/
+     promotions ══ */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+
+  --blue-dark:    #0D47A1;
+  --blue-primary: #1565C0;
+  --blue-mid:     #1E88E5;
+  --blue-light:   #BBDEFB;
+  --blue-pale:    #E3F2FD;
+  --blue-bg:      #EFF6FF;
+  --indigo:       #3730A3;
+  --indigo-pale:  #E0E7FF;
+  --white:        #FFFFFF;
+  --text-primary:   #0D1B2A;
+  --text-secondary: #546E7A;
+  --text-muted:     #90A4AE;
+  --border:       #E8EEF4;
+  --danger:       #D32F2F;
+  --success:      #2E7D32;
+  --warning-bg:   #FFF8E1;
+  --warning-text: #E65100;
+  --radius-xl: 24px;
+  --radius-lg: 16px;
+  --radius-md: 10px;
+  --radius-sm: 6px;
+}
+
+/* ── Content ── */
+.ot-content { --background: var(--blue-bg); flex: 1; }
+
+/* ─────────────────────────────────────────
+   STICKY HEADER
+───────────────────────────────────────── */
+.ot-header {
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(var(--ion-safe-area-top, 0px) + 10px) 16px 10px;
+}
+
+.ot-back-btn {
+  background: var(--blue-pale);
+  border: none;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--blue-primary);
+  font-size: 22px;
+  cursor: pointer;
+  transition: background 0.12s;
+  &:active { background: var(--blue-light); }
+}
+
+.ot-header-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+  margin: 0;
+}
+
+.ot-header-spacer { width: 38px; }
+
+/* ─────────────────────────────────────────
+   LOADING
+───────────────────────────────────────── */
+.ot-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  gap: 14px;
+}
+
+.ot-loading-text {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ─────────────────────────────────────────
+   BODY WRAPPER
+───────────────────────────────────────── */
+.ot-body {
+  padding: 16px 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ─────────────────────────────────────────
+   BASE CARD
+───────────────────────────────────────── */
+.ot-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  padding: 16px;
+}
+
+.ot-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 14px;
+
+  ion-icon {
+    font-size: 18px;
+    color: var(--blue-primary);
+  }
+
+  h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin: 0;
+  }
+}
+
+/* ─────────────────────────────────────────
+   REFERENCE CARD
+───────────────────────────────────────── */
+.ot-ref-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ot-ref-left { display: flex; flex-direction: column; gap: 3px; }
+
+.ot-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.ot-ref-code {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+
+.ot-ref-date {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+  ion-icon { font-size: 13px; }
+}
+
+/* Status Pills */
+.ot-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  ion-icon { font-size: 13px; }
+}
+
+.pill-blue     { background: var(--blue-pale);   color: var(--blue-primary); border: 1px solid var(--blue-light); }
+.pill-indigo   { background: var(--indigo-pale); color: var(--indigo);       border: 1px solid #C7D2FE; }
+.pill-amber    { background: #FFF8E1; color: #E65100; border: 1px solid #FFCC02; }
+.pill-green    { background: #E8F5E9; color: #1B5E20; border: 1px solid #A5D6A7; }
+.pill-red      { background: #FFEBEE; color: #B71C1C; border: 1px solid #FFCDD2; }
+
+/* ─────────────────────────────────────────
+   ANNULÉE / ÉCHOUÉE
+───────────────────────────────────────── */
+.ot-canceled-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #FFEBEE;
+  border-color: #FFCDD2;
+
+  ion-icon {
+    font-size: 24px;
+    color: var(--danger);
+    flex-shrink: 0;
+  }
+
+  h3 {
+    margin: 0 0 4px;
+    font-size: 14px;
+    font-weight: 800;
+    color: #B71C1C;
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: #7f1d1d;
+    line-height: 1.5;
+  }
+}
+
+/* ─────────────────────────────────────────
+   PROGRESS STEPPER
+───────────────────────────────────────── */
+.ot-active-step-desc {
+  margin: -6px 0 14px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  background: var(--blue-pale);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+
+.ot-stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.ot-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.ot-step-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 24px;
+  flex-shrink: 0;
+}
+
+.ot-step-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.ot-step.done .ot-step-dot {
+  background: var(--blue-primary);
+  color: var(--white);
+}
+
+.ot-step.active .ot-step-dot {
+  background: var(--blue-pale);
+  border: 2px solid var(--blue-primary);
+  color: var(--blue-primary);
+}
+
+.ot-step-line {
+  width: 2px;
+  height: 20px;
+  background: var(--border);
+  margin: 2px 0;
+  border-radius: 1px;
+  transition: background 0.2s;
+}
+
+.ot-step-line.done { background: var(--blue-primary); }
+
+.ot-step-label {
+  padding: 3px 0 20px;
+}
+
+.ot-step-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.ot-step.done .ot-step-name  { color: var(--blue-primary); }
+.ot-step.active .ot-step-name { color: var(--text-primary); font-weight: 700; }
+
+/* ─────────────────────────────────────────
+   SHOP GROUP CARD
+───────────────────────────────────────── */
+.ot-shop-card { padding: 0; overflow: hidden; }
+
+.ot-shop-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  gap: 10px;
+}
+
+.ot-shop-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ot-shop-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--blue-pale);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--blue-primary);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.ot-shop-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: block;
+}
+
+.ot-shop-id {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: block;
+}
+
+.ot-delivery-pill {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.dp-pending   { background: #FFF8E1; color: #E65100; }
+.dp-confirmed { background: var(--blue-pale); color: var(--blue-primary); }
+.dp-preparing { background: #E8EAF6; color: #283593; }
+.dp-ready     { background: #F3E5F5; color: #4A148C; }
+.dp-out       { background: #E3F2FD; color: #0D47A1; }
+.dp-delivered { background: #E8F5E9; color: #1B5E20; }
+.dp-failed    { background: #FFEBEE; color: #B71C1C; }
+.dp-canceled  { background: #F5F5F5; color: #546E7A; }
+
+.ot-eta-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: var(--blue-pale);
+  border-bottom: 1px solid var(--blue-light);
+  ion-icon { color: var(--blue-primary); font-size: 14px; }
+}
+
+.ot-eta-done {
+  background: #E8F5E9;
+  border-bottom-color: #C8E6C9;
+  color: #1B5E20;
+  ion-icon { color: #2E7D32; }
+}
+
+/* Items */
+.ot-items-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px;
+}
+
+.ot-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  &:last-child { border-bottom: none; }
+}
+
+.ot-item-img {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--blue-pale);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+
+  img { width: 100%; height: 100%; object-fit: cover; }
+  ion-icon { font-size: 22px; color: var(--blue-light); }
+}
+
+.ot-item-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ot-item-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ot-item-qty {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.ot-item-total {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--blue-primary);
+  flex-shrink: 0;
+}
+
+.ot-shop-subtotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background: var(--blue-pale);
+  font-size: 13px;
+  border-top: 1px solid var(--blue-light);
+
+  span { color: var(--text-secondary); }
+  strong { color: var(--blue-primary); font-weight: 700; }
+}
+
+/* ─────────────────────────────────────────
+   DELIVERY DETAILS
+───────────────────────────────────────── */
+.ot-detail-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.ot-detail-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--blue-pale);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--blue-primary);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.ot-detail-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ot-detail-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+
+.ot-detail-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.ot-detail-sub {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  ion-icon { font-size: 12px; }
+}
+
+.ot-detail-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 12px 0;
+}
+
+.ot-note-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  border-radius: var(--radius-md);
+  padding: 12px;
+
+  ion-icon { font-size: 18px; color: #B45309; flex-shrink: 0; padding-top: 1px; }
+}
+
+.ot-note-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #92400E;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.ot-note-text {
+  font-size: 13px;
+  color: #78350F;
+  font-style: italic;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ─────────────────────────────────────────
+   PAYMENT SUMMARY
+───────────────────────────────────────── */
+.ot-payment-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.ot-pay-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.ot-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-top: 12px;
+  border-top: 1.5px solid var(--border);
+  margin-bottom: 14px;
+}
+
+.ot-total-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.ot-total-amount {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--blue-primary);
+  letter-spacing: -0.5px;
+}
+
+.ot-payment-method {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--blue-pale);
+  border: 1px solid var(--blue-light);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue-primary);
+  ion-icon { font-size: 18px; }
+}
+
+/* ─────────────────────────────────────────
+   EMPTY STATE
+───────────────────────────────────────── */
+.ot-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 64px 24px;
+  text-align: center;
+}
+
+.ot-empty-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--blue-pale);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--blue-primary);
+  font-size: 32px;
+  margin-bottom: 16px;
+}
+
+.ot-empty-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 6px;
+}
+
+.ot-empty-sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0 0 24px;
+}
+
+.ot-retry-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 28px;
+  border-radius: var(--radius-md);
+  background: var(--blue-primary);
+  border: none;
+  color: var(--white);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  ion-icon { font-size: 18px; }
+}
+
+/* Zone de sécurité basse (encoche / home indicator iOS) — définie une
+   seule fois (le fichier précédent avait deux règles contradictoires). */
+.ot-bottom-spacer {
+  height: calc(48px + var(--ion-safe-area-bottom, 0px));
+}

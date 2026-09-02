@@ -1,0 +1,744 @@
+// ================================================================
+//  PRODUCT DETAILS PAGE — GroupinG App
+//  Harmonisé sur la palette globale de l'app (--primary/--navy),
+//  au lieu d'un thème bleu local isolé.
+// ================================================================
+
+// ── Design tokens — repris des CSS custom properties globales,
+//    avec fallback si elles ne sont pas encore définies partout ──
+$blue-primary : var(--primary, #2563eb);
+$blue-dark    : var(--navy, #1e3a8a);
+$blue-light   : rgba(37, 99, 235, .07);   // fond teinté (badges, callouts) — s'adapte à --primary
+$blue-light-active : rgba(37, 99, 235, .14); // état pressé/actif des panneaux teintés (remplace darken() sur rgba)
+$blue-mid     : rgba(37, 99, 235, .25);   // bordures teintées
+$white        : var(--bg, #ffffff);
+$gray-50      : var(--bg2, #f8fafc);
+$gray-100     : var(--bg3, #eef2f7);
+$gray-200     : var(--border-light, #e5e7eb);
+$gray-400     : var(--text3, #94a3b8);
+$gray-500     : var(--text2, #64748b);
+$gray-800     : var(--text, #0f172a);
+$font-display : var(--font-display, inherit);
+$red-100      : #FEE2E2;
+$red-600      : #ef4444;
+$green-100    : #DCFCE7;
+$green-600    : #16A34A;
+$orange-500   : #F97316;
+
+// ── Toolbar ─────────────────────────────────────────────────────
+.detail-toolbar {
+  --background: #{$white};
+  --border-width: 0;
+  box-shadow: 0 1px 0 #{$gray-200};
+
+  .toolbar-title {
+    font-family: $font-display;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: $gray-800;
+    letter-spacing: -0.01em;
+  }
+
+  .icon-btn {
+    --color: #{$gray-800};
+    --padding-start: 6px;
+    --padding-end: 6px;
+    --ripple-color: #{$blue-light};
+
+    ion-icon { font-size: 1.3rem; }
+
+    .active-heart { color: $red-600; }
+  }
+
+  .cart-btn { position: relative; }
+
+  .cart-badge {
+    position: absolute;
+    top: 4px;
+    right: 2px;
+    background: $blue-primary;
+    color: $white;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    pointer-events: none;
+    line-height: 1;
+  }
+}
+
+// ── Content background ───────────────────────────────────────────
+.detail-content {
+  --background: #{$gray-50};
+}
+
+// ── Hero gallery : piste défilante (swipe natif tactile + drag desktop) ──
+.img-hero {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: $gray-100;
+  overflow: hidden;
+}
+
+.hero-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.hero-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  scroll-snap-align: start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $white;
+
+  .product-img {
+    width: 100%;
+    height: 100%;
+    // "contain" plutôt que "cover" : évite de rogner le produit quel que
+    // soit le ratio de la photo d'origine (portrait, carré, avec marge...).
+    object-fit: contain;
+    display: block;
+  }
+}
+
+.img-overlay-badges {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 2;
+}
+
+// ── Points de pagination sous la galerie ──
+.hero-dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hero-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(12, 68, 124, .25);
+  transition: all .2s ease;
+
+  &.active {
+    width: 16px;
+    border-radius: 3px;
+    background: $blue-primary;
+  }
+}
+
+// ── Badges ───────────────────────────────────────────────────────
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+
+  &-promo { background: $orange-500;  color: $white; }
+  &-out   { background: $red-600;     color: $white; }
+}
+
+// ── Thumbnail strip (règles absentes du fichier d'origine — miniatures
+//    rendaient sans aucun style) ──
+.gallery-strip {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  background: $white;
+  overflow-x: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.gallery-thumb {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: $gray-100;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color .15s ease, transform .15s ease;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  &.active {
+    border-color: $blue-primary;
+    transform: scale(1.05);
+  }
+
+  &:active { transform: scale(.92); }
+}
+
+// ── Main card (overlaps hero with rounded top) ────────────────────
+.detail-card {
+  background: $white;
+  border-radius: 22px 22px 0 0;
+  margin-top: -8px;
+  padding: 24px 20px 12px;
+  position: relative;
+  z-index: 1;
+  min-height: 60vh;
+}
+
+// ── Category row ─────────────────────────────────────────────────
+.category-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 10px;
+
+  .cat-icon {
+    font-size: 13px;
+    color: $blue-primary;
+  }
+
+  .category-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: $blue-primary;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+  }
+}
+
+// ── Product name ─────────────────────────────────────────────────
+.product-name {
+  font-family: $font-display;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: $gray-800;
+  line-height: 1.25;
+  margin: 0 0 16px;
+  letter-spacing: -0.02em;
+}
+
+// ── Price + stock row ────────────────────────────────────────────
+.price-stock-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.price-group {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  .price-main {
+    font-family: $font-display;
+    font-size: 1.55rem;
+    font-weight: 900;
+    color: $blue-dark;
+    letter-spacing: -0.03em;
+  }
+
+  .price-crossed {
+    font-size: 0.875rem;
+    color: $gray-400;
+    text-decoration: line-through;
+  }
+}
+
+// ── Stock pill ───────────────────────────────────────────────────
+.stock-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 11px;
+  border-radius: 999px;
+
+  ion-icon { font-size: 14px; }
+
+  &.stock-in  { background: $green-100; color: $green-600; }
+  &.stock-out { background: $red-100;   color: $red-600;   }
+}
+
+// ── Qty hint ─────────────────────────────────────────────────────
+.qty-hint {
+  font-size: 12px;
+  color: $gray-500;
+  margin: 4px 0 0;
+}
+
+// ── Divider ──────────────────────────────────────────────────────
+.divider {
+  height: 1px;
+  background: $gray-200;
+  margin: 22px 0;
+}
+
+// ── Section titles ───────────────────────────────────────────────
+.section-title {
+  font-family: $font-display;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: $gray-800;
+  margin: 0 0 10px;
+  letter-spacing: -0.01em;
+}
+
+// ── Variant chips (règles absentes du fichier d'origine) ──────────
+.variant-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.variant-chip {
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1.5px solid $gray-200;
+  background: $white;
+  color: $gray-800;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s ease;
+
+  &.selected {
+    border-color: $blue-primary;
+    background: $blue-light;
+    color: $blue-dark;
+  }
+
+  &:active { transform: scale(.96); }
+}
+
+.variant-warning {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: $red-600;
+  ion-icon { font-size: 14px; }
+}
+
+.variant-selected-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: $green-600;
+  ion-icon { font-size: 14px; }
+}
+
+// ── Tags (règles absentes du fichier d'origine) ────────────────────
+.tag-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag-chip-display {
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: $gray-100;
+  color: $gray-500;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+// ── Weight row ───────────────────────────────────────────────────
+.weight-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: $gray-500;
+  font-weight: 600;
+
+  ion-icon { font-size: 16px; color: $blue-primary; }
+}
+
+// ── Description ──────────────────────────────────────────────────
+.description-text {
+  font-size: 0.875rem;
+  color: $gray-500;
+  line-height: 1.7;
+  margin: 0;
+}
+
+// ── Shop card ────────────────────────────────────────────────────
+.shop-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: $blue-light;
+  border-radius: 14px;
+  padding: 14px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  border: 1.5px solid $blue-mid;
+
+  &:active,
+  &:focus-visible {
+    background: $blue-light-active;
+    outline: none;
+  }
+
+  .shop-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    background: $blue-primary;
+    color: $white;
+    font-size: 1.2rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .shop-info {
+    flex: 1;
+    min-width: 0;
+
+    .shop-name {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: $blue-dark;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .shop-email {
+      font-size: 11px;
+      color: $gray-500;
+      margin: 2px 0 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .shop-dist {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 11px;
+      color: $blue-primary;
+      font-weight: 600;
+      margin-top: 5px;
+
+      ion-icon { font-size: 12px; }
+    }
+  }
+
+  .shop-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    flex-shrink: 0;
+
+    .shop-chevron {
+      font-size: 16px;
+      color: $blue-primary;
+    }
+  }
+}
+
+// ── Open / Closed pill ───────────────────────────────────────────
+.open-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+
+  &.open   { background: $green-100; color: $green-600; }
+  &.closed { background: $red-100;   color: $red-600;   }
+}
+
+// ── Stats row ────────────────────────────────────────────────────
+.stats-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: $gray-50;
+  border-radius: 14px;
+  padding: 16px 12px;
+  border: 1px solid $gray-200;
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    flex: 1;
+
+    .stat-icon {
+      font-size: 1.15rem;
+      color: $blue-primary;
+      margin-bottom: 2px;
+    }
+
+    .stat-value {
+      font-family: $font-display;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: $blue-dark;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: $gray-500;
+      text-align: center;
+    }
+  }
+
+  .stat-sep {
+    width: 1px;
+    height: 40px;
+    background: $gray-200;
+    flex-shrink: 0;
+  }
+}
+
+// ── Share callout ────────────────────────────────────────────────
+.share-callout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1.5px dashed $blue-mid;
+  background: $blue-light;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:active,
+  &:focus-visible {
+    background: $blue-light-active;
+    outline: none;
+  }
+
+  .share-callout-text {
+    .share-callout-title {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: $blue-dark;
+      margin: 0;
+    }
+
+    .share-callout-sub {
+      font-size: 12px;
+      color: $gray-500;
+      margin: 2px 0 0;
+    }
+  }
+
+  .share-callout-icon {
+    font-size: 1.4rem;
+    color: $blue-primary;
+    flex-shrink: 0;
+  }
+}
+
+// ── Skeleton ─────────────────────────────────────────────────────
+.skeleton-wrap {
+  .skel-hero {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    height: auto;
+    --border-radius: 0;
+  }
+
+  .skel-body {
+    padding: 24px 20px;
+    background: $white;
+    border-radius: 22px 22px 0 0;
+    margin-top: -8px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .skel-line {
+    border-radius: 6px;
+  }
+}
+
+// ── Error state ──────────────────────────────────────────────────
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 40px 32px;
+  text-align: center;
+  gap: 6px;
+
+  .error-icon-wrap {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: $red-100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+
+    ion-icon {
+      font-size: 2.2rem;
+      color: $red-600;
+    }
+  }
+
+  .error-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: $gray-800;
+    margin: 0;
+  }
+
+  .error-sub {
+    font-size: 0.875rem;
+    color: $gray-500;
+    margin: 4px 0 20px;
+  }
+
+  .error-btn {
+    --background: #{$blue-primary};
+    --border-radius: 10px;
+    --color: #{$white};
+    --box-shadow: none;
+    font-weight: 700;
+  }
+}
+
+// ── Footer ───────────────────────────────────────────────────────
+.detail-footer {
+  background: $white;
+  border-top: 1px solid $gray-200;
+  padding-bottom: var(--ion-safe-area-bottom, 0px);
+
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+  }
+
+  .footer-price-col {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+
+    .footer-label {
+      font-size: 10px;
+      color: $gray-500;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .footer-price {
+      font-family: $font-display;
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: $blue-dark;
+      white-space: nowrap;
+      letter-spacing: -0.02em;
+    }
+  }
+
+  // Native button — no Ionic wrapper so we get full CSS control
+  .add-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 50px;
+    background: $blue-primary;
+    color: $white;
+    border: none;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+    letter-spacing: -0.01em;
+
+    ion-icon { font-size: 1.15rem; }
+
+    &:active:not(:disabled) {
+      background: $blue-dark;
+      transform: scale(0.98);
+    }
+
+    &:disabled {
+      background: $gray-200;
+      color: $gray-400;
+      cursor: not-allowed;
+    }
+
+    // "Ajouté !" feedback state
+    &.added {
+      background: $green-600;
+    }
+  }
+}
+
+// ── Global toast override ────────────────────────────────────────
+.bis-toast {
+  --border-radius: 10px;
+  --min-height: 44px;
+  font-weight: 600;
+  font-size: 0.875rem;
+}

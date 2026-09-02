@@ -12,10 +12,18 @@ import { Preferences } from '@capacitor/preferences';
 import { environment } from 'src/environments/environment.development';
 import { PkceService } from './pkce.service';
 import { TokenService } from './token.service';
-import { UserResponse } from '../model/response/usersResponse';
-import { RegisterRequest } from '../model/requests/registerRequest';
-import { VerifyOtpRequest } from '../model/requests/verifyOtpRequest';
-import { OneSignalService } from '../services/untils/one-signal.service';
+import { UserResponse } from '../core/model/response/usersResponse';
+import { RegisterRequest } from '../core/model/requests/registerRequest';
+import { VerifyOtpRequest } from '../core/model/requests/verifyOtpRequest';
+import { OneSignalService } from '../core/utils/one-signal.service';
+import { ForgotPasswordRequest } from '../core/model/requests/ForgotPasswordRequest';
+import { ResetPasswordRequest } from '../core/model/requests/ResetPasswordRequest';
+
+/** Route affichée une fois authentifié. */
+const AUTHENTICATED_HOME_ROUTE = '/catalog';
+
+/** Route de la page login / passerelle OAuth2 (voir routes.ts, path: 'secure-app'). */
+const LOGIN_GATEWAY_ROUTE = '/secure-app';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -42,10 +50,12 @@ export class AuthService {
 
   private readonly PKCE_KEY = 'pkce_verifier';
 
+  /** Empêche de traiter deux fois le même redirect (listener + cold-start) */
+  private nativeRedirectHandled = false;
+
   // ── Auth state stream ─────────────────────────────────────────────────────
   private readonly _currentUser$ = new BehaviorSubject<UserResponse | null>(null);
   readonly currentUser$ = this._currentUser$.asObservable();
-
 
   get currentUser(): UserResponse | null {
     return this._currentUser$.getValue();
@@ -65,23 +75,32 @@ export class AuthService {
   }
 
   constructor() {
-    // Registers the deep-link listener once, app-wide. Call
-    // authService.init() (or inject it once at bootstrap) so this runs early.
     if (this.isNative) {
+      // Cas "warm" : l'app tourne déjà quand le navigateur redirige vers le custom scheme.
       App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
         this.handleNativeRedirect(event.url);
       });
+
+      // Cas "cold start" : l'app était fermée et relancée directement par le
+      // redirect OAuth2 (fréquent sur iOS). Sans ceci, 'appUrlOpen' peut être
+      // manqué car le listener n'était pas encore enregistré à temps.
+      App.getLaunchUrl().then(result => {
+        if (result?.url) {
+          this.handleNativeRedirect(result.url);
+        }
+      }).catch(() => { /* pas de launch URL, démarrage normal */ });
     }
   }
 
   /** Extracts `code` from the custom-scheme redirect and completes the flow. */
   private handleNativeRedirect(url: string): void {
     if (!url.startsWith(this.mobileRedirectUri)) return;
+    if (this.nativeRedirectHandled) return;
+    this.nativeRedirectHandled = true;
 
     const parsed = new URL(url.replace(this.mobileRedirectUri, 'https://callback'));
     const code = parsed.searchParams.get('code');
 
-    // Close the in-app browser now that we have control back
     Browser.close().catch(() => {});
 
     if (!code) return;
@@ -95,6 +114,8 @@ export class AuthService {
 
   // ── PKCE Login ────────────────────────────────────────────────────────────
   async login(): Promise<void> {
+    this.nativeRedirectHandled = false;
+
     const verifier = this.pkceService.generateCodeVerifier();
     const challenge = await this.pkceService.generateCodeChallenge(verifier);
     await Preferences.set({ key: this.PKCE_KEY, value: verifier });
@@ -111,8 +132,6 @@ export class AuthService {
     const authUrl = `${this.authEndpoint}?${params.toString()}`;
 
     if (this.isNative) {
-      // Opens system-managed in-app browser (SFSafariViewController / Custom Tabs).
-      // appUrlOpen listener above catches the redirect back into the app.
       await Browser.open({ url: authUrl, presentationStyle: 'popover' });
     } else {
       window.location.href = authUrl;
@@ -120,11 +139,6 @@ export class AuthService {
   }
 
   // ── Token exchange ────────────────────────────────────────────────────────
-  /**
-   * FIX: après avoir sauvegardé les tokens, on appelle me() pour peupler
-   * le stream currentUser$ immédiatement. Sans ça, le footer reste en mode
-   * guest même après un login réussi.
-   */
   async exchangeCodeForToken(code: string): Promise<any> {
     const stored = await Preferences.get({ key: this.PKCE_KEY });
     const verifier = stored.value;
@@ -154,9 +168,13 @@ export class AuthService {
 
       this.me().subscribe();
 
-      // On native, navigate into the app now that we're authenticated
+      // ✅ CORRIGÉ : on naviguait vers '/secure-app' (= la page LOGIN),
+      // ce qui renvoyait l'utilisateur droit vers l'écran de connexion
+      // juste après un login réussi. On va maintenant vers l'accueil authentifié.
       if (this.isNative) {
-        this.router.navigateByUrl('/catalog');
+        this.zone.run(() => {
+          this.router.navigateByUrl(AUTHENTICATED_HOME_ROUTE, { replaceUrl: true });
+        });
       }
     }
 
@@ -164,11 +182,6 @@ export class AuthService {
   }
 
   // ── Boot loader ───────────────────────────────────────────────────────────
-  /**
-   * Appelé UNE SEULE FOIS depuis AppComponent.ngOnInit().
-   * Lit le token → appelle /me si valide → pousse dans currentUser$.
-   * Tous les abonnés (Footer, Profile…) réagissent automatiquement.
-   */
   loadCurrentUser(): Observable<UserResponse | null> {
     return from(this.tokenService.getAccessToken()).pipe(
       switchMap(token => {
@@ -231,12 +244,13 @@ export class AuthService {
       next: async () => {
         await this.tokenService.clearTokens();
         this._currentUser$.next(null);
+        this.nativeRedirectHandled = false;
 
-        if (this.isNative) {
-          this.router.navigateByUrl('/catalog');
-        } else {
-          window.location.href = '/secure-app';
-        }
+        // Ici '/secure-app' est correct : après logout, on veut bien
+        // renvoyer vers la page login.
+        this.zone.run(() => {
+          this.router.navigateByUrl(LOGIN_GATEWAY_ROUTE, { replaceUrl: true });
+        });
       },
     });
   }
@@ -252,6 +266,23 @@ export class AuthService {
   verifyOtp(request: VerifyOtpRequest): Observable<string> {
     return this.http.post(
       `${this.API_URL}/api/v1/bis/auth/verify-otp`,
+      request,
+      { responseType: 'text' },
+    );
+  }
+
+  // ── Forgot / Reset password ───────────────────────────────────────────────
+  forgotPassword(request: ForgotPasswordRequest): Observable<string> {
+    return this.http.post(
+      `${this.API_URL}/api/v1/bis/auth/forgot-password`,
+      request,
+      { responseType: 'text' },
+    );
+  }
+
+  resetPassword(request: ResetPasswordRequest): Observable<string> {
+    return this.http.post(
+      `${this.API_URL}/api/v1/bis/auth/reset-password`,
       request,
       { responseType: 'text' },
     );
