@@ -1,22 +1,26 @@
 // ================================================================
-//  PRODUCT DETAILS PAGE — BIS App
-//  Theme : Blue #1A6FD4 primary · White surfaces
+//  PRODUCT DETAILS PAGE — GroupinG App
+//  Harmonisé sur la palette globale de l'app (--primary/--navy),
+//  au lieu d'un thème bleu local isolé.
 // ================================================================
 
-// ── Design tokens ───────────────────────────────────────────────
-$blue-primary : #1A6FD4;
-$blue-dark    : #0C447C;
-$blue-light   : #E6F1FB;
-$blue-mid     : #B5D4F4;
-$white        : #ffffff;
-$gray-50      : #F8F9FA;
-$gray-100     : #F1F5F9;
-$gray-200     : #E2E8F0;
-$gray-400     : #94A3B8;
-$gray-500     : #6B7280;
-$gray-800     : #1F2937;
+// ── Design tokens — repris des CSS custom properties globales,
+//    avec fallback si elles ne sont pas encore définies partout ──
+$blue-primary : var(--primary, #2563eb);
+$blue-dark    : var(--navy, #1e3a8a);
+$blue-light   : rgba(37, 99, 235, .07);   // fond teinté (badges, callouts) — s'adapte à --primary
+$blue-light-active : rgba(37, 99, 235, .14); // état pressé/actif des panneaux teintés (remplace darken() sur rgba)
+$blue-mid     : rgba(37, 99, 235, .25);   // bordures teintées
+$white        : var(--bg, #ffffff);
+$gray-50      : var(--bg2, #f8fafc);
+$gray-100     : var(--bg3, #eef2f7);
+$gray-200     : var(--border-light, #e5e7eb);
+$gray-400     : var(--text3, #94a3b8);
+$gray-500     : var(--text2, #64748b);
+$gray-800     : var(--text, #0f172a);
+$font-display : var(--font-display, inherit);
 $red-100      : #FEE2E2;
-$red-600      : #DC2626;
+$red-600      : #ef4444;
 $green-100    : #DCFCE7;
 $green-600    : #16A34A;
 $orange-500   : #F97316;
@@ -28,6 +32,7 @@ $orange-500   : #F97316;
   box-shadow: 0 1px 0 #{$gray-200};
 
   .toolbar-title {
+    font-family: $font-display;
     font-size: 0.95rem;
     font-weight: 700;
     color: $gray-800;
@@ -72,28 +77,81 @@ $orange-500   : #F97316;
   --background: #{$gray-50};
 }
 
-// ── Hero image ───────────────────────────────────────────────────
+// ── Hero gallery : piste défilante (swipe natif tactile + drag desktop) ──
 .img-hero {
   position: relative;
   width: 100%;
-  height: 290px;
+  aspect-ratio: 1 / 1;
   background: $gray-100;
   overflow: hidden;
+}
+
+.hero-track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.hero-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  scroll-snap-align: start;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $white;
 
   .product-img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    // "contain" plutôt que "cover" : évite de rogner le produit quel que
+    // soit le ratio de la photo d'origine (portrait, carré, avec marge...).
+    object-fit: contain;
     display: block;
   }
+}
 
-  .img-overlay-badges {
-    position: absolute;
-    top: 14px;
-    left: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+.img-overlay-badges {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 2;
+}
+
+// ── Points de pagination sous la galerie ──
+.hero-dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hero-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(12, 68, 124, .25);
+  transition: all .2s ease;
+
+  &.active {
+    width: 16px;
+    border-radius: 3px;
+    background: $blue-primary;
   }
 }
 
@@ -112,11 +170,49 @@ $orange-500   : #F97316;
   &-out   { background: $red-600;     color: $white; }
 }
 
+// ── Thumbnail strip (règles absentes du fichier d'origine — miniatures
+//    rendaient sans aucun style) ──
+.gallery-strip {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  background: $white;
+  overflow-x: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
+.gallery-thumb {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: $gray-100;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color .15s ease, transform .15s ease;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  &.active {
+    border-color: $blue-primary;
+    transform: scale(1.05);
+  }
+
+  &:active { transform: scale(.92); }
+}
+
 // ── Main card (overlaps hero with rounded top) ────────────────────
 .detail-card {
   background: $white;
   border-radius: 22px 22px 0 0;
-  margin-top: -20px;
+  margin-top: -8px;
   padding: 24px 20px 12px;
   position: relative;
   z-index: 1;
@@ -146,6 +242,7 @@ $orange-500   : #F97316;
 
 // ── Product name ─────────────────────────────────────────────────
 .product-name {
+  font-family: $font-display;
   font-size: 1.4rem;
   font-weight: 800;
   color: $gray-800;
@@ -171,6 +268,7 @@ $orange-500   : #F97316;
   flex-wrap: wrap;
 
   .price-main {
+    font-family: $font-display;
     font-size: 1.55rem;
     font-weight: 900;
     color: $blue-dark;
@@ -216,11 +314,89 @@ $orange-500   : #F97316;
 
 // ── Section titles ───────────────────────────────────────────────
 .section-title {
+  font-family: $font-display;
   font-size: 0.9rem;
   font-weight: 700;
   color: $gray-800;
   margin: 0 0 10px;
   letter-spacing: -0.01em;
+}
+
+// ── Variant chips (règles absentes du fichier d'origine) ──────────
+.variant-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.variant-chip {
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1.5px solid $gray-200;
+  background: $white;
+  color: $gray-800;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s ease;
+
+  &.selected {
+    border-color: $blue-primary;
+    background: $blue-light;
+    color: $blue-dark;
+  }
+
+  &:active { transform: scale(.96); }
+}
+
+.variant-warning {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: $red-600;
+  ion-icon { font-size: 14px; }
+}
+
+.variant-selected-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: $green-600;
+  ion-icon { font-size: 14px; }
+}
+
+// ── Tags (règles absentes du fichier d'origine) ────────────────────
+.tag-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag-chip-display {
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: $gray-100;
+  color: $gray-500;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+// ── Weight row ───────────────────────────────────────────────────
+.weight-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: $gray-500;
+  font-weight: 600;
+
+  ion-icon { font-size: 16px; color: $blue-primary; }
 }
 
 // ── Description ──────────────────────────────────────────────────
@@ -245,7 +421,7 @@ $orange-500   : #F97316;
 
   &:active,
   &:focus-visible {
-    background: darken($blue-light, 5%);
+    background: $blue-light-active;
     outline: none;
   }
 
@@ -350,6 +526,7 @@ $orange-500   : #F97316;
     }
 
     .stat-value {
+      font-family: $font-display;
       font-size: 1.15rem;
       font-weight: 800;
       color: $blue-dark;
@@ -385,7 +562,7 @@ $orange-500   : #F97316;
 
   &:active,
   &:focus-visible {
-    background: darken($blue-light, 4%);
+    background: $blue-light-active;
     outline: none;
   }
 
@@ -416,7 +593,8 @@ $orange-500   : #F97316;
   .skel-hero {
     display: block;
     width: 100%;
-    height: 290px;
+    aspect-ratio: 1 / 1;
+    height: auto;
     --border-radius: 0;
   }
 
@@ -424,7 +602,7 @@ $orange-500   : #F97316;
     padding: 24px 20px;
     background: $white;
     border-radius: 22px 22px 0 0;
-    margin-top: -20px;
+    margin-top: -8px;
     display: flex;
     flex-direction: column;
   }
@@ -487,8 +665,7 @@ $orange-500   : #F97316;
 .detail-footer {
   background: $white;
   border-top: 1px solid $gray-200;
-  /* Use CSS variable for safe area bottom */
-  padding-bottom: var(--safe-area-bottom);
+  padding-bottom: var(--ion-safe-area-bottom, 0px);
 
   .footer-inner {
     display: flex;
@@ -511,6 +688,7 @@ $orange-500   : #F97316;
     }
 
     .footer-price {
+      font-family: $font-display;
       font-size: 1.05rem;
       font-weight: 900;
       color: $blue-dark;

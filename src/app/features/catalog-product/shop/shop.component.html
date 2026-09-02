@@ -1,0 +1,97 @@
+<!-- shop.component.html -->
+
+<div class="shop-header">
+  <div class="header-topbar">
+    <button class="icon-btn" (click)="goBack()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </button>
+
+    <div class="shop-identity">
+      @if (shopName) {
+        <div class="shop-avatar">{{ shopInitial }}</div>
+        <div class="shop-identity-text">
+          <span class="shop-name">{{ shopName }}</span>
+          @if (shopOpen !== null) {
+            <span class="shop-status" [class.open]="shopOpen" [class.closed]="!shopOpen">
+              <span class="shop-status-dot"></span>
+              {{ shopOpen ? 'Boutique ouverte' : 'Boutique fermée' }}
+            </span>
+          }
+        </div>
+      } @else {
+        <span class="shop-name shop-name-loading">Boutique</span>
+      }
+    </div>
+
+    <button class="icon-btn" (click)="share()" aria-label="Partager cette boutique">
+      <ion-icon name="share-outline"></ion-icon>
+    </button>
+
+    <button class="icon-btn primary" (click)="goToCart()">
+      <ion-icon name="bag-outline"></ion-icon>
+      @if (cartCount > 0) {
+        <span class="tab-badge">{{ cartCount > 99 ? '99+' : cartCount }}</span>
+      }
+    </button>
+  </div>
+
+  <div class="filter-chips">
+    <button class="filter-chip" [class.active]="inStockOnly" (click)="toggleInStockOnly()">
+      <ion-icon name="cube-outline"></ion-icon>
+      <span>En stock uniquement</span>
+    </button>
+    <button class="filter-chip" [class.active]="promotionOnly" (click)="togglePromotionOnly()">
+      <ion-icon name="pricetag-outline"></ion-icon>
+      <span>Promotions</span>
+    </button>
+  </div>
+</div>
+
+<ion-content>
+
+  @if (isLoading) {
+    <div class="product-grid">
+      @for (i of [1,2,3,4,5,6]; track i) {
+        <div class="skeleton-card">
+          <div class="skeleton-img"></div>
+          <div class="skeleton-body">
+            <div class="skeleton-line skeleton-line--wide"></div>
+            <div class="skeleton-line skeleton-line--narrow"></div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else if (products.length > 0) {
+    <div class="section-hd">
+      <h3><ion-icon name="grid-outline"></ion-icon> Produits</h3>
+      <small>{{ products.length }} articles</small>
+    </div>
+    <div class="product-grid">
+      @for (p of products; track p.productId) {
+        <app-product-card [product]="p"></app-product-card>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <ion-icon name="storefront-outline" class="empty-icon"></ion-icon>
+      <h3>Aucun produit trouvé</h3>
+      <p>Cette boutique n'a aucun article correspondant à vos filtres</p>
+      @if (inStockOnly || promotionOnly) {
+        <button class="btn-reset" (click)="resetFilters()">
+          <ion-icon name="refresh-outline"></ion-icon> Réinitialiser les filtres
+        </button>
+      }
+    </div>
+  }
+
+  <div class="scroll-spacer"></div>
+
+  <ion-infinite-scroll (ionInfinite)="loadMore($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="crescent"
+      loadingText="Chargement…"/>
+  </ion-infinite-scroll>
+
+</ion-content>
+
+<app-footer></app-footer>

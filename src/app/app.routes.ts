@@ -79,18 +79,20 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/catalog-product/details-page/details-page.component').then(m => m.DetailsPageComponent),
   },
+  
+  // par exemple juste après la route 'promotions'
+  {
+    path: 'shop/:shopId',
+    loadComponent: () =>
+      import('./features/catalog-product/shop/shop.component').then(m => m.ShopComponent),
+  },
+
   {
     path: 'cart',
     loadComponent: () =>
       import('./features/carts/cart/cart.component').then(m => m.CartComponent),
   },
-  {
-    path: 'profile',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/profil/profil.component').then(m => m.ProfilComponent),
-    // → ajouter <app-footer> dans profil.component.html
-  },
+ 
   {
     path: 'checkout',
     canActivate: [authGuard],
@@ -119,6 +121,15 @@ export const routes: Routes = [
     component: ConfirmationOrderComponent,
     title: 'Order Confirmation',
   },
+
+   {
+    path: 'profile',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/profil/profil.component').then(m => m.ProfilComponent),
+    // → ajouter <app-footer> dans profil.component.html
+  },
+  // payments
   {
     path: 'payment-success/:orderId',
     component: PaymentSuccessComponent,

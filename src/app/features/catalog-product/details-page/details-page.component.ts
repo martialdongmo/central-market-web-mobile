@@ -1,10 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { IonContent, IonIcon, ToastController, IonTitle, IonHeader, IonFooter, IonButtons, IonToolbar, IonButton, IonSkeletonText } from '@ionic/angular/standalone';
 import { arrowBackOutline, heartOutline, heart, cartOutline, bagCheckOutline, checkmarkCircle, chevronForwardOutline, closeCircle, copyOutline, locationOutline, logoWhatsapp, pricetagOutline, shareOutline, starOutline, imagesOutline, checkmarkOutline } from 'ionicons/icons';
 import { CatalogProductResponse } from '../../../core/model/response/catalogProductResponse';
 import { CatalogProductVariantResponse } from '../../../core/model/response/catalog-product-variant-response';
+import { ProductCategory, getProductCategoryLabel } from 'src/app/core/model/enums/product-category';
 
 import { addIcons } from 'ionicons';
 import { FooterComponent } from "../../../shared/footer/footer.component";
@@ -32,6 +33,8 @@ export class DetailsPageComponent implements OnInit {
   private catalog   = inject(CatalogService);
   private cartSvc   = inject(CartService);
   private toastCtrl = inject(ToastController);
+
+  @ViewChild('heroTrack') heroTrack?: ElementRef<HTMLDivElement>;
 
   product: CatalogProductResponse | null = null;
   isLoading    = true;
@@ -99,6 +102,13 @@ export class DetailsPageComponent implements OnInit {
   }
 
   // ============================================================
+  // CATÉGORIE — libellé français (corrigé : affichait l'enum brut avant)
+  // ============================================================
+  getCategoryLabel(category: ProductCategory): string {
+    return getProductCategoryLabel(category);
+  }
+
+  // ============================================================
   // GALLERY
   // ============================================================
   get galleryImages(): string[] {
@@ -109,8 +119,30 @@ export class DetailsPageComponent implements OnInit {
     return combined.filter((url, i) => !!url && combined.indexOf(url) === i);
   }
 
+  /** Clic sur une miniature : met à jour l'image active ET fait défiler
+   *  la galerie principale jusqu'à cette image (swipe/scroll synchronisés). */
   selectImage(url: string): void {
     this.activeImageUrl = url;
+    this.scrollHeroToImage(url);
+  }
+
+  private scrollHeroToImage(url: string): void {
+    const track = this.heroTrack?.nativeElement;
+    if (!track) return;
+    const index = this.galleryImages.indexOf(url);
+    if (index < 0) return;
+    track.scrollTo({ left: index * track.clientWidth, behavior: 'smooth' });
+  }
+
+  /** Swipe manuel sur l'image principale : synchronise la miniature active. */
+  onHeroScroll(event: Event): void {
+    const track = event.target as HTMLDivElement;
+    if (!track.clientWidth) return;
+    const index = Math.round(track.scrollLeft / track.clientWidth);
+    const url = this.galleryImages[index];
+    if (url && url !== this.activeImageUrl) {
+      this.activeImageUrl = url;
+    }
   }
 
   // ============================================================
@@ -166,7 +198,7 @@ export class DetailsPageComponent implements OnInit {
     this.selectedColor = variant.color || this.selectedColor;
     this.selectedSize = variant.size || this.selectedSize;
     if (variant.imageUrl) {
-      this.activeImageUrl = variant.imageUrl;
+      this.selectImage(variant.imageUrl);
     }
   }
 
@@ -230,7 +262,7 @@ export class DetailsPageComponent implements OnInit {
     if (!this.product) return;
 
     const url  = `${window.location.origin}/details/${this.product.productId}`;
-    const text = `Découvrez ${this.product.productName} sur BIS — ${this.displayPrice} FCFA`;
+    const text = `Découvrez ${this.product.productName} sur GroupinG — ${this.displayPrice} FCFA`;
     const title = this.product.productName;
 
     // 1) Native app (Capacitor) — only fires if @capacitor/share is installed

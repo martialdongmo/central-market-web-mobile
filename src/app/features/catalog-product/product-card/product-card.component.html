@@ -2,34 +2,33 @@
   <div class="card-img">
     <img [src]="product.imageUrl" [alt]="product.productName" loading="lazy">
     @if(product.promotionActive){
-    <div class="promo-tag">PROMO</div>
+      <div class="promo-tag">PROMO</div>
     }
-
     @if(!product.inStock){
-    <div class="stock-badge">Épuisé</div>
+      <div class="stock-badge">Épuisé</div>
     }
-
   </div>
   <div class="card-body">
     <div class="card-shop">
-      <span class="card-shop-name">{{ product.shopName }}</span>
+      <button class="card-shop-name" (click)="goToShop($event)">
+        <ion-icon name="storefront-outline"></ion-icon>
+        <span>{{ product.shopName }}</span>
+      </button>
       @if(product.distanceKm){
-      <div class="card-dist">
-        <ion-icon name="location-outline"></ion-icon>
-        <span>{{ product.distanceKm | number:'1.1-1' }} km</span>
-      </div>
+        <div class="card-dist">
+          <ion-icon name="location-outline"></ion-icon>
+          <span>{{ product.distanceKm | number:'1.1-1' }} km</span>
+        </div>
       }
-
     </div>
     <h3 class="card-name">{{ product.productName }}</h3>
     <div class="card-footer">
       <div class="card-price-wrap">
         @if(product.promotionActive){
-        <div class="card-old-price"><small>{{ product.price | customCurrency }}</small> </div>
+          <div class="card-old-price"><small>{{ product.price | customCurrency }}</small></div>
         }
         <div class="card-price">
-          <small>{{ (product.promotionActive ? product.promotionPrice : product.price) | customCurrency
-            }}</small>
+          <small>{{ (product.promotionActive ? product.promotionPrice : product.price) | customCurrency }}</small>
         </div>
       </div>
       <button class="add-btn" (click)="addToCart($event)" [disabled]="!product.inStock">

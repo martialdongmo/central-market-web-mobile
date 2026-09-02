@@ -77,9 +77,15 @@
        ============================================================ -->
   @if (!isLoading && !hasError && product) {
 
-    <!-- ── Hero image / gallery ── -->
+    <!-- ── Hero gallery : piste défilante en swipe, synchronisée avec les miniatures ── -->
     <div class="img-hero">
-      <img [src]="activeImageUrl" [alt]="product.productName" class="product-img" />
+      <div class="hero-track" #heroTrack (scroll)="onHeroScroll($event)">
+        @for (url of galleryImages; track url) {
+          <div class="hero-slide">
+            <img [src]="url" [alt]="product.productName" class="product-img" />
+          </div>
+        }
+      </div>
 
       <div class="img-overlay-badges">
         @if (product.promotionActive && !selectedVariant) {
@@ -89,6 +95,14 @@
           <span class="badge badge-out">Épuisé</span>
         }
       </div>
+
+      @if (galleryImages.length > 1) {
+        <div class="hero-dots">
+          @for (url of galleryImages; track url) {
+            <span class="hero-dot" [class.active]="url === activeImageUrl"></span>
+          }
+        </div>
+      }
     </div>
 
     <!-- ── Thumbnail strip (only if more than 1 image) ── -->
@@ -114,7 +128,7 @@
       <!-- Category pill -->
       <div class="category-row">
         <ion-icon name="pricetag-outline" class="cat-icon"></ion-icon>
-        <span class="category-label">{{ product.categoryName }}</span>
+        <span class="category-label">{{ getCategoryLabel(product.categoryName) }}</span>
       </div>
 
       <!-- Product name -->

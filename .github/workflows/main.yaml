@@ -2,7 +2,7 @@ name: Central Market Web Mobile Pipline
 on:
   push:
     branches:
-      - web-dev
+      - web-apk-1
   pull_request:
     branches:
       - deployment
