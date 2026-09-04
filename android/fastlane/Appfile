@@ -1,0 +1,7 @@
+package_name("cm.kapexpert.grouping")
+
+# Android app details
+app_name("GroupinG")
+
+# For Google Play upload (if needed)
+# json_key_file("./fastlane/GooglePlayService-Info.json")

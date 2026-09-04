@@ -1,0 +1,57 @@
+# ============================================================
+# Fastlane Fastfile — Android Build for Central Market
+# ============================================================
+#
+# Lanes:
+#   android build        → builds release APK
+#   android beta         → builds & uploads to Play Console internal track
+# ============================================================
+
+default_platform(:android)
+
+platform :android do
+  desc "Build release APK"
+  lane :build do
+    # Ensure we're in the android directory
+    Dir.chdir(File.expand_path('..', __dir__)) do
+      gradle(
+        task: 'assembleRelease',
+        project_dir: '.',
+        properties: {
+          "android.injected.signing.store.file" => ENV['KEYSTORE_FILE'],
+          "android.injected.signing.store.password" => ENV['KEYSTORE_PASSWORD'],
+          "android.injected.signing.key.alias" => ENV['KEY_ALIAS'],
+          "android.injected.signing.key.password" => ENV['KEY_PASSWORD']
+        },
+        flags: '--warning-mode all --stacktrace'
+      )
+    end
+  end
+
+  desc "Build and upload to Play Console (internal testing)"
+  lane :beta do
+    build
+    upload_to_play_store(
+      track: 'internal',
+      aab: '../app/build/outputs/bundle/release/app-release.aab',
+      skip_upload_apk: true,
+      json_key_data: ENV['GOOGLE_PLAY_JSON_KEY']
+    )
+  end
+
+  # Error handling: upload logs if build fails
+  error do |lane, exception|
+    if ENV['CI']
+      # In CI, we can try to capture the build log
+      begin
+        log_path = File.expand_path('../../build.log', __dir__)
+        if File.exist?(log_path)
+          UI.important("Build log (last 100 lines):")
+          UI.important(File.readlines(log_path).last(100).join)
+        end
+      rescue => e
+        UI.error("Could not read build log: #{e.message}")
+      end
+    end
+  end
+end
