@@ -5,7 +5,8 @@
 # This pipeline:
 #   1. Installs Node.js 22, npm deps, and syncs Capacitor
 #   2. Installs Android SDK (platform 36, build-tools 36.0.0)
-#   3. Runs Fastlane (which runs ./gradlew assembleRelease)
+#   3. Builds Android debug APK via Gradle (assembleDebug)
+#      For release builds, use Fastlane with signing config
 #
 # Prerequisites (configure in GitLab > Settings > CI/CD > Variables):
 #   ANDROID_SDK_ROOT   → /opt/android-sdk
@@ -28,9 +29,9 @@ variables:
 # ----------------------------------------
 .android-sdk-template: &android-sdk-template
   before_script:
-    # Install OpenJDK 17 (required for AGP 8.x)
-    - apt-get update && apt-get install -y openjdk-17-jdk-headless unzip curl wget
-    - export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+    # Install OpenJDK 21 (required for Java 21 compatibility)
+    - apt-get update && apt-get install -y openjdk-21-jdk-headless unzip curl wget
+    - export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
     - export PATH=$JAVA_HOME/bin:$PATH
     - java -version
 
@@ -69,10 +70,13 @@ build:android:
   <<: *android-sdk-template
 
   before_script:
-    # Inherit from template
-    - apt-get update && apt-get install -y openjdk-17-jdk-headless unzip curl wget git ruby ruby-dev build-essential
-    - export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+    # Install OpenJDK 21 (required for Java 21 compatibility)
+    - apt-get update && apt-get install -y openjdk-21-jdk-headless unzip curl wget git ruby ruby-dev build-essential
+    - export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
     - export PATH=$JAVA_HOME/bin:$PATH
+    - java -version
+
+    # Install Android SDK command-line tools
     - |
       if [ ! -d "/opt/android-sdk/cmdline-tools/latest" ]; then
         mkdir -p /opt/android-sdk/cmdline-tools
@@ -102,14 +106,14 @@ build:android:
     - echo "Building Android APK..."
     - |
       cd android
-      ./gradlew assembleRelease \
+      ./gradlew assembleDebug \
         --warning-mode all \
         --no-daemon \
         --stacktrace 2>&1 | tee ../build.log
     - |
-      if [ -f app/build/outputs/apk/release/app-release.apk ]; then
+      if [ -f app/build/outputs/apk/debug/app-debug.apk ]; then
         echo "✅ APK built successfully:"
-        ls -lh app/build/outputs/apk/release/app-release.apk
+        ls -lh app/build/outputs/apk/debug/app-debug.apk
       else
         echo "❌ APK not found. Check build.log above for errors."
         cat ../build.log | grep -E "(FAILURE|error:|Error:|What went wrong|SDK|exception)" | head -20
@@ -120,7 +124,7 @@ build:android:
     when: always
     paths:
       - build.log
-      - android/app/build/outputs/apk/release/app-release.apk
+      - android/app/build/outputs/apk/debug/app-debug.apk
     expire_in: 1 week
 
   after_script:
