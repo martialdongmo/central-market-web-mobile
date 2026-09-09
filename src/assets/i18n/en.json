@@ -10,6 +10,9 @@
     "menu": "Menu",
     "account": "Account",
     "logout": "Log out",
+    "deleteAccount": "Delete Account",
+    "deleteAccountAlert": "Do you really want to delete the account? This action is irreversible.",
+    "deleteAccountConfirm": "Delete",
     "welcome": "Welcome",
     "login_prompt": "Log in to your account",
     "login": "Log in",
@@ -249,11 +252,7 @@
     "settings": "Settings",
     "notifications": "Notifications",
     "dark_mode": "Dark mode",
-    "language": "Language",
-        "logout": "Log out",
-    "deleteAccount": "Delete Account",
-    "deleteAccountAlert": "Do you really want to delete the account? This action is irreversible.",
-    "deleteAccountConfirm": "Delete"
+    "language": "Language"
   },
   "pages": {
     "not_found": {
