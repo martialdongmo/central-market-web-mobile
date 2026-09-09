@@ -31,11 +31,11 @@
 
     <!-- Version -->
     <key>CFBundleShortVersionString</key>
-    <string>2.4.3</string>
+    <string>2.4.4</string>
 
     <!-- Build -->
     <key>CFBundleVersion</key>
-    <string>16</string>
+    <string>17</string>
 
     <key>LSRequiresIPhoneOS</key>
     <true/>
