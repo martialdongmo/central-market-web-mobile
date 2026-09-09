@@ -250,7 +250,10 @@
     "notifications": "Notifications",
     "dark_mode": "Dark mode",
     "language": "Language",
-    "logout": "Log out"
+        "logout": "Log out",
+    "deleteAccount": "Delete Account",
+    "deleteAccountAlert": "Do you really want to delete the account? This action is irreversible.",
+    "deleteAccountConfirm": "Delete"
   },
   "pages": {
     "not_found": {

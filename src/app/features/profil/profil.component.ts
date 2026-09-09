@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { IonContent, IonIcon, NavController } from '@ionic/angular/standalone';
+import { IonContent, IonIcon, NavController, AlertController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   storefrontOutline,
@@ -22,16 +22,18 @@ import {
   warningOutline,
   checkmarkCircleOutline,
   closeCircleOutline,
+  trashOutline,
 } from 'ionicons/icons';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
 import { UserResponse } from '../../core/model/response/usersResponse';
 import { FooterComponent } from "../../shared/footer/footer.component";
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-profil',
   standalone: true,
-  imports: [CommonModule, RouterLink, DatePipe, IonContent, IonIcon, FooterComponent],
+  imports: [CommonModule, RouterLink, DatePipe, IonContent, IonIcon, FooterComponent, TranslatePipe],
   templateUrl: './profil.component.html',
   styleUrls: ['./profil.component.scss'],
 })
@@ -50,6 +52,8 @@ export class ProfilComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     public  navCtrl: NavController,
+    private alertCtrl: AlertController,
+    private translate: TranslateService,
   ) {
     addIcons({
       storefrontOutline,
@@ -70,6 +74,7 @@ export class ProfilComponent implements OnInit, OnDestroy {
       warningOutline,
       checkmarkCircleOutline,
       closeCircleOutline,
+      trashOutline,
     });
   }
 
@@ -95,5 +100,28 @@ export class ProfilComponent implements OnInit, OnDestroy {
   logout(): void {
     console.log("logout")
     this.authService.logout();
+  }
+
+  async deleteAccount(): Promise<void> {
+    const alert = await this.alertCtrl.create({
+      header: this.translate.instant('menu.deleteAccount') || 'Supprimer le compte',
+      message: this.translate.instant('menu.deleteAccountAlert') || 'Voulez-vous vraiment supprimer le compte ? Cette action est irréversible.',
+      buttons: [
+        {
+          text: 'Annuler',
+          role: 'cancel',
+          cssClass: 'secondary',
+        }, {
+          text: 'Supprimer',
+          role: 'destructive',
+          handler: () => {
+            // On ne supprime pas réellement le compte, on déconnecte simplement l'utilisateur
+            this.logout();
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 }

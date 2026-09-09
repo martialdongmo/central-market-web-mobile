@@ -394,4 +394,32 @@
   &:active { background: #FFF5F5; }
 }
 
+/* ─────────────────────────────────────────
+   DELETE ACCOUNT BUTTON
+───────────────────────────────────────── */
+.delete-account-wrap {
+  padding: 0 16px;
+  margin-top: 12px;
+}
+
+.delete-account-btn {
+  width: 100%;
+  padding: 15px;
+  border-radius: var(--radius-md);
+  background: #FFF5F5;
+  border: 1.5px solid var(--danger);
+  color: var(--danger);
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+
+  ion-icon { font-size: 20px; }
+  &:active { background: #FFEBEE; }
+}
+
 .bottom-spacer { height: 48px; }
