@@ -23,45 +23,9 @@ export const routes: Routes = [
 
   { path: '', redirectTo: 'catalog', pathMatch: 'full' },
 
-  // ════════════════════════════════════════════════════════════
-  // PAGES SANS FOOTER
-  // login, register, callback, otp — pas de tab bar ici
-  // ════════════════════════════════════════════════════════════
-
-  {
-    path: 'secure-app',
-    loadComponent: () =>
-      import('./auth/login/login.component').then(m => m.LoginComponent),
-  },
-  {
-    path: 'register',
-    loadComponent: () =>
-      import('./auth/register/register.component').then(m => m.RegisterComponent),
-  },
-  {
-    path: 'verify-otp',
-    component: VerifyOtpComponent,
-    title: 'Verify OTP',
-  },
-  {
-    path: 'callback',
-    component: CallbackComponent,
-  },
-  {
-    path: 'change-password',
-    component: ResetPasswordComponent,
-    title: 'Change Password',
-  },
-  {
-    path: 'forgot-password',
-    component: ForgotPasswordComponent,
-    title: 'Forgot Password',
-  },
-
- 
   {
     path: 'catalog',
-    component: CatalogComponent,  // déjà <app-footer> dans son template ✓
+    component: CatalogComponent,
     title: 'Catalogue',
   },
   {
@@ -79,7 +43,7 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/catalog-product/details-page/details-page.component').then(m => m.DetailsPageComponent),
   },
-  
+
   // par exemple juste après la route 'promotions'
   {
     path: 'shop/:shopId',
@@ -92,28 +56,25 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/carts/cart/cart.component').then(m => m.CartComponent),
   },
- 
+
   {
     path: 'checkout',
     canActivate: [authGuard],
     title: 'Checkout',
     loadComponent: () =>
       import('./features/carts/checkout/checkout.component').then(m => m.CheckoutComponent),
-    // → ajouter <app-footer> dans checkout.component.html (ou pas, selon votre choix)
   },
   {
     path: 'orders',
     component: OrdersComponent,
     title: 'My Orders',
     canActivate: [authGuard],
-    // → ajouter <app-footer> dans orders.component.html
   },
   {
     path: 'order-tracking/:id',
     component: OrderTrackingComponent,
     title: 'Order Details',
     canActivate: [authGuard],
-    // → ajouter <app-footer> dans order-tracking.component.html
   },
   {
     path: 'order-confirmation/:orderId',
@@ -122,12 +83,11 @@ export const routes: Routes = [
     title: 'Order Confirmation',
   },
 
-   {
+  {
     path: 'profile',
     canActivate: [authGuard],
     loadComponent: () =>
       import('./features/profil/profil.component').then(m => m.ProfilComponent),
-    // → ajouter <app-footer> dans profil.component.html
   },
   // payments
   {
@@ -183,6 +143,44 @@ export const routes: Routes = [
     path: 'payment-policy',
     component: PaymentPolicyComponent,
     title: 'Payment Policy',
+  },
+
+
+
+
+  // ════════════════════════════════════════════════════════════
+  // PAGES SANS FOOTER
+  // login, register, callback, otp — pas de tab bar ici
+  // ════════════════════════════════════════════════════════════
+
+  {
+    path: 'secure-app',
+    loadComponent: () =>
+      import('./auth/login/login.component').then(m => m.LoginComponent),
+  },
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./auth/register/register.component').then(m => m.RegisterComponent),
+  },
+  {
+    path: 'verify-otp',
+    component: VerifyOtpComponent,
+    title: 'Verify OTP',
+  },
+  {
+    path: 'callback',
+    component: CallbackComponent,
+  },
+  {
+    path: 'change-password',
+    component: ResetPasswordComponent,
+    title: 'Change Password',
+  },
+  {
+    path: 'forgot-password',
+    component: ForgotPasswordComponent,
+    title: 'Forgot Password',
   },
 
   // Fallback

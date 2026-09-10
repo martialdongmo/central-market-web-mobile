@@ -1,3 +1,5 @@
+// CALL BACK APP CLIENT
+
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, IonIcon } from "@ionic/angular/standalone";

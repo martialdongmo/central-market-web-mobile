@@ -33,7 +33,10 @@ $danger:  #ef4444;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 0 12px;
+  /* ⚠️ CORRECTIF : sans le safe-area-top, le bouton retour et le panier
+     se retrouvent partiellement cachés sous l'encoche / la barre de
+     statut système sur mobile réel (Android edge-to-edge, iOS notch). */
+  padding: calc(var(--ion-safe-area-top, 0px) + 10px) 0 12px;
 }
 
 // ── boutons retour / panier (repris de catalog/nearby/promotions) ──
