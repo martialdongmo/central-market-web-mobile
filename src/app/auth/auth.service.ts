@@ -132,7 +132,7 @@ export class AuthService {
     const authUrl = `${this.authEndpoint}?${params.toString()}`;
 
     if (this.isNative) {
-      await Browser.open({ url: authUrl, presentationStyle: 'popover' });
+      await Browser.open({ url: authUrl, presentationStyle: 'fullscreen' });
     } else {
       window.location.href = authUrl;
     }
