@@ -2,7 +2,7 @@ name: Central Market Web Mobile Pipline
 on:
   push:
     branches:
-      - web-apk-1
+      - dev-sidof-v3
   pull_request:
     branches:
       - deployment

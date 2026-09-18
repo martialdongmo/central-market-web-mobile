@@ -2,87 +2,60 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>CAPACITOR_DEBUG</key>
-    <string>$(CAPACITOR_DEBUG)</string>
-    <key>CFBundleDevelopmentRegion</key>
-    <string>fr</string>
-    <key>CFBundleDisplayName</key>
-    <string>GroupinG</string>
-    <key>CFBundleExecutable</key>
-    <string>$(EXECUTABLE_NAME)</string>
-    <key>CFBundleIdentifier</key>
-    <string>cm.kapexpert.grouping</string>
-    <key>CFBundleInfoDictionaryVersion</key>
-    <string>6.0</string>
-    <key>CFBundleName</key>
-    <string>$(PRODUCT_NAME)</string>
-    <key>CFBundlePackageType</key>
-    <string>APPL</string>
-    <key>CFBundleShortVersionString</key>
-    <string>$(MARKETING_VERSION)</string>
-    <key>CFBundleVersion</key>
-    <string>$(CURRENT_PROJECT_VERSION)</string>
-    <key>LSRequiresIPhoneOS</key>
-    <true/>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>fr</string>
+	<key>CFBundleDisplayName</key>
+	<string>GroupinG</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>2.4.3</string>
+	<key>CFBundleVersion</key>
+	<string>16</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
 
-    <!-- Interface & Storyboards -->
-    <key>UILaunchStoryboardName</key>
-    <string>LaunchScreen</string>
-    <key>UIMainStoryboardFile</key>
-    <string>Main</string>
-    <key>UIRequiredDeviceCapabilities</key>
-    <array>
-        <string>armv7</string>
-    </array>
-    <key>UISupportedInterfaceOrientations</key>
-    <array>
-        <string>UIInterfaceOrientationPortrait</string>
-        <string>UIInterfaceOrientationLandscapeLeft</string>
-        <string>UIInterfaceOrientationLandscapeRight</string>
-    </array>
-    <key>UISupportedInterfaceOrientations~ipad</key>
-    <array>
-        <string>UIInterfaceOrientationPortrait</string>
-        <string>UIInterfaceOrientationPortraitUpsideDown</string>
-        <string>UIInterfaceOrientationLandscapeLeft</string>
-        <string>UIInterfaceOrientationLandscapeRight</string>
-    </array>
-    <key>UIViewControllerBasedStatusBarAppearance</key>
-    <true/>
+	<!-- 🔗 Deep Link Custom Scheme -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>cm.kapexpert.grouping</string>
+			</array>
+		</dict>
+	</array>
 
-    <!-- Custom Deep Link / OAuth URL Schemes -->
-    <key>CFBundleURLTypes</key>
-    <array>
-        <dict>
-            <key>CFBundleURLName</key>
-            <string>OAuth Callback</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>cm.kapexpert.grouping</string>
-            </array>
-        </dict>
-    </array>
+	<!-- 🔒 Permission Descriptions (Requises par Apple) -->
+	<key>NSCameraUsageDescription</key>
+	<string>GroupinG nécessite l'accès à la caméra pour vous permettre de prendre des photos de profil ou scanner des codes QR.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>GroupinG a besoin d'accéder à votre galerie pour ajouter des images à votre profil.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>GroupinG a besoin de permission pour enregistrer des images dans vos photos.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>GroupinG utilise votre position pour localiser les offres et services à proximité.</string>
 
-    <!-- Autoriser le partage et l'ouverture d'apps externes -->
-    <key>LSApplicationQueriesSchemes</key>
-    <array>
-        <string>whatsapp</string>
-        <string>https</string>
-        <string>http</string>
-        <string>tel</string>
-        <string>mailto</string>
-    </array>
-
-    <!-- Description des permissions iOS (Textes explicatifs obligatoires) -->
-    <key>NSCameraUsageDescription</key>
-    <string>L'application nécessite l'accès à l'appareil photo pour la capture de photos et le scan de QR codes.</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>L'application nécessite l'accès à votre galerie pour sélectionner des photos.</string>
-    <key>NSPhotoLibraryAddUsageDescription</key>
-    <string>L'application nécessite l'autorisation d'enregistrer des images dans votre galerie.</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>L'application nécessite votre position pour afficher les boutiques et offres à proximité.</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>L'application nécessite l'accès au microphone pour les fonctionnalités vocales ou vidéo.</string>
+	<!-- 📱 Interface -->
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
 </dict>
 </plist>
