@@ -82,7 +82,7 @@
         <div class="s-row">
           <span class="s-label">Sous-total</span>
           @if (order.subtotalAmount != null && order.subtotalAmount > 0) {
-            <span class="s-val">{{ order.subtotalAmount | customCurrency }}</span>
+            <span class="s-val">{{ order.subtotalAmount | customCurrency: order.currency }}</span>
           } @else {
             <span class="s-val s-val-error">
               <ion-icon name="alert-circle-outline"></ion-icon>
@@ -95,7 +95,7 @@
         <div class="s-row">
           <span class="s-label">Frais de livraison</span>
           @if (order.deliveryFee != null) {
-            <span class="s-val">{{ order.deliveryFee | customCurrency }}</span>
+            <span class="s-val">{{ order.deliveryFee | customCurrency:order.currency }}</span>
           } @else {
             <span class="s-val s-val-error">
               <ion-icon name="alert-circle-outline"></ion-icon>
@@ -117,7 +117,7 @@
         <div class="s-row s-total">
           <span>Total</span>
           @if (order.totalAmount != null && order.totalAmount > 0) {
-            <span class="s-total-val">{{ order.totalAmount | customCurrency }}</span>
+            <span class="s-total-val">{{ order.totalAmount | customCurrency: order.currency }}</span>
           } @else {
             <span class="s-total-val s-val-error">
               <ion-icon name="alert-circle-outline"></ion-icon>
@@ -243,7 +243,7 @@
           <p class="cash-title">Paiement à la livraison</p>
           <p class="cash-sub">
             @if (order.totalAmount > 0) {
-              Merci de préparer <strong>{{ order.totalAmount | customCurrency }}</strong> à la réception de votre commande.
+              Merci de préparer <strong>{{ order.totalAmount | customCurrency: order.currency }}</strong> à la réception de votre commande.
             } @else {
               <span class="s-val-error">Montant indisponible — contactez le support.</span>
             }
@@ -266,7 +266,7 @@
             </p>
             <p class="cta-sub">
               @if (order.totalAmount > 0) {
-                {{ order.totalAmount | customCurrency }} via {{ payment.label }}
+                {{ order.totalAmount | customCurrency:order.currency }} via {{ payment.label }}
               } @else {
                 Montant indisponible
               }
@@ -285,7 +285,7 @@
             }
           </span>
           @if (order.totalAmount > 0) {
-            <span class="pay-amt">{{ order.totalAmount | customCurrency }}</span>
+            <span class="pay-amt">{{ order.totalAmount | customCurrency: order.currency }}</span>
           }
           } @else {
           <ion-spinner name="crescent"></ion-spinner>

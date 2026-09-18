@@ -1,6 +1,7 @@
 export const environment = {
   production: false,
   AUTH_API_URL: 'http://localhost:9009',
+  baseUrl: 'http://localhost:9009/v1/bis',
   USER_API_URL: 'http://localhost:9009/api/v1/bis/users',
   CATALOG_API_URL: "http://localhost:9009/api/v1/bis/catalog",
   categoryEndpoint: 'http://localhost:9009/api/v1/bis/categories',

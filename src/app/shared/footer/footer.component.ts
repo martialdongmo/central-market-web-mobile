@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import {
   IonTabBar, IonTabButton, IonIcon, IonLabel,
-  NavController, AlertController,
+  NavController, AlertController, ToastController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -11,7 +11,8 @@ import {
   menuOutline, closeOutline, bagHandleOutline, personOutline,
   bicycleOutline, chatbubbleEllipsesOutline, helpCircleOutline,
   chevronForwardOutline, logOutOutline, openOutline,
-  checkmarkCircleOutline, personCircleOutline, globeOutline
+  checkmarkCircleOutline, personCircleOutline, globeOutline,
+  shieldCheckmarkOutline, trashOutline
 } from 'ionicons/icons';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
@@ -20,6 +21,12 @@ import { UserResponse } from 'src/app/core/model/response/usersResponse';
 
 const CAN_VALIDATE_ROLES = ['DELIVERY', 'ADMIN', 'MANAGER'] as const;
 const CREATE_SHOP_URL    = 'https://kapexpert.cloud:3001/home';
+
+// Politique de confidentialité — requise à la fois ici (lien in-app, exigé par
+// Apple/Google) ET dans les fiches App Store Connect / Play Console elles-mêmes
+// (deux exigences distinctes, l'une ne remplace pas l'autre).
+const PRIVACY_POLICY_URL = 'https://kapexpert.cloud:3000/privacy-policy'; // TODO: adapter à l'URL réelle
+
 const ROLE_DISPLAY: Record<string, string> = {
   USER:     'Customer',
   DELIVERY: 'Delivery Driver',
@@ -44,6 +51,7 @@ export class FooterComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly navCtrl     = inject(NavController);
   private readonly alertCtrl   = inject(AlertController);
+  private readonly toastCtrl   = inject(ToastController);
   private readonly translate   = inject(TranslateService);
 
   menuOpen          = false;
@@ -61,7 +69,8 @@ export class FooterComponent implements OnInit, OnDestroy {
       menuOutline, closeOutline, bagHandleOutline, personOutline,
       bicycleOutline, chatbubbleEllipsesOutline, helpCircleOutline,
       chevronForwardOutline, logOutOutline, openOutline,
-      checkmarkCircleOutline, personCircleOutline, globeOutline
+      checkmarkCircleOutline, personCircleOutline, globeOutline,
+      shieldCheckmarkOutline, trashOutline,
     });
 
     // Initialize language from storage or default
@@ -140,6 +149,59 @@ export class FooterComponent implements OnInit, OnDestroy {
       return;
     }
     window.open(CREATE_SHOP_URL, '_blank', 'noopener,noreferrer');
+  }
+
+  // ── Confidentialité ───────────────────────────────────────────────────
+  openPrivacyPolicy(): void {
+    this.closeMenu();
+    this.navCtrl.navigateRoot('/privacy-policy');
+
+  }
+
+  // ── Suppression de compte ─────────────────────────────────────────────
+  // Exigence App Store 5.1.1(v) : toute app permettant la création d'un
+  // compte doit permettre à l'utilisateur d'en demander la suppression
+  // directement depuis l'app (un simple lien "contactez le support par
+  // email" ne suffit pas à la validation).
+  async confirmDeleteAccount(): Promise<void> {
+    this.closeMenu();
+
+    const alert = await this.alertCtrl.create({
+      header:  'Supprimer votre compte ?',
+      message: 'Cette action est définitive. Vos commandes, favoris et informations personnelles seront supprimés et vous serez déconnecté. Voulez-vous continuer ?',
+      buttons: [
+        { text: 'Annuler', role: 'cancel' },
+        {
+          text: 'Supprimer définitivement',
+          cssClass: 'alert-btn-danger',
+          handler: () => this.deleteAccount(),
+        },
+      ],
+    });
+    await alert.present();
+  }
+
+  private deleteAccount(): void {
+    // TODO: remplacer par l'appel réel à votre endpoint de suppression de
+    // compte (ex: DELETE /users/me). AuthService n'expose pas encore cette
+    // méthode — à ajouter côté service, avec suppression ou anonymisation
+    // des données associées côté backend.
+    this.authService.deleteAccount().subscribe({
+      next: () => {
+        this.authService.logout();
+        this.navCtrl.navigateRoot('/catalog');
+      },
+      error: async (err: unknown) => {
+        console.error('Échec de la suppression du compte:', err);
+        const toast = await this.toastCtrl.create({
+          message: "Échec de la suppression du compte. Veuillez réessayer ou contacter le support.",
+          duration: 3000,
+          position: 'top',
+          color: 'danger',
+        });
+        await toast.present();
+      },
+    });
   }
 
   // ── Role helpers ──────────────────────────────────────────────────────

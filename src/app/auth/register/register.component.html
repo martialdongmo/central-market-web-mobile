@@ -1,111 +1,158 @@
-<ion-content class="auth-page">
+<ion-content class="auth-page" [scrollY]="true">
+
+  <div class="header-banner">
+    <div class="logo-frame">
+      <img src="/assets/central-market-logo.png" alt="GroupinG Logo" class="logo-img" />
+    </div>
+    <h1 class="auth-title">Groupin<span>G</span></h1>
+    <p class="auth-sub">Créez votre compte pour commencer vos achats</p>
+  </div>
 
   <div class="auth-body">
 
-    <div class="brand-identity-wrap">
-      <div class="logo-frame">
-        <img src="/assets/central-market-logo.png" alt="GroupinG Logo" class="logo-img" />
+    <div class="step-tracker">
+      <div class="step-track">
+        <div class="step-track-fill" [style.width.%]="progressPercent()"></div>
       </div>
-      <h1 class="auth-title">Groupin<span>G</span></h1>
-      <p class="auth-sub">Create your account to start shopping</p>
+      <div class="step-labels">
+        <span [class.active]="currentStep() >= 1">Identité</span>
+        <span [class.active]="currentStep() >= 2">Contact</span>
+        <span [class.active]="currentStep() >= 3">Sécurité</span>
+      </div>
     </div>
 
     <form [formGroup]="registerForm" (ngSubmit)="register()">
 
-      <div class="auth-field">
-        <label>First name</label>
-        <div class="input-box">
-          <ion-icon name="person-outline"></ion-icon>
-          <input type="text" formControlName="firstName" placeholder="John">
+      @if (currentStep() === 1) {
+        <div class="step-panel">
+          <div class="auth-field">
+            <label>Prénom</label>
+            <div class="input-box" [class.has-error]="isFieldInvalid('firstName')">
+              <ion-icon name="person-outline"></ion-icon>
+              <input type="text" formControlName="firstName" placeholder="Jean">
+            </div>
+          </div>
+
+          <div class="auth-field">
+            <label>Nom</label>
+            <div class="input-box" [class.has-error]="isFieldInvalid('lastName')">
+              <ion-icon name="person-outline"></ion-icon>
+              <input type="text" formControlName="lastName" placeholder="Dupont">
+            </div>
+          </div>
+
+          <div class="auth-field">
+            <label>Nom d'utilisateur</label>
+            <div class="input-box" [class.has-error]="isFieldInvalid('username')">
+              <ion-icon name="at-outline"></ion-icon>
+              <input type="text" formControlName="username" placeholder="jeandupont">
+            </div>
+          </div>
         </div>
-      </div>
+      }
 
-      <div class="auth-field">
-        <label>Last name</label>
-        <div class="input-box">
-          <ion-icon name="person-outline"></ion-icon>
-          <input type="text" formControlName="lastName" placeholder="Doe">
+      @if (currentStep() === 2) {
+        <div class="step-panel">
+          <div class="auth-field">
+            <label>Email</label>
+            <div class="input-box" [class.has-error]="isFieldInvalid('email')">
+              <ion-icon name="mail-outline"></ion-icon>
+              <input type="email" formControlName="email" placeholder="vous@email.com">
+            </div>
+          </div>
+
+          <div class="auth-field">
+            <label>Téléphone</label>
+            <div class="input-box" [class.has-error]="isFieldInvalid('phoneNumber')">
+              <ion-icon name="call-outline"></ion-icon>
+              <input type="text" formControlName="phoneNumber" placeholder="+237...">
+            </div>
+          </div>
+
+          <div class="auth-field">
+            <label>Devise</label>
+            <div class="input-box" [class.has-error]="isFieldInvalid('currency')">
+              <ion-icon name="cash-outline"></ion-icon>
+              <select formControlName="currency" class="native-select">
+                @for (c of currencies; track c) {
+                  <option [value]="c">{{ c }}</option>
+                }
+              </select>
+            </div>
+          </div>
         </div>
-      </div>
+      }
 
-      <div class="auth-field">
-        <label>Username</label>
-        <div class="input-box">
-          <ion-icon name="at-outline"></ion-icon>
-          <input type="text" formControlName="username" placeholder="johndoe">
+      @if (currentStep() === 3) {
+        <div class="step-panel">
+          <div class="auth-field">
+            <label>Mot de passe</label>
+            <div class="input-box" [class.has-error]="isFieldInvalid('password')">
+              <ion-icon name="lock-closed-outline"></ion-icon>
+              <input [type]="isPasswordHidden ? 'password' : 'text'" formControlName="password"
+                placeholder="Min. 6 caractères">
+              <button type="button" class="toggle-password-btn" (click)="togglePasswordVisibility()">
+                <ion-icon [name]="isPasswordHidden ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="auth-policy-wrap">
+            <label class="policy-checkbox-container">
+              <input type="checkbox" formControlName="agreeToTerms">
+              <span class="custom-checkbox"></span>
+              <span class="policy-text">
+                J'accepte les
+                <a (click)="$event.stopPropagation(); openTerms()">Conditions d'utilisation</a>
+                et la
+                <a (click)="$event.stopPropagation(); openPrivacy()">Politique de confidentialité</a>
+              </span>
+            </label>
+          </div>
         </div>
-      </div>
-
-      <div class="auth-field">
-        <label>Email</label>
-        <div class="input-box">
-          <ion-icon name="mail-outline"></ion-icon>
-          <input type="email" formControlName="email" placeholder="you@email.com">
-        </div>
-      </div>
-
-      <div class="auth-field">
-        <label>Phone number</label>
-        <div class="input-box">
-          <ion-icon name="call-outline"></ion-icon>
-          <input type="text" formControlName="phoneNumber" placeholder="+237...">
-        </div>
-      </div>
-
-      <div class="auth-field">
-        <label>Password</label>
-        <div class="input-box">
-          <ion-icon name="lock-closed-outline"></ion-icon>
-
-          <input [type]="isPasswordHidden ? 'password' : 'text'" formControlName="password"
-            placeholder="Min 6 characters">
-
-          <button type="button" class="toggle-password-btn" (click)="togglePasswordVisibility()">
-            <ion-icon [name]="isPasswordHidden ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
-          </button>
-        </div>
-      </div>
-
-      <div class="auth-policy-wrap">
-        <label class="policy-checkbox-container">
-          <input type="checkbox" formControlName="agreeToTerms">
-          <span class="custom-checkbox"></span>
-          <span class="policy-text">
-            I agree to the
-            <a (click)="$event.stopPropagation(); openTerms()">Terms of Service</a>
-            and
-            <a (click)="$event.stopPropagation(); openPrivacy()">Privacy Policy</a>
-          </span>
-        </label>
-      </div>
+      }
 
       @if (errorMessage) {
-      <div class="error-box">
-        <ion-icon name="alert-circle-outline"></ion-icon>
-        <span>{{ errorMessage }}</span>
-      </div>
+        <div class="error-box">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          <span>{{ errorMessage }}</span>
+        </div>
       }
 
       @if (successMessage) {
-      <div class="success-box">
-        <ion-icon name="checkmark-circle-outline"></ion-icon>
-        <span>{{ successMessage }}</span>
-      </div>
+        <div class="success-box">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          <span>{{ successMessage }}</span>
+        </div>
       }
 
-      <button type="submit" class="primary-btn" [disabled]="isLoading || registerForm.invalid">
-        @if (!isLoading) {
-        <span>Create account</span>
+      <div class="step-actions">
+        <button type="button" class="secondary-btn" (click)="goBack()">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+          Retour
+        </button>
+
+        @if (currentStep() < totalSteps) {
+          <button type="button" class="primary-btn" (click)="goNext()">
+            Suivant
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </button>
         } @else {
-        <div class="spinner"></div>
+          <button type="submit" class="primary-btn" [disabled]="isLoading || registerForm.invalid">
+            @if (!isLoading) {
+              <span>Créer le compte</span>
+            } @else {
+              <div class="spinner"></div>
+            }
+          </button>
         }
-      </button>
+      </div>
 
     </form>
 
     <div class="switch">
-      <span>Already have an account?</span>
-      <button type="button" routerLink="/secure-app">Sign in</button>
+      <span>Vous avez déjà un compte ?</span>
+      <button type="button" routerLink="/secure-app">Se connecter</button>
     </div>
 
   </div>

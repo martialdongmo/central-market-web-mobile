@@ -22,7 +22,12 @@
     "support_desc": "Chat with our team",
     "help": "Help & FAQ",
     "help_desc": "Find answers",
-    "language": "Language"
+    "language": "Language",
+    "legal": "Legal & Account",
+    "privacy_policy": "Privacy Policy",
+    "privacy_policy_desc": "How we protect your data",
+    "delete_account": "Delete my account",
+    "delete_account_desc": "Permanently delete your account and data"
   },
   "lang": {
     "fr": "French",

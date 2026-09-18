@@ -34,6 +34,7 @@ export class AuthService {
   private tokenEndpoint = environment.AUTH_API_URL + '/oauth2/token';
   private AUTH_URL = environment.USER_API_URL;
   private API_URL = environment.AUTH_API_URL;
+  private baseUrl = environment.baseUrl;
 
   private clientIdMobile = 'mobile';
   private clientIdWeb = 'grouping_web';
@@ -289,4 +290,10 @@ export class AuthService {
       { responseType: 'text' },
     );
   }
+
+  deleteAccount(): Observable<void>{
+    return this.http.get<void>(`${this.baseUrl}/user/delete`)
+  }
+
+
 }

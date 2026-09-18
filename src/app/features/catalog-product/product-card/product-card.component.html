@@ -25,10 +25,10 @@
     <div class="card-footer">
       <div class="card-price-wrap">
         @if(product.promotionActive){
-          <div class="card-old-price"><small>{{ product.price | customCurrency }}</small></div>
+          <div class="card-old-price"><small>{{ product.price | customCurrency: product.currency }}</small></div>
         }
         <div class="card-price">
-          <small>{{ (product.promotionActive ? product.promotionPrice : product.price) | customCurrency }}</small>
+          <small>{{ (product.promotionActive ? product.promotionPrice : product.price) | customCurrency: product.currency }}</small>
         </div>
       </div>
       <button class="add-btn" (click)="addToCart($event)" [disabled]="!product.inStock">

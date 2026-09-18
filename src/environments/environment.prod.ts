@@ -1,6 +1,7 @@
 export const environment = {
   production: true,
   AUTH_API_URL: 'https://kapexpert.cloud:9009',
+  baseUrl: 'https://kapexpert.cloud:9009/v1/bis',
   redirectUri: 'https://kapexpert.cloud:3000/callback',
   USER_API_URL: 'https://kapexpert.cloud:9009/api/v1/bis/users',
   CATALOG_API_URL: "https://kapexpert.cloud:9009/api/v1/bis/catalog",

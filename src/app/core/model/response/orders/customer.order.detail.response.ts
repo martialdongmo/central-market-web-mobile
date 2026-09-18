@@ -3,6 +3,7 @@ import { DeliveryType } from "../../enums/deliveryType";
 import { PaymentMethod } from "../../enums/payment-method";
 import { OrderStatus } from "./orderStatus";
 import { CustomerShopGroupResponse } from "./customerShopGroupResponse";
+import { Currency } from "../../enums/currency-type";
 
 export interface CustomerOrderDetailResponse {
   id: string; // UUID → string
@@ -13,6 +14,7 @@ export interface CustomerOrderDetailResponse {
   subtotalAmount: number; // BigDecimal → number
   deliveryFee: number;
   totalAmount: number;
+  currency:Currency; 
 
   // ─── Payment + delivery ───────────────────────
   paymentMethod: PaymentMethod; // Enum → custom TS enum

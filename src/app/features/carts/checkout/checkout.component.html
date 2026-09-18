@@ -1,7 +1,7 @@
 <ion-header class="ion-no-border">
   <ion-toolbar class="checkout-toolbar">
     <ion-buttons slot="start">
-      <ion-button (click)="navCtrl.back()" fill="clear" class="back-btn">
+      <ion-button (click)="goPrev()" fill="clear" class="back-btn">
         <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -16,19 +16,19 @@
 
   <!-- ── Étapes ── -->
   <div class="step-bar">
-    <div class="step done">
+    <div class="step" [class.done]="isStepDone(1)" [class.active]="isStepActive(1)">
       <div class="step-dot"><ion-icon name="cart-outline"></ion-icon></div>
-      <span>Panier</span>
+      <span>Articles</span>
     </div>
-    <div class="step-line done"></div>
-    <div class="step active">
-      <div class="step-dot"><ion-icon name="location-outline"></ion-icon></div>
-      <span>Livraison</span>
-    </div>
-    <div class="step-line"></div>
-    <div class="step">
+    <div class="step-line" [class.done]="isStepDone(1)"></div>
+    <div class="step" [class.done]="isStepDone(2)" [class.active]="isStepActive(2)">
       <div class="step-dot"><ion-icon name="card-outline"></ion-icon></div>
       <span>Paiement</span>
+    </div>
+    <div class="step-line" [class.done]="isStepDone(2)"></div>
+    <div class="step" [class.done]="isStepDone(3)" [class.active]="isStepActive(3)">
+      <div class="step-dot"><ion-icon name="person-outline"></ion-icon></div>
+      <span>Client</span>
     </div>
   </div>
 </ion-header>
@@ -57,249 +57,304 @@
   <div class="page-body">
 
     <!-- ════════════════════════════════════
-         HERO — sans icône, plus compact
+         HERO — dépend de l'étape courante
     ════════════════════════════════════ -->
     <div class="hero">
-      <h1 class="hero-title">Presque terminé !</h1>
-      <p class="hero-sub">Vérifiez vos articles et complétez la livraison.</p>
-    </div>
-
-
-    <!-- ════════════════════════════════════
-         CARD 1 — RÉCAPITULATIF
-    ════════════════════════════════════ -->
-    <div class="bcard">
-      <div class="bcard-head">
-        <span class="bcard-title">Récapitulatif</span>
-        <span class="count-chip">
-          {{ cartItems.length }} article{{ cartItems.length !== 1 ? 's' : '' }}
-        </span>
-      </div>
-
-      @if (!cartItems.length) {
-        <div class="empty-state">
-          <ion-icon name="bag-outline"></ion-icon>
-          <p>Votre panier est vide</p>
-        </div>
-      }
-
-      @if (cartItems.length) {
-        <div class="item-list">
-          @for (item of cartItems; track item.productId) {
-          <div class="item-row">
-
-            <div class="thumb-wrap">
-              <img [src]="item.imageUrl || 'assets/placeholder.png'"
-                   [alt]="item.productName" class="thumb" />
-              <span class="qty-badge">{{ item.quantity }}</span>
-            </div>
-
-            <div class="item-meta">
-              <p class="item-name">{{ item.productName }}</p>
-              <p class="item-shop">
-                <ion-icon name="storefront-outline"></ion-icon>
-                {{ item.shopName }}
-              </p>
-              @if (item.promotionActive && item.promotionPrice) {
-                <p class="item-price">
-                  <span class="promo">{{ item.promotionPrice | customCurrency }}</span>
-                  <span class="struck">{{ item.price | customCurrency }}</span>
-                </p>
-              } @else {
-                <p class="item-price">{{ item.price | customCurrency }}</p>
-              }
-            </div>
-
-            <p class="line-total">
-              {{ getItemLineTotal(item) | customCurrency }}
-            </p>
-
-          </div>
-          }
-        </div>
-
-        <div class="total-strip">
-          <div class="s-row s-total">
-            <span>Total</span>
-            <span class="s-total-val">{{ totalPrice | customCurrency }}</span>
-          </div>
-        </div>
+      @switch (currentStep) {
+        @case (1) {
+          <h1 class="hero-title">Vos articles</h1>
+          <p class="hero-sub">Vérifiez le contenu de votre panier avant de continuer.</p>
+        }
+        @case (2) {
+          <h1 class="hero-title">Paiement</h1>
+          <p class="hero-sub">Choisissez comment vous souhaitez payer.</p>
+        }
+        @case (3) {
+          <h1 class="hero-title">Presque terminé !</h1>
+          <p class="hero-sub">Complétez vos coordonnées de livraison.</p>
+        }
       }
     </div>
 
 
     <!-- ════════════════════════════════════
-         CARD 2 — LIVRAISON
+         ÉTAPE 1 — RÉCAPITULATIF DES ARTICLES
     ════════════════════════════════════ -->
-    <div class="bcard">
-      <div class="bcard-head">
-        <span class="bcard-title">Détails de livraison</span>
-      </div>
-
-      <form [formGroup]="addressForm" class="checkout-form">
-
-        <!-- Type de livraison -->
-        <div class="field-block">
-          <label class="field-label">Mode de livraison <span class="req">*</span></label>
-          <div class="pill-group">
-            @for (type of deliveryTypes; track type) {
-              <button type="button"
-                      class="pill-btn"
-                      [class.active]="deliveryTypeCtrl.value === type"
-                      (click)="deliveryTypeCtrl.setValue(type); deliveryTypeCtrl.markAsTouched()">
-                <ion-icon [name]="type === 'DELIVERY' ? 'bicycle-outline' : 'bag-handle-outline'">
-                </ion-icon>
-                {{ deliveryLabel(type) }}
-              </button>
-            }
-          </div>
-          @if (deliveryTypeCtrl.invalid && deliveryTypeCtrl.touched) {
-          <p class="err">Sélectionnez un mode de livraison.</p>
-          }
+    @if (currentStep === 1) {
+      <div class="bcard">
+        <div class="bcard-head">
+          <span class="bcard-title">Récapitulatif</span>
+          <span class="count-chip">
+            {{ cartItems.length }} article{{ cartItems.length !== 1 ? 's' : '' }}
+          </span>
         </div>
 
-        <!-- Méthode de paiement -->
-        <div class="field-block">
-          <label class="field-label">Méthode de paiement <span class="req">*</span></label>
-          <div class="pay-tiles">
-            @for (method of paymentMethods; track method) {
-              <button type="button"
-                      class="pay-tile"
-                      [class.active]="paymentMethodCtrl.value === method"
-                      (click)="paymentMethodCtrl.setValue(method); paymentMethodCtrl.markAsTouched()">
-                <span class="pay-name">{{ paymentLabel(method) }}</span>
-                @if (paymentMethodCtrl.value === method) {
-                  <ion-icon name="checkmark-circle" class="pay-check"></ion-icon>
-                }
-              </button>
-            }
-          </div>
-          @if (paymentMethodCtrl.invalid && paymentMethodCtrl.touched) {
-          <p class="err">Choisissez une méthode de paiement.</p>
-          }
-        </div>
-
-        <!-- Téléphone -->
-        <div class="field-block">
-          <label class="field-label" for="phoneNumber">
-            Numéro de téléphone <span class="req">*</span>
-          </label>
-          <div class="input-row">
-            <span class="input-pre"><ion-icon name="call-outline"></ion-icon></span>
-            <input id="phoneNumber" type="tel" class="f-input"
-                   formControlName="phoneNumber"
-                   placeholder="+237 6XX XXX XXX" />
-          </div>
-          @if (phoneNumberCtrl.invalid && phoneNumberCtrl.touched) {
-          <p class="err">Le numéro de téléphone est requis.</p>
-          }
-        </div>
-
-        <!-- Adresse -->
-        <div class="field-block">
-          <label class="field-label" for="address">
-            Adresse <span class="req">*</span>
-          </label>
-          <div class="input-row">
-            <span class="input-pre"><ion-icon name="home-outline"></ion-icon></span>
-            <input id="address" type="text" class="f-input"
-                   formControlName="address"
-                   placeholder="ex : Rue Foe, Bastos" />
-          </div>
-          @if (addressCtrl.invalid && addressCtrl.touched) {
-          <p class="err">L'adresse est requise.</p>
-          }
-        </div>
-
-        <!-- Ville -->
-        <div class="field-block">
-          <label class="field-label" for="city">
-            Ville <span class="req">*</span>
-          </label>
-          <div class="input-row">
-            <span class="input-pre"><ion-icon name="business-outline"></ion-icon></span>
-            <input id="city" type="text" class="f-input"
-                   formControlName="city"
-                   placeholder="ex : Yaoundé" />
-          </div>
-          @if (cityCtrl.invalid && cityCtrl.touched) {
-          <p class="err">La ville est requise.</p>
-          }
-        </div>
-
-        <!-- Adresse par défaut -->
-        <div class="toggle-row">
-          <div>
-            <p class="toggle-lbl">Définir comme adresse par défaut</p>
-            <p class="toggle-sub">Utilisée automatiquement pour vos prochaines commandes</p>
-          </div>
-          <ion-toggle color="primary"
-                      [checked]="defaultAddressCtrl.value"
-                      (ionChange)="defaultAddressCtrl.setValue($event.detail.checked)">
-          </ion-toggle>
-        </div>
-
-        <!-- Formulaire Stripe -->
-        @if (paymentMethodCtrl.value === 'STRIPE') {
-          <div class="stripe-section">
-            <app-stripe-payment-form
-              [amount]="totalPrice"
-              [currency]="'XAF'"
-              [clientSecret]="stripeClientSecret"
-              (paymentSuccess)="onStripePaymentSuccess($event)"
-              (paymentError)="onStripePaymentError($event)"
-              (loadingChange)="onStripeLoading($event)">
-            </app-stripe-payment-form>
+        @if (!cartItems.length) {
+          <div class="empty-state">
+            <ion-icon name="bag-outline"></ion-icon>
+            <p>Votre panier est vide</p>
           </div>
         }
 
-      </form>
-    </div>
+        @if (cartItems.length) {
+          <div class="item-list">
+            @for (item of cartItems; track item.productId) {
+            <div class="item-row">
 
+              <div class="thumb-wrap">
+                <img [src]="item.imageUrl || 'assets/placeholder.png'"
+                     [alt]="item.productName" class="thumb" />
+                <span class="qty-badge">{{ item.quantity }}</span>
+              </div>
 
-    <!-- ════════════════════════════════════
-         CARD 3 — COMPTE
-    ════════════════════════════════════ -->
-    @if (user) {
-    <div class="bcard account-card">
-      <div class="bcard-head">
-        <span class="bcard-title">Compte</span>
-        <ion-icon name="shield-checkmark-outline" class="verified-icon"></ion-icon>
-      </div>
-      <div class="account-row">
-        <div class="avatar">
-          {{ (user.firstName?.[0] ?? '') + (user.lastName?.[0] ?? '') | uppercase }}
-        </div>
-        <div class="account-info">
-          <p class="a-name">{{ user.firstName }} {{ user.lastName }}</p>
-          <p class="a-email">{{ user.email }}</p>
-        </div>
-      </div>
-    </div>
-    } @else {
-      <div class="bcard skel-card">
-        <ion-skeleton-text animated style="width:55%;height:14px;border-radius:6px;"></ion-skeleton-text>
-        <ion-skeleton-text animated style="width:38%;height:12px;border-radius:6px;margin-top:10px;"></ion-skeleton-text>
+              <div class="item-meta">
+                <p class="item-name">{{ item.productName }}</p>
+                <p class="item-shop">
+                  <ion-icon name="storefront-outline"></ion-icon>
+                  {{ item.shopName }}
+                </p>
+                @if (item.promotionActive && item.promotionPrice) {
+                  <p class="item-price">
+                    <span class="promo">{{ item.promotionPrice | customCurrency: item.currency }}</span>
+                    <span class="struck">{{ item.price | customCurrency: item.currency }}</span>
+                  </p>
+                } @else {
+                  <p class="item-price">{{ item.price | customCurrency: item.currency }}</p>
+                }
+              </div>
+
+              <p class="line-total">
+                {{ getItemLineTotal(item) | customCurrency: item.currency }}
+              </p>
+
+            </div>
+            }
+          </div>
+
+          <div class="total-strip">
+            <div class="s-row s-total">
+              <span>Total</span>
+              <span class="s-total-val">{{ totalPrice | customCurrency: getItemCurrency() }}</span>
+            </div>
+          </div>
+        }
       </div>
     }
 
 
     <!-- ════════════════════════════════════
-         CTA — PASSER LA COMMANDE
+         ÉTAPE 2 — MÉTHODE DE PAIEMENT
+    ════════════════════════════════════ -->
+    @if (currentStep === 2) {
+      <div class="bcard">
+        <div class="bcard-head">
+          <span class="bcard-title">Méthode de paiement</span>
+        </div>
+
+        <form [formGroup]="addressForm" class="checkout-form">
+
+          <div class="field-block">
+            <label class="field-label">Choisissez un moyen de paiement <span class="req">*</span></label>
+            <div class="pay-tiles">
+              @for (method of paymentMethods; track method) {
+                <button type="button"
+                        class="pay-tile"
+                        [class.active]="paymentMethodCtrl.value === method"
+                        (click)="paymentMethodCtrl.setValue(method); paymentMethodCtrl.markAsTouched()">
+                  <div class="pay-tile-left">
+                    @if (paymentLogos[method]) {
+                      <img [src]="paymentLogos[method]" [alt]="paymentLabel(method)" class="pay-logo" />
+                    } @else {
+                      <span class="pay-logo-fallback">
+                        <ion-icon name="cash-outline"></ion-icon>
+                      </span>
+                    }
+                    <span class="pay-name">{{ paymentLabel(method) }}</span>
+                  </div>
+                  @if (paymentMethodCtrl.value === method) {
+                    <ion-icon name="checkmark-circle" class="pay-check"></ion-icon>
+                  }
+                </button>
+              }
+            </div>
+            @if (paymentMethodCtrl.invalid && paymentMethodCtrl.touched) {
+            <p class="err">Choisissez une méthode de paiement.</p>
+            }
+          </div>
+
+          <!-- Formulaire Stripe -->
+          @if (paymentMethodCtrl.value === 'STRIPE') {
+            <div class="stripe-section">
+              <app-stripe-payment-form
+                [amount]="totalPrice"
+                [currency]="getItemCurrency()"
+                [clientSecret]="stripeClientSecret"
+                (paymentSuccess)="onStripePaymentSuccess($event)"
+                (paymentError)="onStripePaymentError($event)"
+                (loadingChange)="onStripeLoading($event)">
+              </app-stripe-payment-form>
+            </div>
+          }
+
+        </form>
+      </div>
+    }
+
+
+    <!-- ════════════════════════════════════
+         ÉTAPE 3 — LIVRAISON & COMPTE
+    ════════════════════════════════════ -->
+    @if (currentStep === 3) {
+      <div class="bcard">
+        <div class="bcard-head">
+          <span class="bcard-title">Détails de livraison</span>
+        </div>
+
+        <form [formGroup]="addressForm" class="checkout-form">
+
+          <!-- Type de livraison -->
+          <div class="field-block">
+            <label class="field-label">Mode de livraison <span class="req">*</span></label>
+            <div class="pill-group">
+              @for (type of deliveryTypes; track type) {
+                <button type="button"
+                        class="pill-btn"
+                        [class.active]="deliveryTypeCtrl.value === type"
+                        (click)="deliveryTypeCtrl.setValue(type); deliveryTypeCtrl.markAsTouched()">
+                  <ion-icon [name]="type === 'DELIVERY' ? 'bicycle-outline' : 'bag-handle-outline'">
+                  </ion-icon>
+                  {{ deliveryLabel(type) }}
+                </button>
+              }
+            </div>
+            @if (deliveryTypeCtrl.invalid && deliveryTypeCtrl.touched) {
+            <p class="err">Sélectionnez un mode de livraison.</p>
+            }
+          </div>
+
+          <!-- Téléphone -->
+          <div class="field-block">
+            <label class="field-label" for="phoneNumber">
+              Numéro de téléphone <span class="req">*</span>
+            </label>
+            <div class="input-row">
+              <span class="input-pre"><ion-icon name="call-outline"></ion-icon></span>
+              <input id="phoneNumber" type="tel" class="f-input"
+                     formControlName="phoneNumber"
+                     placeholder="" />
+            </div>
+            @if (phoneNumberCtrl.invalid && phoneNumberCtrl.touched) {
+            <p class="err">Le numéro de téléphone est requis.</p>
+            }
+          </div>
+
+          <!-- Adresse -->
+          <div class="field-block">
+            <label class="field-label" for="address">
+              Adresse <span class="req">*</span>
+            </label>
+            <div class="input-row">
+              <span class="input-pre"><ion-icon name="home-outline"></ion-icon></span>
+              <input id="address" type="text" class="f-input"
+                     formControlName="address"
+                     placeholder="ex : Rue Foe, Bastos" />
+            </div>
+            @if (addressCtrl.invalid && addressCtrl.touched) {
+            <p class="err">L'adresse est requise.</p>
+            }
+          </div>
+
+          <!-- Ville -->
+          <div class="field-block">
+            <label class="field-label" for="city">
+              Ville <span class="req">*</span>
+            </label>
+            <div class="input-row">
+              <span class="input-pre"><ion-icon name="business-outline"></ion-icon></span>
+              <input id="city" type="text" class="f-input"
+                     formControlName="city"
+                     placeholder="ex : Yaoundé, Charleroi" />
+            </div>
+            @if (cityCtrl.invalid && cityCtrl.touched) {
+            <p class="err">La ville est requise.</p>
+            }
+          </div>
+
+          <!-- Adresse par défaut -->
+          <div class="toggle-row">
+            <div>
+              <p class="toggle-lbl">Définir comme adresse par défaut</p>
+              <p class="toggle-sub">Utilisée automatiquement pour vos prochaines commandes</p>
+            </div>
+            <ion-toggle color="primary"
+                        [checked]="defaultAddressCtrl.value"
+                        (ionChange)="defaultAddressCtrl.setValue($event.detail.checked)">
+            </ion-toggle>
+          </div>
+
+        </form>
+      </div>
+
+      @if (user) {
+      <div class="bcard account-card">
+        <div class="bcard-head">
+          <span class="bcard-title">Compte</span>
+          <ion-icon name="shield-checkmark-outline" class="verified-icon"></ion-icon>
+        </div>
+        <div class="account-row">
+          <div class="avatar">
+            {{ (user.firstName?.[0] ?? '') + (user.lastName?.[0] ?? '') | uppercase }}
+          </div>
+          <div class="account-info">
+            <p class="a-name">{{ user.firstName }} {{ user.lastName }}</p>
+            <p class="a-email">{{ user.email }}</p>
+          </div>
+        </div>
+      </div>
+      } @else {
+        <div class="bcard skel-card">
+          <ion-skeleton-text animated style="width:55%;height:14px;border-radius:6px;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width:38%;height:12px;border-radius:6px;margin-top:10px;"></ion-skeleton-text>
+        </div>
+      }
+    }
+
+
+    <!-- ════════════════════════════════════
+         NAVIGATION — Retour / Suivant / Passer la commande
+         "Passer la commande" n'apparaît qu'à la dernière étape.
     ════════════════════════════════════ -->
     <div class="cta-wrap">
-      <button class="place-btn"
-              (click)="onConfirmation()"
-              [disabled]="isLoading || !cartItems.length || addressForm.invalid">
-        @if (!isLoading) {
-          <ion-icon name="bag-check-outline"></ion-icon>
-          <span class="btn-lbl">Passer la commande</span>
-          <span class="btn-amt">{{ totalPrice | customCurrency }}</span>
+      <div class="step-nav-buttons">
+        <button type="button" class="nav-back-btn" (click)="goPrev()">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+          Retour
+        </button>
+
+        @if (!isLastStep) {
+          <button type="button"
+                  class="place-btn"
+                  (click)="goNext()"
+                  [disabled]="currentStep === 1 && !cartItems.length">
+            <span class="btn-lbl">Suivant</span>
+            <ion-icon name="arrow-forward-outline"></ion-icon>
+          </button>
         } @else {
-          <ion-spinner name="crescent"></ion-spinner>
-          <span>Traitement…</span>
+          <button type="button"
+                  class="place-btn"
+                  (click)="onConfirmation()"
+                  [disabled]="isLoading || !cartItems.length || addressForm.invalid">
+            @if (!isLoading) {
+              <ion-icon name="bag-check-outline"></ion-icon>
+              <span class="btn-lbl">Passer la commande</span>
+              <span class="btn-amt">{{ totalPrice | customCurrency: getItemCurrency() }}</span>
+            } @else {
+              <ion-spinner name="crescent"></ion-spinner>
+              <span>Traitement…</span>
+            }
+          </button>
         }
-      </button>
+      </div>
       <p class="secure-note">
         <ion-icon name="lock-closed-outline"></ion-icon>
         Paiement sécurisé et chiffré

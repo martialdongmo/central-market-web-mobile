@@ -132,9 +132,9 @@
                 </div>
                 <div class="ord-amount-block">
                   @if (order.deliveryFee > 0) {
-                    <span class="ord-fee">+{{ order.deliveryFee | number:'1.0-0' }} delivery</span>
+                    <span class="ord-fee">+{{ order.deliveryFee | customCurrency: order.currency }}</span>
                   }
-                  <span class="ord-total">{{ order.totalAmount | number:'1.0-0' }} <span class="ord-currency">XAF</span></span>
+                  <span class="ord-total">{{ order.totalAmount | customCurrency: order.currency }}</span>
                 </div>
               </div>
 

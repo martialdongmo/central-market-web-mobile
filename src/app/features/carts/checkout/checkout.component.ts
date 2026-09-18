@@ -20,13 +20,13 @@ import { DELIVERY_TYPE_LABELS, DeliveryType } from '../../../core/model/enums/de
 
 import { StripePaymentFormComponent } from '../stripe-payment-form/stripe-payment-form.component';
 import {
-  arrowBackOutline, bagOutline, cartOutline,
+  arrowBackOutline, arrowForwardOutline, bagOutline, cartOutline,
   locationOutline, cardOutline, alertCircleOutline,
   closeOutline, bagCheckOutline, storefrontOutline,
   bicycleOutline, bagHandleOutline, checkmarkCircle,
   callOutline, homeOutline, businessOutline,
   personOutline, shieldCheckmarkOutline,
-  lockClosedOutline, checkmarkCircleOutline
+  lockClosedOutline, checkmarkCircleOutline, cashOutline
 } from 'ionicons/icons';
 import { CartService } from 'src/app/core/services/cart.service';
 import { CustomCurrencyPipe } from 'src/app/core/services/custom.currency.pipe';
@@ -34,6 +34,7 @@ import { CustomerService } from 'src/app/core/services/customer.service';
 import { LocationService } from 'src/app/core/services/location.service';
 import { OrdersService } from 'src/app/core/services/orders.service';
 import { PaymentService } from 'src/app/core/services/payment.service';
+import { Currency } from 'src/app/core/model/enums/currency-type';
 
 @Component({
   selector: 'app-checkout',
@@ -70,6 +71,25 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   readonly paymentMethods = Object.values(PaymentMethod);
   readonly deliveryTypes  = Object.values(DeliveryType);
 
+  // ── Logos des méthodes de paiement ──
+  // CASH n'a pas de logo dédié : le template retombe sur une icône.
+  readonly paymentLogos: Partial<Record<PaymentMethod, string>> = {
+    [PaymentMethod.MTN_MOBILE_MONEY]: 'assets/payments/mtn-momo.png',
+    [PaymentMethod.ORANGE_MONEY]:     'assets/payments/orange-money.png',
+    [PaymentMethod.STRIPE]:           'assets/payments/stripe.png',
+    [PaymentMethod.CASH]:           'assets/payments/cash.png',
+  };
+
+  // ── Assistant par étapes ──
+  // 1: Articles (récapitulatif du panier)
+  // 2: Paiement (méthode de paiement + formulaire Stripe)
+  // 3: Client (livraison + coordonnées + compte)
+  currentStep = 1;
+  totalSteps = 3;
+
+  private step2Fields = ['paymentMethod'];
+  private step3Fields = ['deliveryType', 'phoneNumber', 'address', 'city'];
+
   addressForm = this.fbuilder.group({
     deliveryType:   ['', Validators.required],
     paymentMethod:  ['', Validators.required],
@@ -85,6 +105,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   get addressCtrl():        FormControl { return this.addressForm.get('address')        as FormControl; }
   get cityCtrl():           FormControl { return this.addressForm.get('city')           as FormControl; }
   get defaultAddressCtrl(): FormControl { return this.addressForm.get('defaultAddress') as FormControl; }
+
+  get isLastStep(): boolean { return this.currentStep === this.totalSteps; }
 
   paymentLabel(method: PaymentMethod): string {
     return PAYMENT_METHOD_LABELS[method];
@@ -103,17 +125,22 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     return this.getItemPrice(item) * item.quantity;
   }
 
+  // Le panier est mono-devise (imposé par CartService) : null seulement si le panier est vide.
+  getItemCurrency(): Currency | null {
+    return this.cartService.getCartCurrency();
+  }
+
   private cartSub!: Subscription;
 
   constructor() {
     addIcons({
-      arrowBackOutline, bagOutline, cartOutline,
+      arrowBackOutline, arrowForwardOutline, bagOutline, cartOutline,
       locationOutline, cardOutline, alertCircleOutline,
       closeOutline, bagCheckOutline, storefrontOutline,
       bicycleOutline, bagHandleOutline, checkmarkCircle,
       callOutline, homeOutline, businessOutline,
       personOutline, shieldCheckmarkOutline,
-      lockClosedOutline, checkmarkCircleOutline,
+      lockClosedOutline, checkmarkCircleOutline, cashOutline,
     });
   }
 
@@ -138,19 +165,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     });
   }
 
-  // ─── Toast + bandeau d'erreur ────────────────────────────────
-  private async showToast(message: string, color: 'danger' | 'success' | 'warning' = 'danger') {
-    const toast = await this.toastCtrl.create({
-      message,
-      duration: 3000,
-      position: 'top',
-      color,
-      mode: 'ios',
-      buttons: [{ icon: 'close', role: 'cancel' }],
-    });
-    await toast.present();
-  }
-
   private setError(message: string) {
     this.errorMessage = message;
     this.showToast(message, 'danger');
@@ -158,6 +172,56 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       if (this.errorMessage === message) this.errorMessage = '';
     }, 4000);
+  }
+
+  // ─── Navigation de l'assistant ──────────────────────────────
+
+  goNext(): void {
+    this.errorMessage = '';
+
+    if (this.currentStep === 1) {
+      if (!this.cartItems.length) {
+        this.setError('Votre panier est vide.');
+        return;
+      }
+    }
+
+    if (this.currentStep === 2) {
+      if (this.isFieldGroupInvalid(this.step2Fields)) {
+        this.markFieldGroupTouched(this.step2Fields);
+        this.setError('Choisissez une méthode de paiement.');
+        return;
+      }
+    }
+
+    if (this.currentStep < this.totalSteps) {
+      this.currentStep++;
+    }
+  }
+
+  goPrev(): void {
+    this.errorMessage = '';
+    if (this.currentStep > 1) {
+      this.currentStep--;
+    } else {
+      this.navCtrl.back();
+    }
+  }
+
+  isStepDone(step: number): boolean {
+    return this.currentStep > step;
+  }
+
+  isStepActive(step: number): boolean {
+    return this.currentStep === step;
+  }
+
+  private isFieldGroupInvalid(fields: string[]): boolean {
+    return fields.some(f => this.addressForm.get(f)?.invalid);
+  }
+
+  private markFieldGroupTouched(fields: string[]): void {
+    fields.forEach(f => this.addressForm.get(f)?.markAsTouched());
   }
 
   // ─── Flux principal du checkout ──────────────────────────────
@@ -175,6 +239,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     if (this.addressForm.invalid) {
       this.addressForm.markAllAsTouched();
+      if (this.isFieldGroupInvalid(this.step3Fields)) {
+        this.currentStep = 3;
+      } else if (this.isFieldGroupInvalid(this.step2Fields)) {
+        this.currentStep = 2;
+      }
       this.setError('Veuillez remplir tous les champs obligatoires.');
       return;
     }
@@ -232,6 +301,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   private buildOrderRequest(customer: CustomerResponse, user: UserResponse): OrderRequest {
+
     const { paymentMethod, deliveryType } = this.addressForm.getRawValue();
     const deliveryAddressId = customer.defaultDeliveryAddressId;
 
@@ -244,6 +314,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       userId:            user.userUuid,
       deliveryAddressId: customer.defaultDeliveryAddressId,
       paymentMethod:     paymentMethod as PaymentMethod,
+      currency:        this.getItemCurrency(),  // Le panier est mono-devise (imposé par CartService)
       deliveryType:      deliveryType  as DeliveryType,
       note:              '',
       deviceInfo:        navigator.userAgent,
@@ -258,6 +329,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         productName:   item.productName,
         quantity:      item.quantity,
         unitPrice:     this.getItemPrice(item),
+        currency:      item.currency,
         imageUrl:      item.imageUrl,
       }))
     };
@@ -293,6 +365,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       const response = await this.paymentService.initiateStripePayment({
         orderId,
         amount: this.totalPrice,
+        currency: this.getItemCurrency(),
         paymentMethod: 'STRIPE',
         phoneNumber: this.phoneNumberCtrl.value,
         customerId: this.customer?.id ?? '',
@@ -312,4 +385,21 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       this.isLoading = false;
     }
   }
+
+
+
+
+  // ─── Toast + bandeau d'erreur ────────────────────────────────
+  private async showToast(message: string, color: 'danger' | 'success' | 'warning' = 'danger') {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 3000,
+      position: 'top',
+      color,
+      mode: 'ios',
+      buttons: [{ icon: 'close', role: 'cancel' }],
+    });
+    await toast.present();
+  }
+
 }

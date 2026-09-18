@@ -1,3 +1,5 @@
+import { Currency } from "./enums/currency-type";
+
 export interface CartItem {
   shopLatitude: number;
   shopLongitude: number;
@@ -7,6 +9,7 @@ export interface CartItem {
   imageUrl?: string;
 
   price: number;
+  currency: Currency;    // NEW
   promotionPrice?: number | null;
   promotionActive: boolean; 
 

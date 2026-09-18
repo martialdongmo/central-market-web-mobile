@@ -1,3 +1,5 @@
+import { Currency } from "../enums/currency-type";
+
 export interface RegisterRequest {
     
     firstName: string;
@@ -8,4 +10,5 @@ export interface RegisterRequest {
     password: string;
     latitude: string;
     longitude: string;
+    currency: Currency; // new field
 }

@@ -1,3 +1,4 @@
+import { Currency } from "../../enums/currency-type";
 import { ShopDeliveryStatus } from "../../enums/shopDeliveryStatus";
 import { OrderItemResponse } from "./orderItemResponse";
 
@@ -15,6 +16,7 @@ export interface CustomerShopGroupResponse {
   // ─── This shop's financials ───────────────────
   shopSubtotal: number; 
   deliveryFee: number;
+   currency:Currency; 
 
   // ─── This shop's items only ───────────────────
   items: OrderItemResponse[]; 

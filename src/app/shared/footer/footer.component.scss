@@ -188,6 +188,16 @@
   color:var(--blue); font-size:13px; flex-shrink:0;
 }
 
+/* ── Lien "danger" (suppression de compte) ── */
+.fm-link-danger {
+  .fm-link-text { color:#C62828; }
+  .fm-link-sub  { color:#C6282899; }
+  &:active { background:#FFF5F5; }
+}
+.fm-link-icon--danger {
+  background:#FFEBEE; border:1px solid #FFCDD2; color:#C62828;
+}
+
 /* ── Logout ── */
 .fm-logout-btn {
   display:flex; align-items:center; justify-content:center; gap:8px;

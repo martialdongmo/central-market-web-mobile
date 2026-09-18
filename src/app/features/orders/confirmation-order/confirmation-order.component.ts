@@ -135,6 +135,7 @@ export class ConfirmationOrderComponent implements OnInit {
     return {
       orderId: this.order?.id ?? '',
       amount: this.order?.totalAmount ?? 0,
+      currency: this.order.currency ,
       paymentMethod: this.order?.paymentMethod,
       phoneNumber: this.customerAddress?.phoneNumber ?? '',
       email: this.user?.email ?? '',

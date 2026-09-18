@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonIcon, IonSpinner, NavController } from '@ionic/angular/standalone';
+import { IonContent, IonIcon, NavController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   arrowBackOutline,
@@ -29,6 +29,7 @@ import { DeliveryType } from 'src/app/core/model/enums/deliveryType';
 import { PaymentMethod } from 'src/app/core/model/enums/payment-method';
 import { FooterComponent } from "src/app/shared/footer/footer.component";
 import { OrdersService } from 'src/app/core/services/orders.service';
+import { CustomCurrencyPipe } from '../../../core/services/custom.currency.pipe';
 
 interface StatusTab  { label: string; value: OrderStatus | null; icon: string; }
 interface DateRange  { label: string; key: string; from?: string; to?: string; }
@@ -36,7 +37,7 @@ interface DateRange  { label: string; key: string; from?: string; to?: string; }
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonContent, IonIcon, IonSpinner, DatePipe, DecimalPipe, FooterComponent],
+  imports: [CommonModule, FormsModule, IonContent, IonIcon, DatePipe, FooterComponent, CustomCurrencyPipe],
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.scss'],
 })

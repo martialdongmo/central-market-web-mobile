@@ -9,5 +9,5 @@ export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
   [PaymentMethod.MTN_MOBILE_MONEY]: 'MTN Mobile Money',
   [PaymentMethod.ORANGE_MONEY]: 'Orange Money',
   [PaymentMethod.CASH]: 'Espèces',
-  [PaymentMethod.STRIPE]: 'Carte bancaire (Stripe)',
+  [PaymentMethod.STRIPE]: 'Carte bancaire',
 };

@@ -1,3 +1,5 @@
+import { Currency } from "../enums/currency-type";
+
 export interface OrderItemRequest {
   shopId: string;
   userUuid: string;
@@ -9,5 +11,6 @@ export interface OrderItemRequest {
   productName: string;
   quantity: number;
   unitPrice: number;
+  currency: Currency;    // NEW
   imageUrl: string;
 }

@@ -133,7 +133,7 @@
                   <span class="ot-item-qty">x{{ item.quantity }}</span>
                 </div>
                 <div class="ot-item-total">
-                  {{ item.priceAtPurchase | customCurrency }}
+                  {{ item.priceAtPurchase | customCurrency: item.currency }}
                 </div>
               </div>
             }
@@ -141,7 +141,7 @@
 
           <div class="ot-shop-subtotal">
             <span>{{ 'orders.shop_subtotal' | translate }}</span>
-            <strong>{{ group.shopSubtotal | customCurrency }}</strong>
+            <strong>{{ group.shopSubtotal | customCurrency: group.currency }}</strong>
           </div>
         </div>
       }
@@ -200,17 +200,17 @@
         <div class="ot-payment-rows">
           <div class="ot-pay-row">
             <span>{{ 'orders.subtotal' | translate }}</span>
-            <span>{{ order.subtotalAmount | customCurrency }}</span>
+            <span>{{ order.subtotalAmount | customCurrency: order.currency }}</span>
           </div>
           <div class="ot-pay-row">
             <span>{{ 'orders.delivery_fee' | translate }}</span>
-            <span>{{ order.deliveryFee | customCurrency }}</span>
+            <span>{{ order.deliveryFee | customCurrency: order.currency }}</span>
           </div>
         </div>
 
         <div class="ot-total-row">
           <span class="ot-total-label">{{ 'orders.total_charged' | translate }}</span>
-          <span class="ot-total-amount">{{ order.totalAmount | customCurrency }}</span>
+          <span class="ot-total-amount">{{ order.totalAmount | customCurrency: order.currency }}</span>
         </div>
 
         <div class="ot-payment-method">

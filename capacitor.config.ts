@@ -6,7 +6,6 @@ const config: CapacitorConfig = {
   webDir: 'www',
   server: {
     androidScheme: 'https',
-    // Allow navigation to the callback URL for OAuth
     allowNavigation: [
       'localhost',
       'kapexpert.cloud'
@@ -18,7 +17,7 @@ const config: CapacitorConfig = {
     },
     StatusBar: {
       style: 'LIGHT',
-      backgroundColor: '#ffffff'
+      backgroundColor: '#2699db'
     },
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert']

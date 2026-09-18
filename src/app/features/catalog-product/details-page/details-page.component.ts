@@ -11,7 +11,7 @@ import { addIcons } from 'ionicons';
 import { FooterComponent } from "../../../shared/footer/footer.component";
 import { CartService } from 'src/app/core/services/cart.service';
 import { CatalogService } from 'src/app/core/services/catalog.service';
-import('@capacitor/share')
+import { CustomCurrencyPipe } from '../../../core/services/custom.currency.pipe';
 
 @Component({
   selector: 'app-details-page',
@@ -21,7 +21,8 @@ import('@capacitor/share')
     RouterModule,
     IonHeader, IonToolbar, IonButtons, IonButton, IonIcon,
     IonTitle, IonContent, IonFooter, IonSkeletonText,
-    FooterComponent
+    FooterComponent,
+    CustomCurrencyPipe
   ],
   templateUrl: './details-page.component.html',
   styleUrls: ['./details-page.component.scss']
@@ -102,7 +103,7 @@ export class DetailsPageComponent implements OnInit {
   }
 
   // ============================================================
-  // CATÉGORIE — libellé français (corrigé : affichait l'enum brut avant)
+  // CATÉGORIE — libellé français
   // ============================================================
   getCategoryLabel(category: ProductCategory): string {
     return getProductCategoryLabel(category);
@@ -115,12 +116,9 @@ export class DetailsPageComponent implements OnInit {
     if (!this.product) return [];
     const gallery = this.product.images ?? [];
     const combined = [this.product.imageUrl, ...gallery];
-    // de-duplicate while preserving order
     return combined.filter((url, i) => !!url && combined.indexOf(url) === i);
   }
 
-  /** Clic sur une miniature : met à jour l'image active ET fait défiler
-   *  la galerie principale jusqu'à cette image (swipe/scroll synchronisés). */
   selectImage(url: string): void {
     this.activeImageUrl = url;
     this.scrollHeroToImage(url);
@@ -134,7 +132,6 @@ export class DetailsPageComponent implements OnInit {
     track.scrollTo({ left: index * track.clientWidth, behavior: 'smooth' });
   }
 
-  /** Swipe manuel sur l'image principale : synchronise la miniature active. */
   onHeroScroll(event: Event): void {
     const track = event.target as HTMLDivElement;
     if (!track.clientWidth) return;
@@ -158,7 +155,6 @@ export class DetailsPageComponent implements OnInit {
       product.variants.map(v => v.size).filter((s): s is string => !!s)
     )];
 
-    // Auto-select the first variant if there's only one axis or a single variant
     if (product.variants.length === 1) {
       this.selectVariantDirect(product.variants[0]);
     }
@@ -207,7 +203,7 @@ export class DetailsPageComponent implements OnInit {
   }
 
   // ============================================================
-  // COMPUTED — price / stock reflect selected variant when present
+  // COMPUTED
   // ============================================================
   get displayPrice(): number {
     if (!this.product) return 0;
@@ -256,41 +252,41 @@ export class DetailsPageComponent implements OnInit {
   }
 
   // ============================================================
-  // SHARE — native app share sheet, Web Share API, or clipboard
+  // SHARE — CORRIGÉ POUR POINTAGE SERVEUR SPRING BOOT PUBLIC
   // ============================================================
   async share(): Promise<void> {
     if (!this.product) return;
 
-    const url  = `${window.location.origin}/details/${this.product.productId}`;
-    const text = `Découvrez ${this.product.productName} sur GroupinG — ${this.displayPrice} FCFA`;
+    // Utilisation explicite du domaine backend public pour les balises Open Graph
+    const shareUrl = `https://kapexpert.cloud:9009/share/product/${this.product.productId}`;
+    const text = `Découvrez ${this.product.productName} sur GroupinG !`;
     const title = this.product.productName;
 
-    // 1) Native app (Capacitor) — only fires if @capacitor/share is installed
-    //    and the app is actually running natively (Android/iOS build).
+    // 1) Application Native (Capacitor) — iOS / Android
     try {
       const { Capacitor } = await import('@capacitor/core');
       if (Capacitor.isNativePlatform()) {
         const { Share } = await import('@capacitor/share');
-        await Share.share({ title, text, url, dialogTitle: 'Partager ce produit' });
+        await Share.share({ title, text, url: shareUrl, dialogTitle: 'Partager ce produit' });
         return;
       }
     } catch {
-      // @capacitor/core or @capacitor/share not installed / not native — fall through
+      // Fallthrough si environnement web
     }
 
-    // 2) Web Share API (mobile browsers, PWA)
+    // 2) Web Share API (Navigateurs mobiles / PWA)
     if (this.canNativeShare) {
       try {
-        await navigator.share({ title, text, url });
+        await navigator.share({ title, text, url: shareUrl });
         return;
       } catch (err) {
         if ((err as DOMException).name === 'AbortError') return;
       }
     }
 
-    // 3) Clipboard fallback (desktop browsers)
+    // 3) Presse-papier (Navigateur Desktop)
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(shareUrl);
       this.showToast('Lien copié dans le presse-papier !', 'copy-outline', 'primary');
     } catch {
       this.showToast('Impossible de copier le lien.', 'close-circle', 'danger');

@@ -7,40 +7,89 @@
   --background: #f8fafc;
 }
 
-.auth-body {
-  padding: 2.5rem 1.5rem;
-  max-width: 450px;
-  margin: 0 auto;
-}
-
-/* BRANDING */
-.brand-identity-wrap {
+/* HEADER BANNER */
+.header-banner {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  padding: 2.5rem 1.5rem 3.5rem;
   text-align: center;
-  margin-bottom: 2rem;
+  border-radius: 0 0 28px 28px;
 
   .logo-frame {
-    width: 64px;
-    height: 64px;
+    width: 56px;
+    height: 56px;
     margin: 0 auto 0.75rem;
-    img { width: 100%; height: 100%; object-fit: contain; }
+    background: #ffffff;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    img { width: 70%; height: 70%; object-fit: contain; }
   }
 
   .auth-title {
-    font-size: 1.75rem;
+    font-size: 1.6rem;
     font-weight: 800;
-    color: #0f172a;
+    color: #ffffff;
     margin: 0;
-    span { color: #2563eb; }
+    span { color: #bfdbfe; }
   }
 
   .auth-sub {
-    font-size: 0.875rem;
-    color: #64748b;
-    margin: 0.25rem 0 0;
+    font-size: 0.85rem;
+    color: #dbeafe;
+    margin: 0.35rem 0 0;
   }
 }
 
-/* FIELDS INPUTS & TOGGLE EYE */
+/* BODY / CARD (overlaps banner) */
+.auth-body {
+  max-width: 450px;
+  margin: -2rem auto 0;
+  padding: 1.75rem 1.5rem 2rem;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  position: relative;
+  z-index: 1;
+}
+
+/* STEP TRACKER */
+.step-tracker {
+  margin-bottom: 1.75rem;
+
+  .step-track {
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .step-track-fill {
+    height: 100%;
+    background: #2563eb;
+    border-radius: 999px;
+    transition: width 0.3s ease;
+  }
+
+  .step-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+
+    span {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #94a3b8;
+      &.active { color: #2563eb; }
+    }
+  }
+}
+
+.step-panel {
+  animation: fadeIn 0.25s ease;
+}
+
+/* FIELDS */
 .auth-field {
   display: flex;
   flex-direction: column;
@@ -64,17 +113,17 @@
     height: 48px;
     transition: border-color 0.2s ease;
 
-    &:focus-within {
-      border-color: #2563eb;
-    }
+    &:focus-within { border-color: #2563eb; }
+    &.has-error { border-color: #dc2626; }
 
     ion-icon {
       font-size: 1.25rem;
       color: #94a3b8;
       margin-right: 0.75rem;
+      flex-shrink: 0;
     }
 
-    input {
+    input, .native-select {
       width: 100%;
       height: 100%;
       border: none;
@@ -82,7 +131,13 @@
       font-size: 0.95rem;
       color: #0f172a;
       background: transparent;
-      padding-right: 2.5rem; /* Espace pour pas surcharger l'œil */
+    }
+
+    input { padding-right: 2.5rem; }
+
+    .native-select {
+      appearance: none;
+      -webkit-appearance: none;
     }
 
     .toggle-password-btn {
@@ -105,18 +160,15 @@
         color: #94a3b8;
         transition: color 0.2s ease;
       }
-
-      &:active ion-icon {
-        color: #2563eb;
-      }
+      &:active ion-icon { color: #2563eb; }
     }
   }
 }
 
-/* CHECKBOX POLICIES */
+/* CHECKBOX */
 .auth-policy-wrap {
-  margin: 1rem 0 1.5rem;
-  
+  margin: 0.5rem 0 1.5rem;
+
   .policy-checkbox-container {
     display: flex;
     align-items: flex-start;
@@ -160,7 +212,7 @@
       font-size: 0.85rem;
       color: #64748b;
       line-height: 1.4;
-      
+
       a {
         color: #2563eb;
         font-weight: 600;
@@ -172,7 +224,7 @@
   }
 }
 
-/* MESSAGES BOXES */
+/* MESSAGES */
 .error-box, .success-box {
   display: flex;
   align-items: center;
@@ -188,13 +240,15 @@
 .error-box { background: #fef2f2; color: #dc2626; ion-icon { color: #dc2626; } }
 .success-box { background: #f0fdf4; color: #16a34a; ion-icon { color: #16a34a; } }
 
-/* BUTTONS & SPINNER */
-.primary-btn {
-  width: 100%;
+/* ACTIONS */
+.step-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.primary-btn, .secondary-btn {
   height: 48px;
-  background: #2563eb;
-  color: #ffffff;
-  border: none;
   border-radius: 12px;
   font-size: 0.95rem;
   font-weight: 700;
@@ -202,10 +256,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.4rem;
   transition: all 0.2s ease;
+}
+
+.primary-btn {
+  flex: 1;
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
 
   &:disabled { opacity: 0.6; cursor: not-allowed; }
   &:not(:disabled):active { transform: scale(0.98); }
+}
+
+.secondary-btn {
+  flex: 0 0 auto;
+  padding: 0 1.1rem;
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  &:active { transform: scale(0.98); }
 }
 
 .spinner {

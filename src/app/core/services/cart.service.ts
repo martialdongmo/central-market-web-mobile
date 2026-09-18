@@ -4,6 +4,12 @@ import { BehaviorSubject } from 'rxjs';
 import { Preferences } from '@capacitor/preferences';
 import { CartItem } from '../model/cartItem';
 import { CatalogProductResponse } from '../model/response/catalogProductResponse';
+import { Currency } from '../model/enums/currency-type';
+
+export type AddToCartResult =
+  | { status: 'added' }
+  | { status: 'quantity-updated' }
+  | { status: 'currency-mismatch'; cartCurrency: Currency; productCurrency: Currency };
 
 @Injectable({
   providedIn: 'root',
@@ -34,8 +40,13 @@ export class CartService {
 
   // =========================
   // ADD TO CART
+  // Un panier ne peut contenir que des produits d'une seule devise.
+  // Si le panier est vide, la devise du produit devient la devise du panier.
+  // Si le produit est d'une autre devise que le panier existant, on refuse
+  // l'ajout et on renvoie 'currency-mismatch' pour que l'UI puisse informer
+  // le client (ex : proposer de vider le panier).
   // =========================
-  addToCart(product: CatalogProductResponse) {
+  addToCart(product: CatalogProductResponse): AddToCartResult {
 
     const existing = this.items.find(
       i => i.productId === product.productId
@@ -43,11 +54,26 @@ export class CartService {
 
     if (existing) {
       existing.quantity += 1;
-    } else {
-      this.items.push(this.mapToCartItem(product));
+      this.updateStreams();
+      return { status: 'quantity-updated' };
     }
 
+    const cartCurrency = this.getCartCurrency();
+    if (cartCurrency && cartCurrency !== product.currency) {
+      return { status: 'currency-mismatch', cartCurrency, productCurrency: product.currency };
+    }
+
+    this.items.push(this.mapToCartItem(product));
     this.updateStreams();
+    return { status: 'added' };
+  }
+
+  // =========================
+  // DEVISE ACTUELLE DU PANIER
+  // null si le panier est vide (aucune devise imposée).
+  // =========================
+  getCartCurrency(): Currency | null {
+    return this.items.length ? this.items[0].currency : null;
   }
 
   // =========================
@@ -141,6 +167,7 @@ export class CartService {
       imageUrl: product.imageUrl,
 
       price: product.price,
+      currency: product.currency,
       promotionPrice: realPromo ? product.promotionPrice : null,
       promotionActive: realPromo,
 
@@ -166,6 +193,8 @@ export class CartService {
 
   // =========================
   // TOTAL PRICE
+  // Le panier n'ayant qu'une seule devise, ce total est toujours
+  // exprimé dans la devise renvoyée par getCartCurrency().
   // =========================
   getTotalPrice(): number {
     return this.items.reduce((total, item) => {

@@ -125,6 +125,7 @@ export enum ProductCategory {
   // =========================
   CAR_PARTS = 'CAR_PARTS',
   MOTORCYCLE_PARTS = 'MOTORCYCLE_PARTS',
+  CARS = 'CARS',
 
   // =========================
   // PETS
@@ -477,6 +478,7 @@ export const PRODUCT_CATEGORY_LABEL: Record<ProductCategory, string> = {
   // AUTOMOTIVE
   [ProductCategory.CAR_PARTS]: 'Pièces automobiles',
   [ProductCategory.MOTORCYCLE_PARTS]: 'Pièces moto',
+  [ProductCategory.CARS]: 'Voitures',
 
   // PETS
   [ProductCategory.PET_FOOD]: 'Nourriture pour animaux',

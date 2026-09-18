@@ -1,7 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterModule, ActivatedRoute, Router } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { IonContent, IonIcon, NavController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -14,11 +14,14 @@ import {
   callOutline,
   checkmarkCircleOutline,
   eyeOffOutline,
-  eyeOutline
+  eyeOutline,
+  cashOutline,
+  chevronForwardOutline
 } from 'ionicons/icons';
 import { AuthService } from '../auth.service';
 import { RegisterRequest } from 'src/app/core/model/requests/registerRequest';
 import { LocationService } from '../../core/services/location.service';
+import { Currency } from 'src/app/core/model/enums/currency-type';
 
 @Component({
   selector: 'app-register',
@@ -31,30 +34,39 @@ export class RegisterComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
   successMessage = '';
+  isPasswordHidden = true;
+
+  // Wizard state
+  currentStep = signal<number>(1);
+  totalSteps = 3;
+  progressPercent = computed(() => (this.currentStep() / this.totalSteps) * 100);
+
+  currencies = Object.values(Currency);
 
   private authService = inject(AuthService);
   private router = inject(Router);
   public navCtrl = inject(NavController);
   private fb = inject(FormBuilder);
-  private route = inject(ActivatedRoute);
   private locationService = inject(LocationService);
-  private currentYear = new Date().getFullYear();
-  public isPasswordHidden: boolean = true;
 
+  private readonly stepFields: Record<number, string[]> = {
+    1: ['firstName', 'lastName', 'username'],
+    2: ['email', 'phoneNumber', 'currency'],
+    3: ['password', 'agreeToTerms'],
+  };
 
-  // UX Enhancement: Integrated the dynamic legal checkbox validator
   registerForm = this.fb.group({
     firstName: ['', [Validators.required]],
     lastName: ['', [Validators.required]],
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
     username: ['', [Validators.required]],
+    email: ['', [Validators.required, Validators.email]],
     phoneNumber: ['', [Validators.required, Validators.maxLength(15)]],
-    agreeToTerms: [false, [Validators.requiredTrue]] // Enforces checkbox interaction
+    currency: [Currency.XAF, [Validators.required]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    agreeToTerms: [false, [Validators.requiredTrue]],
   });
 
   constructor() {
-    // Registered new contextual iconography mappings to prevent layout flashing errors
     addIcons({
       arrowBackOutline,
       personOutline,
@@ -65,7 +77,9 @@ export class RegisterComponent implements OnInit {
       callOutline,
       checkmarkCircleOutline,
       eyeOutline,
-      eyeOffOutline
+      eyeOffOutline,
+      cashOutline,
+      chevronForwardOutline
     });
   }
 
@@ -73,16 +87,38 @@ export class RegisterComponent implements OnInit {
     this.locationService.getCurrentLocation();
   }
 
+  isCurrentStepValid(): boolean {
+    return this.stepFields[this.currentStep()].every(
+      (name) => this.registerForm.get(name)?.valid
+    );
+  }
 
+  isFieldInvalid(name: string): boolean {
+    const control = this.registerForm.get(name);
+    return !!control && control.invalid && (control.touched || control.dirty);
+  }
+
+  goNext() {
+    this.stepFields[this.currentStep()].forEach((name) =>
+      this.registerForm.get(name)?.markAsTouched()
+    );
+    if (!this.isCurrentStepValid()) return;
+    if (this.currentStep() < this.totalSteps) {
+      this.currentStep.set(this.currentStep() + 1);
+    }
+  }
+
+  goBack() {
+    if (this.currentStep() > 1) {
+      this.currentStep.set(this.currentStep() - 1);
+    } else {
+      this.navCtrl.back();
+    }
+  }
 
   async register() {
-
-
-
-    if (this.registerForm.invalid) return; // Prevent submission block breaks
+    if (this.registerForm.invalid) return;
     const request = this.createRegisterRequest();
-
-    console.log(request);
     this.saveNewUser(request);
   }
 
@@ -95,20 +131,18 @@ export class RegisterComponent implements OnInit {
       password: this.registerForm.value.password!,
       username: this.registerForm.value.username!,
       phoneNumber: this.registerForm.value.phoneNumber!,
+      currency: this.registerForm.value.currency!,
       latitude: location.lat,
       longitude: location.lng
     };
   }
 
-  // Legal documentation workflow endpoints
   openTerms() {
     this.router.navigate(['/TermandConditions']);
-    console.log('Navigate or display Terms Sheet Modal');
   }
 
   openPrivacy() {
     this.router.navigate(['/privacy-policy']);
-    console.log('Navigate or display Privacy Sheet Modal');
   }
 
   saveNewUser(request: RegisterRequest) {
@@ -117,10 +151,9 @@ export class RegisterComponent implements OnInit {
     this.successMessage = '';
 
     this.authService.registerNewUser(request).subscribe({
-      next: (response) => {
+      next: () => {
         this.isLoading = false;
-        this.successMessage = 'Account created. Please verify the OTP sent to your email.';
-
+        this.successMessage = 'Compte créé. Veuillez saisir le code OTP envoyé par email.';
         this.router.navigate(['/verify-otp'], {
           queryParams: { email: request.email }
         });
@@ -128,21 +161,18 @@ export class RegisterComponent implements OnInit {
       error: (err) => {
         this.isLoading = false;
 
-        // On extrait la propriété 'error' ou 'validationError' de votre objet ErrorResponse
         if (err?.error && typeof err.error === 'object') {
           if (err.error.error) {
-            // Capture "Email already exists" / "Username already exists"
             this.errorMessage = err.error.error;
           } else if (err.error.validationError && err.error.validationError.length > 0) {
-            // Capture les erreurs de validation de champs (ex: @Valid)
             this.errorMessage = Array.from(err.error.validationError).join(', ');
           } else {
-            this.errorMessage = 'An error occurred during registration.';
+            this.errorMessage = "Une erreur est survenue lors de l'inscription.";
           }
         } else if (typeof err?.error === 'string') {
           this.errorMessage = err.error;
         } else {
-          this.errorMessage = 'Registration failed. Please check your network connection.';
+          this.errorMessage = 'Inscription échouée. Veuillez vérifier votre connexion.';
         }
 
         console.error('Registration Error:', err);

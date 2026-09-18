@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { IonIcon, NavController, ToastController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { locationOutline, cartOutline, checkmarkCircle, storefrontOutline } from 'ionicons/icons';
+import { locationOutline, cartOutline, checkmarkCircle, storefrontOutline, alertCircleOutline } from 'ionicons/icons';
 import { CatalogProductResponse } from 'src/app/core/model/response/catalogProductResponse';
 import { CartService } from 'src/app/core/services/cart.service';
 import { CustomCurrencyPipe } from 'src/app/core/services/custom.currency.pipe';
@@ -26,7 +26,7 @@ export class ProductCardComponent {
   private router = inject(Router);
 
   constructor() {
-    addIcons({ locationOutline, cartOutline, checkmarkCircle, storefrontOutline });
+    addIcons({ locationOutline, cartOutline, checkmarkCircle, storefrontOutline, alertCircleOutline });
   }
 
   /** Navigue vers la boutique sans déclencher le routerLink de la carte
@@ -43,15 +43,38 @@ export class ProductCardComponent {
     e.stopPropagation();
     e.preventDefault();
 
-    this.cartService.addToCart(this.product);
+    const result = this.cartService.addToCart(this.product);
 
+    switch (result.status) {
+      case 'added':
+      case 'quantity-updated':
+        await this.showToast({
+          message: `${this.product.productName} ajouté au panier`,
+          color: 'dark',
+          icon: 'checkmark-circle',
+        });
+        break;
+
+      case 'currency-mismatch':
+        await this.showToast({
+          message: `Votre panier contient déjà des articles en ${result.cartCurrency}. `
+            + `Videz-le pour ajouter un article en ${result.productCurrency}.`,
+          color: 'danger',
+          icon: 'alert-circle-outline',
+          duration: 3000,
+        });
+        break;
+    }
+  }
+
+  private async showToast(opts: { message: string; color: string; icon: string; duration?: number }) {
     const t = await this.toastCtrl.create({
-      message: `${this.product.productName} ajouté au panier`,
-      duration: 1800,
+      message: opts.message,
+      duration: opts.duration ?? 1800,
       position: 'top',          // reste visible, jamais masqué par un footer/tab-bar
       mode: 'ios',
-      color: 'dark',            // couleur Ionic valide (existe réellement), proche de votre navy
-      icon: 'checkmark-circle',
+      color: opts.color,        // couleur Ionic valide (existe réellement)
+      icon: opts.icon,
       cssClass: 'cart-toast',   // hook pour un style custom global (voir plus bas)
     });
     await t.present();
