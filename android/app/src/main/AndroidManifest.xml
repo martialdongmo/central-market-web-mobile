@@ -30,18 +30,22 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <!-- 🔗 Application externe pour partage & liens (Android 11+) -->
-    <queries>
-        <intent-filter>
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="https" />
-        </intent-filter>
-        <package android:name="com.whatsapp" />
-        <intent-filter>
-            <action android:name="android.intent.action.DIAL" />
-        </intent-filter>
-    </queries>
+   <queries>
+    <!-- Vérifier les applications capables d'ouvrir des liens HTTPS -->
+    <intent>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="https" />
+    </intent>
 
+    <!-- WhatsApp -->
+    <package android:name="com.whatsapp" />
+
+    <!-- Vérifier les applications capables de composer un numéro -->
+    <intent>
+        <action android:name="android.intent.action.DIAL" />
+    </intent>
+</queries>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
