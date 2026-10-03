@@ -5,47 +5,45 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!-- 🔔 Notifications Push (Android 13+) -->
+    <!-- 🔔 Notifications Push -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-    <!-- 📍 Géolocalisation (Boutiques à proximité) -->
+    <!-- 📍 Géolocalisation -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <!-- 📷 Appareil Photo -->
+    <!-- 📷 Appareil photo -->
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
-    <!-- 🖼️ Galerie & Stockage (Android 13+ & versions ultérieures) -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
-
-    <!-- 🎙️ Enregistrement audio (Optionnel) -->
+    <!-- 🎙️ Enregistrement audio -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
-    <!-- 🔗 Application externe pour partage & liens (Android 11+) -->
-   <queries>
-    <!-- Vérifier les applications capables d'ouvrir des liens HTTPS -->
-    <intent>
-        <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="https" />
-    </intent>
+    <!-- 🔗 Applications externes -->
+    <queries>
 
-    <!-- WhatsApp -->
-    <package android:name="com.whatsapp" />
+        <!-- Applications capables d'ouvrir des liens HTTPS -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+        </intent>
 
-    <!-- Vérifier les applications capables de composer un numéro -->
-    <intent>
-        <action android:name="android.intent.action.DIAL" />
-    </intent>
-</queries>
+        <!-- WhatsApp -->
+        <package android:name="com.whatsapp" />
+
+        <!-- Applications capables de composer un numéro -->
+        <intent>
+            <action android:name="android.intent.action.DIAL" />
+        </intent>
+
+    </queries>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -55,19 +53,19 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBarLaunch"
             android:launchMode="singleTask"
-            android:exported="true">
+            android:exported="true"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Custom OAuth / Scheme Callback (`cm.kapexpert.grouping://`) -->
+            <!-- Custom OAuth / Scheme Callback -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -75,13 +73,19 @@
                 <data android:scheme="cm.kapexpert.grouping" />
             </intent-filter>
 
-            <!-- App Links HTTPS / Universal Links (ex: https://grouping.cm) -->
+            <!-- App Links -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="grouping.cm" />
-                <data android:scheme="http" android:host="grouping.cm" />
+
+                <data
+                    android:scheme="https"
+                    android:host="grouping.cm" />
+
+                <data
+                    android:scheme="http"
+                    android:host="grouping.cm" />
             </intent-filter>
 
         </activity>
@@ -91,10 +95,13 @@
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
+
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
+
         </provider>
+
     </application>
 
 </manifest>
