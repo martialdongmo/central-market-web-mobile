@@ -5,7 +5,7 @@ on:
       - dev-sidof-v3
   pull_request:
     branches:
-      - deployment
+      - main-1
 
 
 jobs:
